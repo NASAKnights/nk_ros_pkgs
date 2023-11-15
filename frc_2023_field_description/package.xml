@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>frc_2023_field_description</name>
+  <version>0.1.0</version>
+  <description>
+    FRC Team 122 Vision setup
+  </description>
+
+  <maintainer email="collincresta1386@gmail.com">Collin Cresta</maintainer>
+
+  <license>BSD</license>
+  <author>Collin Cresta</author>
+
+  <buildtool_depend>ament_cmake_auto</buildtool_depend>
+
+  <depend>rcl_interfaces</depend>
+  <depend>rclcpp</depend>
+  <depend>rclcpp_components</depend>
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

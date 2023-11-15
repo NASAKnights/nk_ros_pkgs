@@ -1,0 +1,90 @@
+<?xml version="1.0"?>
+<robot name="frc_2023_field">
+
+ 	<link name="world">
+		<visual>
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+				<mesh filename="package://frc_2023_field_description/meshes/2023_field.stl"/>
+			</geometry>
+			<material name="Cyan">
+				<color rgba="0 1.0 1.0 1.0"/>
+			</material>
+      	</visual>
+   
+		<collision>
+			<origin xyz="0 0 0" rpy="0 0 0"/>
+			<geometry>
+				<mesh filename="package://frc_2023_field_description/meshes/2023_field.stl"/>
+			</geometry>
+		</collision>
+ 	</link>
+
+
+	<joint name="w2m1" type="fixed">
+		<parent link="world"/>
+		<child link="marker_1"/>
+		<origin xyz="0.967 1.044 0.461" rpy="-1.57 0.0 0.0"/>
+	</joint>
+
+	<link name="marker_1"/>
+
+  
+	<joint name="w2m2" type="fixed">
+		<parent link="world"/>
+		<child link="marker_2"/>
+		<origin xyz="2.643 1.071 0.461" rpy="-1.57 0.0 0.0"/>
+	</joint>
+
+	<link name="marker_2"/>
+
+
+  	<joint name="w2m3" type="fixed">
+		<parent link="world"/>
+		<child link="marker_3"/>
+		<origin xyz="4.319 1.099 0.461" rpy="-1.57 0.0 0.0"/>
+	</joint>
+
+	<link name="marker_3"/>
+
+	<joint name="w2m4" type="fixed">
+		<parent link="world"/>
+		<child link="marker_4"/>
+		<origin xyz="6.656 0.473 0.694" rpy="-1.57 0.0 0.0"/>
+	</joint>
+
+	<link name="marker_4"/>
+
+	<joint name="w2m5" type="fixed">
+		<parent link="world"/>
+		<child link="marker_5"/>
+		<origin xyz="6.394 16.286 0.694" rpy="-1.57 0.0 0.0"/>
+	</joint>
+
+	<link name="marker_5"/>
+
+	<joint name="w2m6" type="fixed">
+		<parent link="world"/>
+		<child link="marker_6"/>
+		<origin xyz="4.08 15.583 0.461" rpy="-1.57 0.0 0.0"/>
+	</joint>
+
+	<link name="marker_6"/>
+
+	<joint name="w2m7" type="fixed">
+		<parent link="world"/>
+		<child link="marker_7"/>
+		<origin xyz="2.404 15.556 0.461" rpy="-1.57 0.0 0.0"/>
+	</joint>
+
+	<link name="marker_7"/>
+
+	<joint name="w2m8" type="fixed">
+		<parent link="world"/>
+		<child link="marker_8"/>
+		<origin xyz="0.728 15.528 0.461" rpy="-1.57 0.0 0.0"/>
+	</joint>
+
+	<link name="marker_8"/>
+
+</robot>

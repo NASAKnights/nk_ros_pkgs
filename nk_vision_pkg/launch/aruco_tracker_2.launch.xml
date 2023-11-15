@@ -1,0 +1,7 @@
+<launch version="0.1.1">
+  <node pkg="aruco_opencv" exec="aruco_tracker_autostart" name="aruco_tracker_2">
+    <param from="$(find-pkg-share nk_vision)/config/aruco_tracker_2.yaml" />
+    <param name="board_descriptions_path"
+      value="$(find-pkg-share nk_vision)/config/board_descriptions.yaml" />
+  </node>
+</launch> 

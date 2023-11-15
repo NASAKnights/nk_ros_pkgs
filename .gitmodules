@@ -1,0 +1,8 @@
+[submodule "image_pipeline"]
+	path = image_pipeline
+	url = https://github.com/NASAKnights/image_pipeline
+	branch = humble
+[submodule "ros_aruco_opencv"]
+	path = ros_aruco_opencv
+	url = https://github.com/NASAKnights/ros_aruco_opencv
+	branch = humble
