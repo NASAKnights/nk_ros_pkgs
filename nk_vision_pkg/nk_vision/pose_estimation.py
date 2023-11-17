@@ -12,6 +12,7 @@ from geometry_msgs.msg import PoseArray, Pose
 from rcl_interfaces.msg import ParameterDescriptor, ParameterType
 import rclpy.time as time
 from tf2_msgs.msg import _tf_message
+from geometry_msgs.msg import TransformStamped
 
 
 class PoseEstimationNode(Node):
@@ -35,7 +36,8 @@ class PoseEstimationNode(Node):
 
         self.pose_sources = ['base_link_1', 'base_link_2']
         self.camera = {'camera_1':False, 'camera_2':False}
-        self.pose_estimates = []
+        ## key is link value is pose estimates
+        self.pose_estimates = {}
 
         self.rate = 20
         self.acceptable_timeout = 1/self.rate 
@@ -63,7 +65,8 @@ class PoseEstimationNode(Node):
         for link in self.pose_sources:
             try:
                 trans = self.tfBuffer.lookup_transform(link, 'world', time.Time())
-                self.pose_estimates.append(trans)
+                self.pose_estimates[link] = trans
+
             except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
                 continue
         pass
@@ -80,9 +83,25 @@ class PoseEstimationNode(Node):
         self.pose.orientation = self.avg_orientation
 
     def check_Timestamp(self, msg: _tf_message.TFMessage):
-        for transform in msg.transforms:
-            if transform.child_frame_id in self.camera.keys():
-                pass
+        for transform_message in msg.transforms:
+            transform_message: TransformStamped
+            if transform_message.child_frame_id in self.camera.keys():
+                ## check for timestamp with child frame to see if recent
+                ## stored as int, nanosec convert into sec and float, then add sec and nanosec
+                ## nanosec
+                stamp_nanosecond = float(transform_message.header.stamp.nanosec) / 1000000000
+                
+                ## second add with nanosec
+                stamp_second = transform_message.header.stamp.sec
+                stamp_total_time = stamp_nanosecond + stamp_second
+                time_since_last_message = time.Time() - stamp_total_time
+                if time_since_last_message <= self.acceptable_timeout:
+                    pass
+                
+                elif time_since_last_message > self.acceptable_timeout:
+                    pass
+
+
 
             
             
