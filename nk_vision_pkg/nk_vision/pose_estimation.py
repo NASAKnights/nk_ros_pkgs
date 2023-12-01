@@ -12,6 +12,7 @@ from geometry_msgs.msg import PoseArray, Pose
 from rcl_interfaces.msg import ParameterDescriptor, ParameterType
 import rclpy.time as time
 from tf2_msgs.msg import _tf_message
+from tf2_ros import TransformBroadcaster
 from geometry_msgs.msg import TransformStamped
 
 
@@ -36,7 +37,7 @@ class PoseEstimationNode(Node):
 
         self.pose_sources = ['base_link_1', 'base_link_2']
         self.camera = {'camera_1':False, 'camera_2':False}
-        ## key is link value is pose estimates
+        ## key is link, value is pose estimates
         self.pose_estimates = {}
 
         self.rate = 20
@@ -53,7 +54,8 @@ class PoseEstimationNode(Node):
 
         # Read parameter and create subscriber to robot odometry topic
 
-        # Set up tf publisher
+        # Set up tf publisher(current work/future work)
+
 
         # Set up timer callback to ensure PoseEstimate is published at 20Hz
         
@@ -83,11 +85,14 @@ class PoseEstimationNode(Node):
         self.pose.orientation = self.avg_orientation
 
     def check_Timestamp(self, msg: _tf_message.TFMessage):
+        ## reset the dict to allow for clean data again
+        self.pose_estimates = {}
         for transform_message in msg.transforms:
             transform_message: TransformStamped
             if transform_message.child_frame_id in self.camera.keys():
                 ## check for timestamp with child frame to see if recent
                 ## stored as int, nanosec convert into sec and float, then add sec and nanosec
+
                 ## nanosec
                 stamp_nanosecond = float(transform_message.header.stamp.nanosec) / 1000000000
                 
@@ -95,11 +100,15 @@ class PoseEstimationNode(Node):
                 stamp_second = transform_message.header.stamp.sec
                 stamp_total_time = stamp_nanosecond + stamp_second
                 time_since_last_message = time.Time() - stamp_total_time
+
+                ## if time_since_last_message is <= self.acceptable timeout. Append to dict with child frame id and transform
                 if time_since_last_message <= self.acceptable_timeout:
-                    pass
+                    self.pose_estimates[transform_message.child_frame_id] = transform_message._transform
                 
+                ## if longer then skip
                 elif time_since_last_message > self.acceptable_timeout:
                     pass
+                    
 
 
 
@@ -108,12 +117,6 @@ class PoseEstimationNode(Node):
 
         
 
-    def is_valid_measurement():
-        """ Returns whether or not this measurement is recent enough to be used in the current estimate.
-        """
-        # TODO return true if message timestamp is within the current time - acceptable_timeout
-
-        return True
     
     def find_avg_position(self):
         positions = np.array()
