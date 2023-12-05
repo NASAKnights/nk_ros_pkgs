@@ -1,0 +1,36 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${default}",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/home/nasa-knights/vision_ws/install/stereo_image_proc/include/**",
+        "/home/nasa-knights/vision_ws/install/image_proc/include/**",
+        "/home/nasa-knights/vision_ws/install/tracetools_image_pipeline/include/**",
+        "/home/nasa-knights/vision_ws/install/image_view/include/**",
+        "/home/nasa-knights/vision_ws/install/image_rotate/include/**",
+        "/home/nasa-knights/vision_ws/install/image_publisher/include/**",
+        "/home/nasa-knights/vision_ws/install/depth_image_proc/include/**",
+        "/home/nasa-knights/vision_ws/install/aruco_opencv_msgs/include/**",
+        "/opt/ros/humble/include/**",
+        "/home/nasa-knights/vision_ws/src/nk_ros_setup/image_pipeline/depth_image_proc/include/**",
+        "/home/nasa-knights/vision_ws/src/nk_ros_setup/image_pipeline/image_proc/include/**",
+        "/home/nasa-knights/vision_ws/src/nk_ros_setup/image_pipeline/image_publisher/include/**",
+        "/home/nasa-knights/vision_ws/src/nk_ros_setup/image_pipeline/image_rotate/include/**",
+        "/home/nasa-knights/vision_ws/src/nk_ros_setup/image_pipeline/image_view/include/**",
+        "/home/nasa-knights/vision_ws/src/nk_ros_setup/image_pipeline/stereo_image_proc/include/**",
+        "/home/nasa-knights/vision_ws/src/nk_ros_setup/image_pipeline/tracetools_image_pipeline/include/**",
+        "/home/nasa-knights/vision_ws/src/nk_ros_setup/ros_aruco_opencv/aruco_opencv/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS",
+      "intelliSenseMode": "gcc-x64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++14"
+    }
+  ],
+  "version": 4
+}

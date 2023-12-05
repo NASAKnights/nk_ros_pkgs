@@ -2,7 +2,7 @@
 
 
 import rclpy
-import rclpy.node
+from rclpy.node import Node
 from rclpy.qos import qos_profile_sensor_data
 import numpy as np
 import tf2_ros
@@ -39,6 +39,7 @@ class PoseEstimationNode(Node):
         self.camera = {'camera_1':False, 'camera_2':False}
         ## key is link, value is pose estimates
         self.pose_estimates = {}
+        self.pose = Pose()
 
         self.rate = 20
         self.acceptable_timeout = 1/self.rate 
@@ -54,10 +55,13 @@ class PoseEstimationNode(Node):
 
         # Read parameter and create subscriber to robot odometry topic
 
-        # Set up tf publisher(current work/future work)
+        # Set up tf publisher(current work/future work) (publish pose: position and orientation) (initalize self.pose = pose)
+        self.tf_broadcaster = TransformBroadcaster(self)
 
 
         # Set up timer callback to ensure PoseEstimate is published at 20Hz
+        timer_period = self.acceptable_timeout
+        self.timer = self.create_timer(timer_period, self.find_avg_pose)
         
     
 
@@ -83,6 +87,14 @@ class PoseEstimationNode(Node):
         self.find_avg_orientation()
         self.pose.position = self.avg_position
         self.pose.orientation = self.avg_orientation
+        ## put in avg_pose to help constantly get new data
+        t = TransformStamped()
+        t.child_frame_id = "world"
+        t.header.stamp = time.Time()
+        t.header.frame_id = "base_link"
+        t.transform.rotation = self.pose.orientation
+        t.transform.translation = self.pose.position
+        self.tf_broadcaster.sendTransform(t)
 
     def check_Timestamp(self, msg: _tf_message.TFMessage):
         ## reset the dict to allow for clean data again
@@ -117,8 +129,10 @@ class PoseEstimationNode(Node):
 
         
 
-    
+
     def find_avg_position(self):
+        """Find average position, by taking location from camera pose estimate we can find the average position.
+        """
         positions = np.array()
         for pose, i in enumerate(self.pose_estimates):
             if self.is_valid_measurement(pose.header):
