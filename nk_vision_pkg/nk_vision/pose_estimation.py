@@ -59,6 +59,7 @@ class PoseEstimationNode(Node):
         self.tf_broadcaster = TransformBroadcaster(self)
 
 
+
         # Set up timer callback to ensure PoseEstimate is published at 20Hz
         timer_period = self.acceptable_timeout
         self.timer = self.create_timer(timer_period, self.find_avg_pose)
