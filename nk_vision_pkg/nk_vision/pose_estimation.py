@@ -8,12 +8,14 @@ import numpy as np
 import tf2_ros
 from scipy.spatial.transform.rotation import Rotation
 import numpy.matlib as npm
-from geometry_msgs.msg import PoseArray, Pose
+from geometry_msgs.msg import PoseArray, Pose, Transform, Quaternion
 from rcl_interfaces.msg import ParameterDescriptor, ParameterType
 import rclpy.time as time
 from tf2_msgs.msg import _tf_message
 from tf2_ros import TransformBroadcaster
 from geometry_msgs.msg import TransformStamped
+from networktables import NetworkTables
+import ntcore
 
 
 class PoseEstimationNode(Node):
@@ -32,7 +34,7 @@ class PoseEstimationNode(Node):
         """
         Initialize PoseEstimationNode
         """
-
+        
         # Read parameters and create n subscribers to the tf topics
 
         self.pose_sources = ['base_link_1', 'base_link_2']
@@ -53,14 +55,19 @@ class PoseEstimationNode(Node):
             self.check_timestamp,
             10)
 
-        # Read parameter and create subscriber to robot odometry topic
+        # Read parameter and create subscriber to robot odometry topic (working)
 
-        # Set up tf publisher(current work/future work) (publish pose: position and orientation) (initalize self.pose = pose)
+        # Network Table
+        inst = ntcore.NetworkTableInstance.getDefault()
+        table = inst.getTable("datatable")
+        inst.startClient4("example client")
+        inst.setServerTeam(122) # where TEAM=190, 294, etc, or use inst.setServer("hostname") or similar
+        self.network_table_pub = table.getDoubleArrayTopic("pose").publish()
+                    
+        # Set up tf publisher (publish pose: position and orientation) (initalize self.pose = pose) (done)
         self.tf_broadcaster = TransformBroadcaster(self)
 
-
-
-        # Set up timer callback to ensure PoseEstimate is published at 20Hz
+        # Set up timer callback to ensure PoseEstimate is published at 20Hz (done)
         timer_period = self.acceptable_timeout
         self.timer = self.create_timer(timer_period, self.find_avg_pose)
         
@@ -69,7 +76,7 @@ class PoseEstimationNode(Node):
     def read_external_measurements(self):
         """ Reads the measurements from all sources defined in pose_sources
         """
-        for link in self.pose_sources:
+        for link in self.pose_sources: 
             try:
                 trans = self.tfBuffer.lookup_transform(link, 'world', time.Time())
                 self.pose_estimates[link] = trans
@@ -87,7 +94,11 @@ class PoseEstimationNode(Node):
         self.find_avg_position()
         self.find_avg_orientation()
         self.pose.position = self.avg_position
-        self.pose.orientation = self.avg_orientation
+        self.pose.orientation: Quaternion
+        self.pose.orientation.x = self.avg_orientation[0]
+        self.pose.orientation.y = self.avg_orientation[1]
+        self.pose.orientation.z = self.avg_orientation[2]
+        self.pose.orientation.w = self.avg_orientation[3]
         ## put in avg_pose to help constantly get new data
         t = TransformStamped()
         t.child_frame_id = "world"
@@ -96,6 +107,9 @@ class PoseEstimationNode(Node):
         t.transform.rotation = self.pose.orientation
         t.transform.translation = self.pose.position
         self.tf_broadcaster.sendTransform(t)
+        pose = [self.pose.position.x, self.pose.position.y, self.pose.position.z, t.transform.rotation.x, t.transform.rotation.y, t.transform.rotation.z, t.transform.rotation.w]
+        self.network_table_pub.set(pose)
+
 
     def check_Timestamp(self, msg: _tf_message.TFMessage):
         ## reset the dict to allow for clean data again
@@ -121,14 +135,6 @@ class PoseEstimationNode(Node):
                 ## if longer then skip
                 elif time_since_last_message > self.acceptable_timeout:
                     pass
-                    
-
-
-
-            
-            
-
-        
 
 
     def find_avg_position(self):
@@ -148,7 +154,7 @@ class PoseEstimationNode(Node):
         for pose, i in enumerate(self.pose_estimates):
             orientations[i,:] = [pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w]
 
-        self.avg_orientation = self.weightedAverageQuaternions(orientations)
+        self.avg_orientation: list[float] = self.weightedAverageQuaternions(orientations)
     
 
     def weightedAverageQuaternions(Q, w=[]):
