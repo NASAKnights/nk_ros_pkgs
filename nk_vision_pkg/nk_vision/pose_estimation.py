@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 
+import argparse
 import rclpy
 from rclpy.node import Node
 from rclpy.qos import qos_profile_sensor_data
@@ -11,7 +12,7 @@ import numpy.matlib as npm
 from geometry_msgs.msg import PoseArray, Pose, Transform, Quaternion
 from rcl_interfaces.msg import ParameterDescriptor, ParameterType
 import rclpy.time as time
-from tf2_msgs.msg import _tf_message
+from tf2_msgs.msg import TFMessage
 from tf2_ros import TransformBroadcaster
 from geometry_msgs.msg import TransformStamped
 from networktables import NetworkTables
@@ -36,7 +37,7 @@ class PoseEstimationNode(Node):
         """
         
         # Read parameters and create n subscribers to the tf topics
-
+        super().__init__('PoseEstimationNode')
         self.pose_sources = ['base_link_1', 'base_link_2']
         self.camera = {'camera_1':False, 'camera_2':False}
         ## key is link, value is pose estimates
@@ -47,12 +48,12 @@ class PoseEstimationNode(Node):
         self.acceptable_timeout = 1/self.rate 
         
         self.tfBuffer = tf2_ros.Buffer()
-        self.listener = tf2_ros.TransformListener(self.tfBuffer)
+        self.listener = tf2_ros.TransformListener(self.tfBuffer, self)
 
         self.tf_subscriber = self.create_subscription(
-            _tf_message,
+            TFMessage,
             'tf',
-            self.check_timestamp,
+            self.check_Timestamp,
             10)
 
         # Read parameter and create subscriber to robot odometry topic (working)
@@ -111,7 +112,7 @@ class PoseEstimationNode(Node):
         self.network_table_pub.set(pose)
 
 
-    def check_Timestamp(self, msg: _tf_message.TFMessage):
+    def check_Timestamp(self, msg: TFMessage):
         ## reset the dict to allow for clean data again
         self.pose_estimates = {}
         for transform_message in msg.transforms:
@@ -140,7 +141,7 @@ class PoseEstimationNode(Node):
     def find_avg_position(self):
         """Find average position, by taking location from camera pose estimate we can find the average position.
         """
-        positions = np.array()
+        positions = np.ndarray(shape = (len(self.pose_estimates),3))
         for pose, i in enumerate(self.pose_estimates):
             if self.is_valid_measurement(pose.header):
                 positions[i,0] = pose.position.x
@@ -150,7 +151,7 @@ class PoseEstimationNode(Node):
 
 
     def find_avg_orientation(self):
-        orientations = np.array()
+        orientations = np.ndarray(shape = (len(self.pose_estimates),4))
         for pose, i in enumerate(self.pose_estimates):
             orientations[i,:] = [pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w]
 
@@ -193,3 +194,13 @@ class PoseEstimationNode(Node):
 
         # return the real part of the largest eigenvector (has only real part)
         return np.real(eigenVectors[:,0].A1)
+    
+def main(args = None):
+    rclpy.init(args = args)
+
+    Pose_Estimation_Node = PoseEstimationNode()
+
+    rclpy.spin(Pose_Estimation_Node)
+
+if __name__ == "__main__":
+    main()
