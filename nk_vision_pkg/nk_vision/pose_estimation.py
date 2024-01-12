@@ -79,7 +79,7 @@ class PoseEstimationNode(Node):
         """
         for link in self.pose_sources: 
             try:
-                trans = self.tfBuffer.lookup_transform(link, 'world', time.Time())
+                trans = self.tfBuffer.lookup_transform(link, 'world', self.get_clock().now())
                 self.pose_estimates[link] = trans
 
             except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
@@ -104,7 +104,7 @@ class PoseEstimationNode(Node):
             ## put in avg_pose to help constantly get new data
             t = TransformStamped()
             t.child_frame_id = "world"
-            t.header.stamp = time.Time()
+            t.header.stamp = self.get_clock().now()
             t.header.frame_id = "base_link"
             t.transform.rotation = self.pose.orientation
             t.transform.translation = self.pose.position
@@ -131,7 +131,10 @@ class PoseEstimationNode(Node):
                 ## second add with nanosec
                 stamp_second = transform_message.header.stamp.sec
                 stamp_total_time = stamp_nanosecond + stamp_second
-                time_since_last_message = time.Time() - stamp_total_time
+                current_time_nanosecond = float(self.get_clock().now().seconds_nanoseconds()[1]) / 1000000000
+                current_time_second = float(self.get_clock().now().seconds_nanoseconds()[0])
+                current_time = current_time_nanosecond + current_time_second
+                time_since_last_message = current_time - stamp_total_time
 
                 ## if time_since_last_message is <= self.acceptable timeout. Append to dict with child frame id and transform
                 if time_since_last_message <= self.acceptable_timeout:
@@ -147,10 +150,10 @@ class PoseEstimationNode(Node):
         """
         positions = np.ndarray(shape = (len(self.pose_estimates),3))
         for pose, i in enumerate(self.pose_estimates):
-            if self.is_valid_measurement(pose.header):
-                positions[i,0] = pose.position.x
-                positions[i,1] = pose.position.y
-                positions[i,2] = pose.position.z
+            # if self.is_valid_measurement(pose.header):
+            positions[i,0] = pose.position.x
+            positions[i,1] = pose.position.y
+            positions[i,2] = pose.position.z
         self.avg_position = np.mean(positions, 0)
 
 

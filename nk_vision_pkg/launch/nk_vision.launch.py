@@ -39,8 +39,8 @@ from ament_index_python.packages import get_package_share_directory
 
 
 def generate_launch_description():
-    device_0 = '0'
-    device_1 = '2'
+    device_0 = '/dev/video2'
+    device_1 = '/dev/video0'
     use_sim_time = LaunchConfiguration('use_sim_time', default='false')
     return LaunchDescription([
 
@@ -87,5 +87,8 @@ def generate_launch_description():
         
         IncludeLaunchDescription(AnyLaunchDescriptionSource(
                 get_package_share_directory('cubert_description') + '/launch/main.launch.py')),
+
+        launch_ros.actions.Node(
+            package='nk_vision', executable='pose_estimation.py', output='screen')
 
     ])
