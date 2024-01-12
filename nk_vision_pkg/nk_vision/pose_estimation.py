@@ -92,24 +92,28 @@ class PoseEstimationNode(Node):
     def find_avg_pose(self):
         """ Finds the average pose from all sources
         """
-        self.find_avg_position()
-        self.find_avg_orientation()
-        self.pose.position = self.avg_position
-        self.pose.orientation: Quaternion
-        self.pose.orientation.x = self.avg_orientation[0]
-        self.pose.orientation.y = self.avg_orientation[1]
-        self.pose.orientation.z = self.avg_orientation[2]
-        self.pose.orientation.w = self.avg_orientation[3]
-        ## put in avg_pose to help constantly get new data
-        t = TransformStamped()
-        t.child_frame_id = "world"
-        t.header.stamp = time.Time()
-        t.header.frame_id = "base_link"
-        t.transform.rotation = self.pose.orientation
-        t.transform.translation = self.pose.position
-        self.tf_broadcaster.sendTransform(t)
-        pose = [self.pose.position.x, self.pose.position.y, self.pose.position.z, t.transform.rotation.x, t.transform.rotation.y, t.transform.rotation.z, t.transform.rotation.w]
-        self.network_table_pub.set(pose)
+        if len(self.pose_estimates) != 0:
+            self.find_avg_position()
+            self.find_avg_orientation()
+            self.pose.position = self.avg_position
+            self.pose.orientation: Quaternion
+            self.pose.orientation.x = self.avg_orientation[0]
+            self.pose.orientation.y = self.avg_orientation[1]
+            self.pose.orientation.z = self.avg_orientation[2]
+            self.pose.orientation.w = self.avg_orientation[3]
+            ## put in avg_pose to help constantly get new data
+            t = TransformStamped()
+            t.child_frame_id = "world"
+            t.header.stamp = time.Time()
+            t.header.frame_id = "base_link"
+            t.transform.rotation = self.pose.orientation
+            t.transform.translation = self.pose.position
+            self.tf_broadcaster.sendTransform(t)
+            pose = [self.pose.position.x, self.pose.position.y, self.pose.position.z, t.transform.rotation.x, t.transform.rotation.y, t.transform.rotation.z, t.transform.rotation.w]
+            self.network_table_pub.set(pose)
+
+        else:
+            self.get_logger().info('There is no markers', throttle_duration_sec = 1.0)
 
 
     def check_Timestamp(self, msg: TFMessage):
@@ -158,7 +162,7 @@ class PoseEstimationNode(Node):
         self.avg_orientation: list[float] = self.weightedAverageQuaternions(orientations)
     
 
-    def weightedAverageQuaternions(Q, w=[]):
+    def weightedAverageQuaternions(self, Q, w=[]):
         """ Average multiple quaternions with specific weights
             The weight vector w must be of the same length as the number of rows in the
             quaternion maxtrix Q
