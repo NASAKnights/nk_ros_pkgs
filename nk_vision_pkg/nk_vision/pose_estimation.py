@@ -17,6 +17,10 @@ from tf2_ros import TransformBroadcaster
 from geometry_msgs.msg import TransformStamped
 from networktables import NetworkTables
 import ntcore
+import logging
+logging.basicConfig(level=logging.DEBUG)
+
+TEAM = 122
 
 
 class PoseEstimationNode(Node):
@@ -59,11 +63,21 @@ class PoseEstimationNode(Node):
         # Read parameter and create subscriber to robot odometry topic (working)
 
         # Network Table
-        inst = ntcore.NetworkTableInstance.getDefault()
-        table = inst.getTable("datatable")
-        inst.startClient4("example client")
-        inst.setServerTeam(122) # where TEAM=190, 294, etc, or use inst.setServer("hostname") or similar
-        self.network_table_pub = table.getDoubleArrayTopic("pose").publish()
+        self.inst = ntcore.NetworkTableInstance.getDefault()
+        table = self.inst.getTable("poseXD")
+        self.inst.startClient4("vision_client")
+        self.inst.setServerTeam(TEAM) # where TEAM=190, 294, etc, or use inst.setServer("hostname") or similar
+        self.inst.startDSClient()
+        self.inst.setServer("host", ntcore.NetworkTableInstance.kDefaultPort4)
+        while not self.inst.isConnected():
+            self.inst = ntcore.NetworkTableInstance.getDefault()
+            table = self.inst.getTable("poseXD")
+            self.inst.startClient4("vision_client")
+            self.inst.setServerTeam(TEAM) # where TEAM=190, 294, etc, or use inst.setServer("hostname") or similar
+            self.inst.startDSClient()
+            self.inst.setServer("host", ntcore.NetworkTableInstance.kDefaultPort4)
+            self.get_logger().info('Trying to connect to the robot', throttle_duration_sec = 1.0)
+        self.camera_based_pose_pub = table.getDoubleArrayTopic("camera_based_pose").publish()
                     
         # Set up tf publisher (publish pose: position and orientation) (initalize self.pose = pose) (done)
         self.tf_broadcaster = TransformBroadcaster(self)
@@ -84,7 +98,6 @@ class PoseEstimationNode(Node):
 
             except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
                 continue
-        pass
 
     def publish_estimate(self):
         pass
@@ -93,9 +106,12 @@ class PoseEstimationNode(Node):
         """ Finds the average pose from all sources
         """
         if len(self.pose_estimates) != 0:
+            self.get_logger().info('Recent Markers Found, fusing', throttle_duration_sec = 1.0)
             self.find_avg_position()
             self.find_avg_orientation()
-            self.pose.position = self.avg_position
+            self.pose.position.x = self.avg_position[0]
+            self.pose.position.y = self.avg_position[1]
+            self.pose.position.z = self.avg_position[2]
             self.pose.orientation: Quaternion
             self.pose.orientation.x = self.avg_orientation[0]
             self.pose.orientation.y = self.avg_orientation[1]
@@ -104,21 +120,24 @@ class PoseEstimationNode(Node):
             ## put in avg_pose to help constantly get new data
             t = TransformStamped()
             t.child_frame_id = "world"
-            t.header.stamp = self.get_clock().now()
+            t.header.stamp = self.latest_timestamp
             t.header.frame_id = "base_link"
             t.transform.rotation = self.pose.orientation
-            t.transform.translation = self.pose.position
+            t.transform.translation.x = self.pose.position.x
+            t.transform.translation.y = self.pose.position.y
+            t.transform.translation.z = self.pose.position.z
             self.tf_broadcaster.sendTransform(t)
+
             pose = [self.pose.position.x, self.pose.position.y, self.pose.position.z, t.transform.rotation.x, t.transform.rotation.y, t.transform.rotation.z, t.transform.rotation.w]
-            self.network_table_pub.set(pose)
+            self.camera_based_pose_pub.set(pose)
 
         else:
-            self.get_logger().info('There is no markers', throttle_duration_sec = 1.0)
+            self.get_logger().info('There are no markers', throttle_duration_sec = 1.0)
 
 
     def check_Timestamp(self, msg: TFMessage):
         ## reset the dict to allow for clean data again
-        self.pose_estimates = {}
+        
         for transform_message in msg.transforms:
             transform_message: TransformStamped
             if transform_message.child_frame_id in self.camera.keys():
@@ -142,25 +161,29 @@ class PoseEstimationNode(Node):
                 
                 ## if longer then skip
                 elif time_since_last_message > self.acceptable_timeout:
-                    pass
+                    self.get_logger().info('There are no recent markers', throttle_duration_sec = 1.0)
+                    self.pose_estimates = {}
 
 
     def find_avg_position(self):
         """Find average position, by taking location from camera pose estimate we can find the average position.
         """
         positions = np.ndarray(shape = (len(self.pose_estimates),3))
-        for pose, i in enumerate(self.pose_estimates):
+        for i, pose in enumerate(self.pose_estimates):
             # if self.is_valid_measurement(pose.header):
-            positions[i,0] = pose.position.x
-            positions[i,1] = pose.position.y
-            positions[i,2] = pose.position.z
+            positions[i,1] = self.pose_estimates[pose].translation.x
+            positions[i,0] = self.pose_estimates[pose].translation.y
+            positions[i,2] = self.pose_estimates[pose].translation.z
         self.avg_position = np.mean(positions, 0)
 
 
     def find_avg_orientation(self):
         orientations = np.ndarray(shape = (len(self.pose_estimates),4))
-        for pose, i in enumerate(self.pose_estimates):
-            orientations[i,:] = [pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w]
+        for i, pose in enumerate(self.pose_estimates):
+            orientations[i,:] = [self.pose_estimates[pose].rotation.x, 
+                                 self.pose_estimates[pose].rotation.y, 
+                                 self.pose_estimates[pose].rotation.z, 
+                                 self.pose_estimates[pose].rotation.w]
 
         self.avg_orientation: list[float] = self.weightedAverageQuaternions(orientations)
     
@@ -184,6 +207,10 @@ class PoseEstimationNode(Node):
         M = Q.shape[0]
         A = npm.zeros(shape=(4,4))
         weightSum = 0
+
+        if len(w) == 0:
+            w = [1 for x in range(M)]
+
 
         for i in range(0,M):
             q = Q[i,:]

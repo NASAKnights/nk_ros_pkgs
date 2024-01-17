@@ -39,59 +39,25 @@ from ament_index_python.packages import get_package_share_directory
 
 
 def generate_launch_description():
-    device_0 = '/dev/video2'
     device_1 = '/dev/video0'
-    use_sim_time = LaunchConfiguration('use_sim_time', default='false')
     return LaunchDescription([
-
-        DeclareLaunchArgument(
-            'use_sim_time',
-            default_value='false',
-            description='Use simulation clock if true'),
-
-        launch_ros.actions.Node(
-            package='image_publisher', executable='image_publisher_node', output='screen',
-            arguments=[device_0],
-            parameters=[{'use_sim_time': use_sim_time,
-                         'filename': device_0,
-                         'publish_rate': 100.0,
-                         'camera_info_url': 'package://nk_vision/config/arducam.yaml',
-                         'frame_id': 'camera_2'}],
-            remappings=[('image_raw', '/camera_2/image_raw'),
-                        ('camera_info', '/camera_2/camera_info')]),
 
         launch_ros.actions.Node(
             package='image_publisher', executable='image_publisher_node', output='screen',
             arguments=[device_1],
-            parameters=[{'use_sim_time': use_sim_time,
+            parameters=[{'filename': device_1,
                          'publish_rate': 100.0,
-                         'filename': device_1,
                          'camera_info_url': 'package://nk_vision/config/arducam.yaml',
                          'frame_id': 'camera_1'}],
             remappings=[('image_raw', '/camera_1/image_raw'),
                         ('camera_info', '/camera_1/camera_info')]),
 
         launch_ros.actions.Node(
-            package='rviz2', executable='rviz2', output='screen',
-            arguments=['-d', get_package_share_directory('nk_vision') + '/config/config_file.rviz']
-        ),
+            package='camera_calibration', executable='cameracalibrator', output='screen',
+            parameters=[{'size': '10x7',
+                         'square': 0.0429,}],
+            remappings=[('image', '/camera_1/image_raw'),
+                        ('camera', '/camera_1')]
+            )
 
-        IncludeLaunchDescription(AnyLaunchDescriptionSource(
-                get_package_share_directory('nk_vision') + '/launch/aruco_tracker_1.launch.xml')),
-
-        IncludeLaunchDescription(AnyLaunchDescriptionSource(
-                get_package_share_directory('nk_vision') + '/launch/aruco_tracker_2.launch.xml')),
-
-        IncludeLaunchDescription(AnyLaunchDescriptionSource(
-                get_package_share_directory('frc_2024_field_description') + '/launch/main.launch.py')),
-        
-        IncludeLaunchDescription(AnyLaunchDescriptionSource(
-                get_package_share_directory('cubert_description') + '/launch/main.launch.py')),
-
-        launch_ros.actions.Node(
-            package='nk_vision', executable='pose_estimation.py', output='screen')
-        
-        launch_ros.actions.Node(
-            package='nk_vision', executable='tf2network_table.py', output='screen',
-            parameters=[{'transfer_topics': 'base_link_1,base_link_2,base_link_3'}]),
     ])
