@@ -23,32 +23,28 @@ logging.basicConfig(level=logging.DEBUG)
 
 TEAM = 122
 NTABLE_NAME = "ROS2Bridge"
+RATE = 50
 
-class TF2NetworkTable(Node):
+class NetworkTable2TF(Node):
     """  
     """
     def __init__(self):
         """
-        Initialize TF2NetworkTable
+        Initialize NetworkTable2TF
         """
         
         # Read parameters and create n subscribers to the tf topics
-        super().__init__('TF2NetworkTable')
+        super().__init__('NetworkTable2TF')
         self.declare_parameter('transfer_topics')
         self.transfer_topics: list = self.get_parameter('transfer_topics').split()
 
         # TF setup 
         self.tfBuffer = tf2_ros.Buffer()
-        self.listener = tf2_ros.TransformListener(self.tfBuffer, self)
-        self.tf_subscriber = self.create_subscription(
-            TFMessage,
-            'tf',
-            self.tf_callback,
-            10)
+        self.tf_broadcaster = TransformBroadcaster(self)
 
         # Network Table
         self.inst = ntcore.NetworkTableInstance.getDefault()
-        self.inst.startClient4("vision_client")
+        self.inst.startClient4("pose_client")
         self.inst.setServerTeam(TEAM) # where TEAM=190, 294, etc, or use inst.setServer("hostname") or similar
         self.inst.startDSClient()
         self.inst.setServer("host", ntcore.NetworkTableInstance.kDefaultPort4)
@@ -56,33 +52,47 @@ class TF2NetworkTable(Node):
         while not self.inst.isConnected():
             self.inst = ntcore.NetworkTableInstance.getDefault()
             table = self.inst.getTable(NTABLE_NAME)
-            self.inst.startClient4("vision_client")
+            self.inst.startClient4("pose_client")
             self.inst.setServerTeam(TEAM) # where TEAM=190, 294, etc, or use inst.setServer("hostname") or similar
             self.inst.startDSClient()
             self.inst.setServer("host", ntcore.NetworkTableInstance.kDefaultPort4)
             self.get_logger().info('Trying to connect to the robot', throttle_duration_sec = 1.0)
         
-        self.pubs: list = []
+        self.subs = {}
         for topic in self.transfer_topics:
-            self.pubs.append(table.getDoubleArrayTopic(topic).publish())
+            self.subs[topic] = table.getDoubleArrayTopic(topic).subscribe(None)
 
-    def tf_callback(self, msg: TFMessage):
-        for transform_message in msg.transforms:
-            transform_message: TransformStamped
-            if transform_message.child_frame_id in self.transfer_topics:
-                translation = transform_message.transform.translation
-                rotation = transform_message.transform.rotation
-                current_time_ros = float(transform_message.header.stamp.nanosec) / 1e9 \
-                    + float(transform_message.header.stamp.sec)            
-                current_time_robot = self.inst.getServerTimeOffset() + current_time_ros
-                pose = [translation.x, translation.y, translation.z, rotation.x, rotation.y, rotation.z, rotation.w, current_time_robot]
-                self.pubs[self.transfer_topics.index(transform_message.child_frame_id)].set(pose)
+        self.timer = self.create_timer(RATE, self.transfer_data)
 
+    def transfer_data(self):
+        tfs = []
+        for name, sub in self.subs:
+            val = sub.get()
+            if val is not None:
+                ros_time = val[7] - self.inst.getServerTimeOffset()
+                ros_seconds = int(ros_time)
+                ros_nanosec = int((ros_time - ros_seconds)*1e9)
+                t = TransformStamped()
+                t.child_frame_id = "world"
+                t.header.stamp.sec = ros_seconds
+                t.header.stamp.nanosec = ros_nanosec
+                t.header.frame_id = name
+                t.transform.translation.x = val[0]
+                t.transform.translation.y = val[1]
+                t.transform.translation.z = val[2]
+                t.transform.rotation.x = val[3]
+                t.transform.rotation.y = val[4]
+                t.transform.rotation.z = val[5]
+                t.transform.rotation.w = val[6]
+                tfs.append(t)
+        
+        self.tf_broadcaster.sendTransform(tfs)
+        
    
 def main(args = None):
     rclpy.init(args = args)
 
-    tf2nt_node = TF2NetworkTable()
+    tf2nt_node = NetworkTable2TF()
 
     rclpy.spin(tf2nt_node)
 
