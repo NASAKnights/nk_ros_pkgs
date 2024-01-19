@@ -47,9 +47,10 @@ class PoseEstimationNode(Node):
         ## key is link, value is pose estimates
         self.pose_estimates = {}
         self.pose = Pose()
+        self.recent_timestamp = {}
 
         self.rate = 20
-        self.acceptable_timeout = 1/self.rate 
+        self.acceptable_timeout = 1.0
         
         self.tfBuffer = tf2_ros.Buffer()
         self.listener = tf2_ros.TransformListener(self.tfBuffer, self)
@@ -120,7 +121,7 @@ class PoseEstimationNode(Node):
             ## put in avg_pose to help constantly get new data
             t = TransformStamped()
             t.child_frame_id = "world"
-            t.header.stamp = self.latest_timestamp
+            t.header.stamp = self.recent_timestamp[list(self.recent_timestamp.keys())[0]]
             t.header.frame_id = "base_link"
             t.transform.rotation = self.pose.orientation
             t.transform.translation.x = self.pose.position.x
@@ -137,32 +138,46 @@ class PoseEstimationNode(Node):
 
     def check_Timestamp(self, msg: TFMessage):
         ## reset the dict to allow for clean data again
+        for base_link in self.pose_sources:
+            try:
+                world_to_base_link = self.tfBuffer.lookup_transform(base_link, "world", self.get_clock())
+                self.pose_estimates[world_to_base_link.child_frame_id] = world_to_base_link._transform
+                self.recent_timestamp[world_to_base_link.child_frame_id] = world_to_base_link.header.stamp
+                
+            except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
+                continue
+
         
-        for transform_message in msg.transforms:
-            transform_message: TransformStamped
-            if transform_message.child_frame_id in self.camera.keys():
-                ## check for timestamp with child frame to see if recent
-                ## stored as int, nanosec convert into sec and float, then add sec and nanosec
+        # for transform_message in msg.transforms:
+        #     transform_message: TransformStamped
+        #     if transform_message.child_frame_id in self.camera.keys():
+        #         ## check for timestamp with child frame to see if recent
+        #         ## stored as int, nanosec convert into sec and float, then add sec and nanosec
 
-                ## nanosec
-                stamp_nanosecond = float(transform_message.header.stamp.nanosec) / 1000000000
+        #         ## nanosec
+        #         stamp_nanosecond = float(transform_message.header.stamp.nanosec) / 1e9
                 
-                ## second add with nanosec
-                stamp_second = transform_message.header.stamp.sec
-                stamp_total_time = stamp_nanosecond + stamp_second
-                current_time_nanosecond = float(self.get_clock().now().seconds_nanoseconds()[1]) / 1000000000
-                current_time_second = float(self.get_clock().now().seconds_nanoseconds()[0])
-                current_time = current_time_nanosecond + current_time_second
-                time_since_last_message = current_time - stamp_total_time
+        #         ## second add with nanosec
+        #         stamp_second = transform_message.header.stamp.sec
+        #         stamp_total_time = stamp_nanosecond + stamp_second
+        #         current_time_nanosecond = float(self.get_clock().now().seconds_nanoseconds()[1]) / 1e9
+        #         current_time_second = float(self.get_clock().now().seconds_nanoseconds()[0])
+        #         current_time = current_time_nanosecond + current_time_second
+        #         time_since_last_message = current_time - stamp_total_time
 
-                ## if time_since_last_message is <= self.acceptable timeout. Append to dict with child frame id and transform
-                if time_since_last_message <= self.acceptable_timeout:
-                    self.pose_estimates[transform_message.child_frame_id] = transform_message._transform
+        #         self.get_logger().info(f'Time since last message {time_since_last_message}', throttle_duration_sec = 1.0)
+
+
+        #         ## if time_since_last_message is <= self.acceptable timeout. Append to dict with child frame id and transform
+        #         # if time_since_last_message <= self.acceptable_timeout:
+        #         self.pose_estimates[transform_message.child_frame_id] = transform_message._transform
+        #         self.recent_timestamp[transform_message.child_frame_id] = transform_message.header.stamp
                 
-                ## if longer then skip
-                elif time_since_last_message > self.acceptable_timeout:
-                    self.get_logger().info('There are no recent markers', throttle_duration_sec = 1.0)
-                    self.pose_estimates = {}
+        #         ## if longer then skip
+        #         # elif time_since_last_message > self.acceptable_timeout:
+        #         #     self.get_logger().info('There are no recent markers', throttle_duration_sec = 1.0)
+        #         #     self.pose_estimates = {}
+        #         #     self.recent_timestamp = {}
 
 
     def find_avg_position(self):
@@ -171,10 +186,12 @@ class PoseEstimationNode(Node):
         positions = np.ndarray(shape = (len(self.pose_estimates),3))
         for i, pose in enumerate(self.pose_estimates):
             # if self.is_valid_measurement(pose.header):
-            positions[i,1] = self.pose_estimates[pose].translation.x
-            positions[i,0] = self.pose_estimates[pose].translation.y
+            positions[i,0] = self.pose_estimates[pose].translation.x
+            positions[i,1] = self.pose_estimates[pose].translation.y
             positions[i,2] = self.pose_estimates[pose].translation.z
+        print(positions)
         self.avg_position = np.mean(positions, 0)
+        print(self.avg_position)
 
 
     def find_avg_orientation(self):

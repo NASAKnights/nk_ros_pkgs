@@ -34,8 +34,8 @@ class TF2NetworkTable(Node):
         
         # Read parameters and create n subscribers to the tf topics
         super().__init__('TF2NetworkTable')
-        self.declare_parameter('transfer_topics')
-        self.transfer_topics: list = self.get_parameter('transfer_topics').split()
+        self.declare_parameter('transfer_topics', [""])
+        self.transfer_topics: list = self.get_parameter('transfer_topics').get_parameter_value().string_array_value
 
         # TF setup 
         self.tfBuffer = tf2_ros.Buffer()

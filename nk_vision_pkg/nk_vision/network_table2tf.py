@@ -35,8 +35,8 @@ class NetworkTable2TF(Node):
         
         # Read parameters and create n subscribers to the tf topics
         super().__init__('NetworkTable2TF')
-        self.declare_parameter('transfer_topics')
-        self.transfer_topics: list = self.get_parameter('transfer_topics').split()
+        self.declare_parameter('transfer_topics', [""])
+        self.transfer_topics: list = self.get_parameter('transfer_topics').get_parameter_value().string_array_value
 
         # TF setup 
         self.tfBuffer = tf2_ros.Buffer()
@@ -60,15 +60,15 @@ class NetworkTable2TF(Node):
         
         self.subs = {}
         for topic in self.transfer_topics:
-            self.subs[topic] = table.getDoubleArrayTopic(topic).subscribe(None)
+            self.subs[topic] = table.getDoubleArrayTopic(topic).subscribe([])
 
         self.timer = self.create_timer(RATE, self.transfer_data)
 
     def transfer_data(self):
         tfs = []
-        for name, sub in self.subs:
+        for name, sub in self.subs.items():
             val = sub.get()
-            if val is not None:
+            if val != []:
                 ros_time = val[7] - self.inst.getServerTimeOffset()
                 ros_seconds = int(ros_time)
                 ros_nanosec = int((ros_time - ros_seconds)*1e9)
