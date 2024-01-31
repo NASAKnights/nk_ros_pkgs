@@ -62,24 +62,6 @@ class PoseEstimationNode(Node):
             10)
 
         # Read parameter and create subscriber to robot odometry topic (working)
-
-        # Network Table
-        self.inst = ntcore.NetworkTableInstance.getDefault()
-        table = self.inst.getTable("poseXD")
-        self.inst.startClient4("vision_client")
-        self.inst.setServerTeam(TEAM) # where TEAM=190, 294, etc, or use inst.setServer("hostname") or similar
-        self.inst.startDSClient()
-        self.inst.setServer("host", ntcore.NetworkTableInstance.kDefaultPort4)
-        while not self.inst.isConnected():
-            self.inst = ntcore.NetworkTableInstance.getDefault()
-            table = self.inst.getTable("poseXD")
-            self.inst.startClient4("vision_client")
-            self.inst.setServerTeam(TEAM) # where TEAM=190, 294, etc, or use inst.setServer("hostname") or similar
-            self.inst.startDSClient()
-            self.inst.setServer("host", ntcore.NetworkTableInstance.kDefaultPort4)
-            self.get_logger().info('Trying to connect to the robot', throttle_duration_sec = 1.0)
-        self.camera_based_pose_pub = table.getDoubleArrayTopic("camera_based_pose").publish()
-                    
         # Set up tf publisher (publish pose: position and orientation) (initalize self.pose = pose) (done)
         self.tf_broadcaster = TransformBroadcaster(self)
 
@@ -122,15 +104,13 @@ class PoseEstimationNode(Node):
             t = TransformStamped()
             t.child_frame_id = "world"
             t.header.stamp = self.recent_timestamp[list(self.recent_timestamp.keys())[0]]
-            t.header.frame_id = "base_link"
+            t.header.frame_id = "base_link_3"
             t.transform.rotation = self.pose.orientation
             t.transform.translation.x = self.pose.position.x
             t.transform.translation.y = self.pose.position.y
             t.transform.translation.z = self.pose.position.z
             self.tf_broadcaster.sendTransform(t)
-
-            pose = [self.pose.position.x, self.pose.position.y, self.pose.position.z, t.transform.rotation.x, t.transform.rotation.y, t.transform.rotation.z, t.transform.rotation.w]
-            self.camera_based_pose_pub.set(pose)
+            
 
         else:
             self.get_logger().info('There are no markers', throttle_duration_sec = 1.0)
@@ -140,7 +120,7 @@ class PoseEstimationNode(Node):
         ## reset the dict to allow for clean data again
         for base_link in self.pose_sources:
             try:
-                world_to_base_link = self.tfBuffer.lookup_transform(base_link, "world", self.get_clock())
+                world_to_base_link = self.tfBuffer.lookup_transform(base_link, "world", time.Time())
                 self.pose_estimates[world_to_base_link.child_frame_id] = world_to_base_link._transform
                 self.recent_timestamp[world_to_base_link.child_frame_id] = world_to_base_link.header.stamp
                 
