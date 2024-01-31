@@ -8,8 +8,6 @@ First make a workspace to store the code in, then clone the project to the src f
 ```bash
 mkdir vision_ws
 cd vision_ws
-mkdir src
-cd src
 git clone https://github.com/NASAKnights/nk_ros_pkgs.git -b humble --recurse-submodules
 ```
 
