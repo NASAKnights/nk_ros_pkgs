@@ -55,6 +55,8 @@ class PoseEstimationNode(Node):
         self.tfBuffer = tf2_ros.Buffer()
         self.listener = tf2_ros.TransformListener(self.tfBuffer, self)
 
+        
+
         self.tf_subscriber = self.create_subscription(
             TFMessage,
             'tf',
@@ -82,14 +84,20 @@ class PoseEstimationNode(Node):
             except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
                 continue
 
-    def publish_estimate(self):
-        pass
+        
+
+    def publish_estimate(self, _t):
+        rotation = _t.transfrom.rotation
+        position_x = _t.trasnform.translation.x
+        position_x = _t.trasnform.translation.x
+        position_x = _t.trasnform.translation.x
+            
 
     def find_avg_pose(self):
         """ Finds the average pose from all sources
         """
-        if len(self.pose_estimates) != 0:
-            self.get_logger().info('Recent Markers Found, fusing', throttle_duration_sec = 1.0)
+        if (len(self.pose_estimates) != 0 ):
+            self.get_logger().info('Recent Markers Found, fusinnnnnnnnnng', throttle_duration_sec = 1.0)
             self.find_avg_position()
             self.find_avg_orientation()
             self.pose.position.x = self.avg_position[0]
@@ -110,10 +118,13 @@ class PoseEstimationNode(Node):
             t.transform.translation.y = self.pose.position.y
             t.transform.translation.z = self.pose.position.z
             self.tf_broadcaster.sendTransform(t)
-            
+            ## prints average points into terminal when seeing a marker, and then resets the pose_estimates so it will repeat the loop.
+            self.get_logger().info(f'{t}', throttle_duration_sec = .5)
+            self.publish_estimate(self, self.tf_broadcaster)
+            self.pose_estimates = {}
 
         else:
-            self.get_logger().info('There are no markers', throttle_duration_sec = 1.0)
+            self.get_logger().info('There are no markers', throttle_duration_sec = .5)
 
 
     def check_Timestamp(self, msg: TFMessage):
@@ -169,9 +180,9 @@ class PoseEstimationNode(Node):
             positions[i,0] = self.pose_estimates[pose].translation.x
             positions[i,1] = self.pose_estimates[pose].translation.y
             positions[i,2] = self.pose_estimates[pose].translation.z
-        print(positions)
+        # print(positions)
         self.avg_position = np.mean(positions, 0)
-        print(self.avg_position)
+        # print(self.avg_position)
 
 
     def find_avg_orientation(self):

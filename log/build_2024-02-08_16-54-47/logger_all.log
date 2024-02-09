@@ -1,0 +1,457 @@
+[0.615s] DEBUG:colcon:Command line arguments: ['/usr/bin/colcon', 'build', '--symlink-install']
+[0.615s] DEBUG:colcon:Parsed command line arguments: Namespace(log_base=None, log_level=None, verb_name='build', build_base='build', install_base='install', merge_install=False, symlink_install=True, test_result_base=None, continue_on_error=False, executor='parallel', parallel_workers=4, event_handlers=None, ignore_user_meta=False, metas=['./colcon.meta'], base_paths=['.'], packages_ignore=None, packages_ignore_regex=None, paths=None, packages_up_to=None, packages_up_to_regex=None, packages_above=None, packages_above_and_dependencies=None, packages_above_depth=None, packages_select_by_dep=None, packages_skip_by_dep=None, packages_skip_up_to=None, packages_select_build_failed=False, packages_skip_build_finished=False, packages_select_test_failures=False, packages_skip_test_passed=False, packages_select=None, packages_skip=None, packages_select_regex=None, packages_skip_regex=None, packages_start=None, packages_end=None, allow_overriding=[], cmake_args=None, cmake_target=None, cmake_target_skip_unavailable=False, cmake_clean_cache=False, cmake_clean_first=False, cmake_force_configure=False, ament_cmake_args=None, catkin_cmake_args=None, catkin_skip_building_tests=False, verb_parser=<colcon_defaults.argument_parser.defaults.DefaultArgumentsDecorator object at 0x7fc4e7666920>, verb_extension=<colcon_core.verb.build.BuildVerb object at 0x7fc4e7962c50>, main=<bound method BuildVerb.main of <colcon_core.verb.build.BuildVerb object at 0x7fc4e7962c50>>)
+[0.651s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) check parameters
+[0.651s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) check parameters
+[0.651s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) check parameters
+[0.651s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) check parameters
+[0.651s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) discover
+[0.651s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) discover
+[0.651s] INFO:colcon.colcon_core.package_discovery:Crawling recursively for packages in '/home/nasa-knights/vision_ws/nk_ros_pkgs'
+[0.651s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ignore', 'ignore_ament_install']
+[0.651s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore'
+[0.651s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore_ament_install'
+[0.651s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['colcon_pkg']
+[0.651s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'colcon_pkg'
+[0.651s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['colcon_meta']
+[0.651s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'colcon_meta'
+[0.651s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ros']
+[0.652s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ros'
+[0.662s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['cmake', 'python']
+[0.662s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'cmake'
+[0.662s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'python'
+[0.662s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['python_setup_py']
+[0.662s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'python_setup_py'
+[0.662s] Level 1:colcon.colcon_core.package_identification:_identify(build) by extensions ['ignore', 'ignore_ament_install']
+[0.663s] Level 1:colcon.colcon_core.package_identification:_identify(build) by extension 'ignore'
+[0.663s] Level 1:colcon.colcon_core.package_identification:_identify(build) ignored
+[0.663s] Level 1:colcon.colcon_core.package_identification:_identify(cubert_description) by extensions ['ignore', 'ignore_ament_install']
+[0.663s] Level 1:colcon.colcon_core.package_identification:_identify(cubert_description) by extension 'ignore'
+[0.663s] Level 1:colcon.colcon_core.package_identification:_identify(cubert_description) by extension 'ignore_ament_install'
+[0.663s] Level 1:colcon.colcon_core.package_identification:_identify(cubert_description) by extensions ['colcon_pkg']
+[0.663s] Level 1:colcon.colcon_core.package_identification:_identify(cubert_description) by extension 'colcon_pkg'
+[0.663s] Level 1:colcon.colcon_core.package_identification:_identify(cubert_description) by extensions ['colcon_meta']
+[0.663s] Level 1:colcon.colcon_core.package_identification:_identify(cubert_description) by extension 'colcon_meta'
+[0.663s] Level 1:colcon.colcon_core.package_identification:_identify(cubert_description) by extensions ['ros']
+[0.663s] Level 1:colcon.colcon_core.package_identification:_identify(cubert_description) by extension 'ros'
+[0.665s] DEBUG:colcon.colcon_core.package_identification:Package 'cubert_description' with type 'ros.ament_cmake' and name 'cubert_description'
+[0.666s] Level 1:colcon.colcon_core.package_identification:_identify(frc_2023_field_description) by extensions ['ignore', 'ignore_ament_install']
+[0.666s] Level 1:colcon.colcon_core.package_identification:_identify(frc_2023_field_description) by extension 'ignore'
+[0.666s] Level 1:colcon.colcon_core.package_identification:_identify(frc_2023_field_description) by extension 'ignore_ament_install'
+[0.666s] Level 1:colcon.colcon_core.package_identification:_identify(frc_2023_field_description) by extensions ['colcon_pkg']
+[0.666s] Level 1:colcon.colcon_core.package_identification:_identify(frc_2023_field_description) by extension 'colcon_pkg'
+[0.666s] Level 1:colcon.colcon_core.package_identification:_identify(frc_2023_field_description) by extensions ['colcon_meta']
+[0.666s] Level 1:colcon.colcon_core.package_identification:_identify(frc_2023_field_description) by extension 'colcon_meta'
+[0.666s] Level 1:colcon.colcon_core.package_identification:_identify(frc_2023_field_description) by extensions ['ros']
+[0.666s] Level 1:colcon.colcon_core.package_identification:_identify(frc_2023_field_description) by extension 'ros'
+[0.667s] DEBUG:colcon.colcon_core.package_identification:Package 'frc_2023_field_description' with type 'ros.ament_cmake' and name 'frc_2023_field_description'
+[0.667s] Level 1:colcon.colcon_core.package_identification:_identify(frc_2024_field_description) by extensions ['ignore', 'ignore_ament_install']
+[0.667s] Level 1:colcon.colcon_core.package_identification:_identify(frc_2024_field_description) by extension 'ignore'
+[0.667s] Level 1:colcon.colcon_core.package_identification:_identify(frc_2024_field_description) by extension 'ignore_ament_install'
+[0.667s] Level 1:colcon.colcon_core.package_identification:_identify(frc_2024_field_description) by extensions ['colcon_pkg']
+[0.667s] Level 1:colcon.colcon_core.package_identification:_identify(frc_2024_field_description) by extension 'colcon_pkg'
+[0.667s] Level 1:colcon.colcon_core.package_identification:_identify(frc_2024_field_description) by extensions ['colcon_meta']
+[0.667s] Level 1:colcon.colcon_core.package_identification:_identify(frc_2024_field_description) by extension 'colcon_meta'
+[0.667s] Level 1:colcon.colcon_core.package_identification:_identify(frc_2024_field_description) by extensions ['ros']
+[0.667s] Level 1:colcon.colcon_core.package_identification:_identify(frc_2024_field_description) by extension 'ros'
+[0.668s] DEBUG:colcon.colcon_core.package_identification:Package 'frc_2024_field_description' with type 'ros.ament_cmake' and name 'frc_2024_field_description'
+[0.668s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline) by extensions ['ignore', 'ignore_ament_install']
+[0.668s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline) by extension 'ignore'
+[0.668s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline) by extension 'ignore_ament_install'
+[0.668s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline) by extensions ['colcon_pkg']
+[0.668s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline) by extension 'colcon_pkg'
+[0.668s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline) by extensions ['colcon_meta']
+[0.668s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline) by extension 'colcon_meta'
+[0.668s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline) by extensions ['ros']
+[0.668s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline) by extension 'ros'
+[0.668s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline) by extensions ['cmake', 'python']
+[0.668s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline) by extension 'cmake'
+[0.668s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline) by extension 'python'
+[0.668s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline) by extensions ['python_setup_py']
+[0.668s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline) by extension 'python_setup_py'
+[0.668s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/camera_calibration) by extensions ['ignore', 'ignore_ament_install']
+[0.669s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/camera_calibration) by extension 'ignore'
+[0.669s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/camera_calibration) by extension 'ignore_ament_install'
+[0.669s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/camera_calibration) by extensions ['colcon_pkg']
+[0.669s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/camera_calibration) by extension 'colcon_pkg'
+[0.669s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/camera_calibration) by extensions ['colcon_meta']
+[0.669s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/camera_calibration) by extension 'colcon_meta'
+[0.669s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/camera_calibration) by extensions ['ros']
+[0.669s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/camera_calibration) by extension 'ros'
+[0.670s] DEBUG:colcon.colcon_core.package_identification:Package 'image_pipeline/camera_calibration' with type 'ros.ament_python' and name 'camera_calibration'
+[0.670s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/depth_image_proc) by extensions ['ignore', 'ignore_ament_install']
+[0.670s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/depth_image_proc) by extension 'ignore'
+[0.670s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/depth_image_proc) by extension 'ignore_ament_install'
+[0.670s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/depth_image_proc) by extensions ['colcon_pkg']
+[0.670s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/depth_image_proc) by extension 'colcon_pkg'
+[0.670s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/depth_image_proc) by extensions ['colcon_meta']
+[0.670s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/depth_image_proc) by extension 'colcon_meta'
+[0.670s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/depth_image_proc) by extensions ['ros']
+[0.670s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/depth_image_proc) by extension 'ros'
+[0.671s] DEBUG:colcon.colcon_core.package_identification:Package 'image_pipeline/depth_image_proc' with type 'ros.ament_cmake' and name 'depth_image_proc'
+[0.672s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/image_pipeline) by extensions ['ignore', 'ignore_ament_install']
+[0.672s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/image_pipeline) by extension 'ignore'
+[0.672s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/image_pipeline) by extension 'ignore_ament_install'
+[0.672s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/image_pipeline) by extensions ['colcon_pkg']
+[0.672s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/image_pipeline) by extension 'colcon_pkg'
+[0.672s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/image_pipeline) by extensions ['colcon_meta']
+[0.672s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/image_pipeline) by extension 'colcon_meta'
+[0.672s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/image_pipeline) by extensions ['ros']
+[0.672s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/image_pipeline) by extension 'ros'
+[0.672s] DEBUG:colcon.colcon_core.package_identification:Package 'image_pipeline/image_pipeline' with type 'ros.ament_cmake' and name 'image_pipeline'
+[0.673s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/image_proc) by extensions ['ignore', 'ignore_ament_install']
+[0.673s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/image_proc) by extension 'ignore'
+[0.673s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/image_proc) by extension 'ignore_ament_install'
+[0.673s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/image_proc) by extensions ['colcon_pkg']
+[0.673s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/image_proc) by extension 'colcon_pkg'
+[0.673s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/image_proc) by extensions ['colcon_meta']
+[0.673s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/image_proc) by extension 'colcon_meta'
+[0.673s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/image_proc) by extensions ['ros']
+[0.673s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/image_proc) by extension 'ros'
+[0.674s] DEBUG:colcon.colcon_core.package_identification:Package 'image_pipeline/image_proc' with type 'ros.ament_cmake' and name 'image_proc'
+[0.674s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/image_publisher) by extensions ['ignore', 'ignore_ament_install']
+[0.674s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/image_publisher) by extension 'ignore'
+[0.674s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/image_publisher) by extension 'ignore_ament_install'
+[0.674s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/image_publisher) by extensions ['colcon_pkg']
+[0.674s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/image_publisher) by extension 'colcon_pkg'
+[0.674s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/image_publisher) by extensions ['colcon_meta']
+[0.674s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/image_publisher) by extension 'colcon_meta'
+[0.674s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/image_publisher) by extensions ['ros']
+[0.674s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/image_publisher) by extension 'ros'
+[0.675s] DEBUG:colcon.colcon_core.package_identification:Package 'image_pipeline/image_publisher' with type 'ros.ament_cmake' and name 'image_publisher'
+[0.675s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/image_rotate) by extensions ['ignore', 'ignore_ament_install']
+[0.675s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/image_rotate) by extension 'ignore'
+[0.676s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/image_rotate) by extension 'ignore_ament_install'
+[0.676s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/image_rotate) by extensions ['colcon_pkg']
+[0.676s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/image_rotate) by extension 'colcon_pkg'
+[0.676s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/image_rotate) by extensions ['colcon_meta']
+[0.676s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/image_rotate) by extension 'colcon_meta'
+[0.676s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/image_rotate) by extensions ['ros']
+[0.676s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/image_rotate) by extension 'ros'
+[0.677s] DEBUG:colcon.colcon_core.package_identification:Package 'image_pipeline/image_rotate' with type 'ros.ament_cmake' and name 'image_rotate'
+[0.677s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/image_view) by extensions ['ignore', 'ignore_ament_install']
+[0.677s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/image_view) by extension 'ignore'
+[0.677s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/image_view) by extension 'ignore_ament_install'
+[0.677s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/image_view) by extensions ['colcon_pkg']
+[0.677s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/image_view) by extension 'colcon_pkg'
+[0.677s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/image_view) by extensions ['colcon_meta']
+[0.677s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/image_view) by extension 'colcon_meta'
+[0.677s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/image_view) by extensions ['ros']
+[0.677s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/image_view) by extension 'ros'
+[0.679s] DEBUG:colcon.colcon_core.package_identification:Package 'image_pipeline/image_view' with type 'ros.ament_cmake' and name 'image_view'
+[0.679s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/stereo_image_proc) by extensions ['ignore', 'ignore_ament_install']
+[0.679s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/stereo_image_proc) by extension 'ignore'
+[0.679s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/stereo_image_proc) by extension 'ignore_ament_install'
+[0.679s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/stereo_image_proc) by extensions ['colcon_pkg']
+[0.679s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/stereo_image_proc) by extension 'colcon_pkg'
+[0.679s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/stereo_image_proc) by extensions ['colcon_meta']
+[0.679s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/stereo_image_proc) by extension 'colcon_meta'
+[0.679s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/stereo_image_proc) by extensions ['ros']
+[0.679s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/stereo_image_proc) by extension 'ros'
+[0.680s] DEBUG:colcon.colcon_core.package_identification:Package 'image_pipeline/stereo_image_proc' with type 'ros.ament_cmake' and name 'stereo_image_proc'
+[0.680s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/tools) by extensions ['ignore', 'ignore_ament_install']
+[0.680s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/tools) by extension 'ignore'
+[0.680s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/tools) by extension 'ignore_ament_install'
+[0.680s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/tools) by extensions ['colcon_pkg']
+[0.680s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/tools) by extension 'colcon_pkg'
+[0.680s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/tools) by extensions ['colcon_meta']
+[0.681s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/tools) by extension 'colcon_meta'
+[0.681s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/tools) by extensions ['ros']
+[0.681s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/tools) by extension 'ros'
+[0.681s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/tools) by extensions ['cmake', 'python']
+[0.681s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/tools) by extension 'cmake'
+[0.681s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/tools) by extension 'python'
+[0.681s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/tools) by extensions ['python_setup_py']
+[0.681s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/tools) by extension 'python_setup_py'
+[0.681s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/tracetools_image_pipeline) by extensions ['ignore', 'ignore_ament_install']
+[0.681s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/tracetools_image_pipeline) by extension 'ignore'
+[0.681s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/tracetools_image_pipeline) by extension 'ignore_ament_install'
+[0.681s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/tracetools_image_pipeline) by extensions ['colcon_pkg']
+[0.681s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/tracetools_image_pipeline) by extension 'colcon_pkg'
+[0.681s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/tracetools_image_pipeline) by extensions ['colcon_meta']
+[0.681s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/tracetools_image_pipeline) by extension 'colcon_meta'
+[0.681s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/tracetools_image_pipeline) by extensions ['ros']
+[0.681s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/tracetools_image_pipeline) by extension 'ros'
+[0.682s] DEBUG:colcon.colcon_core.package_identification:Package 'image_pipeline/tracetools_image_pipeline' with type 'ros.ament_cmake' and name 'tracetools_image_pipeline'
+[0.682s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/wiki_files) by extensions ['ignore', 'ignore_ament_install']
+[0.682s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/wiki_files) by extension 'ignore'
+[0.682s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/wiki_files) by extension 'ignore_ament_install'
+[0.682s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/wiki_files) by extensions ['colcon_pkg']
+[0.682s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/wiki_files) by extension 'colcon_pkg'
+[0.682s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/wiki_files) by extensions ['colcon_meta']
+[0.682s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/wiki_files) by extension 'colcon_meta'
+[0.682s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/wiki_files) by extensions ['ros']
+[0.682s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/wiki_files) by extension 'ros'
+[0.682s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/wiki_files) by extensions ['cmake', 'python']
+[0.682s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/wiki_files) by extension 'cmake'
+[0.682s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/wiki_files) by extension 'python'
+[0.682s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/wiki_files) by extensions ['python_setup_py']
+[0.682s] Level 1:colcon.colcon_core.package_identification:_identify(image_pipeline/wiki_files) by extension 'python_setup_py'
+[0.682s] Level 1:colcon.colcon_core.package_identification:_identify(install) by extensions ['ignore', 'ignore_ament_install']
+[0.682s] Level 1:colcon.colcon_core.package_identification:_identify(install) by extension 'ignore'
+[0.682s] Level 1:colcon.colcon_core.package_identification:_identify(install) ignored
+[0.683s] Level 1:colcon.colcon_core.package_identification:_identify(log) by extensions ['ignore', 'ignore_ament_install']
+[0.683s] Level 1:colcon.colcon_core.package_identification:_identify(log) by extension 'ignore'
+[0.683s] Level 1:colcon.colcon_core.package_identification:_identify(log) ignored
+[0.683s] Level 1:colcon.colcon_core.package_identification:_identify(nk_vision_pkg) by extensions ['ignore', 'ignore_ament_install']
+[0.683s] Level 1:colcon.colcon_core.package_identification:_identify(nk_vision_pkg) by extension 'ignore'
+[0.683s] Level 1:colcon.colcon_core.package_identification:_identify(nk_vision_pkg) by extension 'ignore_ament_install'
+[0.683s] Level 1:colcon.colcon_core.package_identification:_identify(nk_vision_pkg) by extensions ['colcon_pkg']
+[0.683s] Level 1:colcon.colcon_core.package_identification:_identify(nk_vision_pkg) by extension 'colcon_pkg'
+[0.683s] Level 1:colcon.colcon_core.package_identification:_identify(nk_vision_pkg) by extensions ['colcon_meta']
+[0.683s] Level 1:colcon.colcon_core.package_identification:_identify(nk_vision_pkg) by extension 'colcon_meta'
+[0.683s] Level 1:colcon.colcon_core.package_identification:_identify(nk_vision_pkg) by extensions ['ros']
+[0.683s] Level 1:colcon.colcon_core.package_identification:_identify(nk_vision_pkg) by extension 'ros'
+[0.684s] DEBUG:colcon.colcon_core.package_identification:Package 'nk_vision_pkg' with type 'ros.ament_cmake' and name 'nk_vision'
+[0.684s] Level 1:colcon.colcon_core.package_identification:_identify(ros_aruco_opencv) by extensions ['ignore', 'ignore_ament_install']
+[0.684s] Level 1:colcon.colcon_core.package_identification:_identify(ros_aruco_opencv) by extension 'ignore'
+[0.684s] Level 1:colcon.colcon_core.package_identification:_identify(ros_aruco_opencv) by extension 'ignore_ament_install'
+[0.684s] Level 1:colcon.colcon_core.package_identification:_identify(ros_aruco_opencv) by extensions ['colcon_pkg']
+[0.684s] Level 1:colcon.colcon_core.package_identification:_identify(ros_aruco_opencv) by extension 'colcon_pkg'
+[0.684s] Level 1:colcon.colcon_core.package_identification:_identify(ros_aruco_opencv) by extensions ['colcon_meta']
+[0.684s] Level 1:colcon.colcon_core.package_identification:_identify(ros_aruco_opencv) by extension 'colcon_meta'
+[0.684s] Level 1:colcon.colcon_core.package_identification:_identify(ros_aruco_opencv) by extensions ['ros']
+[0.684s] Level 1:colcon.colcon_core.package_identification:_identify(ros_aruco_opencv) by extension 'ros'
+[0.684s] Level 1:colcon.colcon_core.package_identification:_identify(ros_aruco_opencv) by extensions ['cmake', 'python']
+[0.684s] Level 1:colcon.colcon_core.package_identification:_identify(ros_aruco_opencv) by extension 'cmake'
+[0.684s] Level 1:colcon.colcon_core.package_identification:_identify(ros_aruco_opencv) by extension 'python'
+[0.684s] Level 1:colcon.colcon_core.package_identification:_identify(ros_aruco_opencv) by extensions ['python_setup_py']
+[0.684s] Level 1:colcon.colcon_core.package_identification:_identify(ros_aruco_opencv) by extension 'python_setup_py'
+[0.684s] Level 1:colcon.colcon_core.package_identification:_identify(ros_aruco_opencv/aruco_opencv) by extensions ['ignore', 'ignore_ament_install']
+[0.685s] Level 1:colcon.colcon_core.package_identification:_identify(ros_aruco_opencv/aruco_opencv) by extension 'ignore'
+[0.685s] Level 1:colcon.colcon_core.package_identification:_identify(ros_aruco_opencv/aruco_opencv) by extension 'ignore_ament_install'
+[0.685s] Level 1:colcon.colcon_core.package_identification:_identify(ros_aruco_opencv/aruco_opencv) by extensions ['colcon_pkg']
+[0.685s] Level 1:colcon.colcon_core.package_identification:_identify(ros_aruco_opencv/aruco_opencv) by extension 'colcon_pkg'
+[0.685s] Level 1:colcon.colcon_core.package_identification:_identify(ros_aruco_opencv/aruco_opencv) by extensions ['colcon_meta']
+[0.685s] Level 1:colcon.colcon_core.package_identification:_identify(ros_aruco_opencv/aruco_opencv) by extension 'colcon_meta'
+[0.685s] Level 1:colcon.colcon_core.package_identification:_identify(ros_aruco_opencv/aruco_opencv) by extensions ['ros']
+[0.685s] Level 1:colcon.colcon_core.package_identification:_identify(ros_aruco_opencv/aruco_opencv) by extension 'ros'
+[0.686s] DEBUG:colcon.colcon_core.package_identification:Package 'ros_aruco_opencv/aruco_opencv' with type 'ros.ament_cmake' and name 'aruco_opencv'
+[0.686s] Level 1:colcon.colcon_core.package_identification:_identify(ros_aruco_opencv/aruco_opencv_msgs) by extensions ['ignore', 'ignore_ament_install']
+[0.686s] Level 1:colcon.colcon_core.package_identification:_identify(ros_aruco_opencv/aruco_opencv_msgs) by extension 'ignore'
+[0.686s] Level 1:colcon.colcon_core.package_identification:_identify(ros_aruco_opencv/aruco_opencv_msgs) by extension 'ignore_ament_install'
+[0.686s] Level 1:colcon.colcon_core.package_identification:_identify(ros_aruco_opencv/aruco_opencv_msgs) by extensions ['colcon_pkg']
+[0.686s] Level 1:colcon.colcon_core.package_identification:_identify(ros_aruco_opencv/aruco_opencv_msgs) by extension 'colcon_pkg'
+[0.686s] Level 1:colcon.colcon_core.package_identification:_identify(ros_aruco_opencv/aruco_opencv_msgs) by extensions ['colcon_meta']
+[0.686s] Level 1:colcon.colcon_core.package_identification:_identify(ros_aruco_opencv/aruco_opencv_msgs) by extension 'colcon_meta'
+[0.686s] Level 1:colcon.colcon_core.package_identification:_identify(ros_aruco_opencv/aruco_opencv_msgs) by extensions ['ros']
+[0.686s] Level 1:colcon.colcon_core.package_identification:_identify(ros_aruco_opencv/aruco_opencv_msgs) by extension 'ros'
+[0.687s] DEBUG:colcon.colcon_core.package_identification:Package 'ros_aruco_opencv/aruco_opencv_msgs' with type 'ros.ament_cmake' and name 'aruco_opencv_msgs'
+[0.687s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) using defaults
+[0.687s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) discover
+[0.687s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) using defaults
+[0.687s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) discover
+[0.687s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) using defaults
+[0.751s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) check parameters
+[0.751s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) discover
+[0.760s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) using defaults
+[0.777s] Level 5:colcon.colcon_core.verb:set package 'aruco_opencv_msgs' build argument 'cmake_args' from command line to 'None'
+[0.777s] Level 5:colcon.colcon_core.verb:set package 'aruco_opencv_msgs' build argument 'cmake_target' from command line to 'None'
+[0.777s] Level 5:colcon.colcon_core.verb:set package 'aruco_opencv_msgs' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.777s] Level 5:colcon.colcon_core.verb:set package 'aruco_opencv_msgs' build argument 'cmake_clean_cache' from command line to 'False'
+[0.777s] Level 5:colcon.colcon_core.verb:set package 'aruco_opencv_msgs' build argument 'cmake_clean_first' from command line to 'False'
+[0.777s] Level 5:colcon.colcon_core.verb:set package 'aruco_opencv_msgs' build argument 'cmake_force_configure' from command line to 'False'
+[0.777s] Level 5:colcon.colcon_core.verb:set package 'aruco_opencv_msgs' build argument 'ament_cmake_args' from command line to 'None'
+[0.777s] Level 5:colcon.colcon_core.verb:set package 'aruco_opencv_msgs' build argument 'catkin_cmake_args' from command line to 'None'
+[0.777s] Level 5:colcon.colcon_core.verb:set package 'aruco_opencv_msgs' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.777s] DEBUG:colcon.colcon_core.verb:Building package 'aruco_opencv_msgs' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/nasa-knights/vision_ws/nk_ros_pkgs/build/aruco_opencv_msgs', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/nasa-knights/vision_ws/nk_ros_pkgs/install/aruco_opencv_msgs', 'merge_install': False, 'path': '/home/nasa-knights/vision_ws/nk_ros_pkgs/ros_aruco_opencv/aruco_opencv_msgs', 'symlink_install': True, 'test_result_base': None}
+[0.785s] Level 5:colcon.colcon_core.verb:set package 'camera_calibration' build argument 'cmake_args' from command line to 'None'
+[0.785s] Level 5:colcon.colcon_core.verb:set package 'camera_calibration' build argument 'cmake_target' from command line to 'None'
+[0.785s] Level 5:colcon.colcon_core.verb:set package 'camera_calibration' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.785s] Level 5:colcon.colcon_core.verb:set package 'camera_calibration' build argument 'cmake_clean_cache' from command line to 'False'
+[0.785s] Level 5:colcon.colcon_core.verb:set package 'camera_calibration' build argument 'cmake_clean_first' from command line to 'False'
+[0.785s] Level 5:colcon.colcon_core.verb:set package 'camera_calibration' build argument 'cmake_force_configure' from command line to 'False'
+[0.785s] Level 5:colcon.colcon_core.verb:set package 'camera_calibration' build argument 'ament_cmake_args' from command line to 'None'
+[0.785s] Level 5:colcon.colcon_core.verb:set package 'camera_calibration' build argument 'catkin_cmake_args' from command line to 'None'
+[0.785s] Level 5:colcon.colcon_core.verb:set package 'camera_calibration' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.785s] DEBUG:colcon.colcon_core.verb:Building package 'camera_calibration' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/nasa-knights/vision_ws/nk_ros_pkgs/build/camera_calibration', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/nasa-knights/vision_ws/nk_ros_pkgs/install/camera_calibration', 'merge_install': False, 'path': '/home/nasa-knights/vision_ws/nk_ros_pkgs/image_pipeline/camera_calibration', 'symlink_install': True, 'test_result_base': None}
+[0.793s] Level 5:colcon.colcon_core.verb:set package 'cubert_description' build argument 'cmake_args' from command line to 'None'
+[0.793s] Level 5:colcon.colcon_core.verb:set package 'cubert_description' build argument 'cmake_target' from command line to 'None'
+[0.793s] Level 5:colcon.colcon_core.verb:set package 'cubert_description' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.793s] Level 5:colcon.colcon_core.verb:set package 'cubert_description' build argument 'cmake_clean_cache' from command line to 'False'
+[0.794s] Level 5:colcon.colcon_core.verb:set package 'cubert_description' build argument 'cmake_clean_first' from command line to 'False'
+[0.794s] Level 5:colcon.colcon_core.verb:set package 'cubert_description' build argument 'cmake_force_configure' from command line to 'False'
+[0.794s] Level 5:colcon.colcon_core.verb:set package 'cubert_description' build argument 'ament_cmake_args' from command line to 'None'
+[0.794s] Level 5:colcon.colcon_core.verb:set package 'cubert_description' build argument 'catkin_cmake_args' from command line to 'None'
+[0.794s] Level 5:colcon.colcon_core.verb:set package 'cubert_description' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.794s] DEBUG:colcon.colcon_core.verb:Building package 'cubert_description' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/nasa-knights/vision_ws/nk_ros_pkgs/build/cubert_description', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/nasa-knights/vision_ws/nk_ros_pkgs/install/cubert_description', 'merge_install': False, 'path': '/home/nasa-knights/vision_ws/nk_ros_pkgs/cubert_description', 'symlink_install': True, 'test_result_base': None}
+[0.802s] Level 5:colcon.colcon_core.verb:set package 'depth_image_proc' build argument 'cmake_args' from command line to 'None'
+[0.802s] Level 5:colcon.colcon_core.verb:set package 'depth_image_proc' build argument 'cmake_target' from command line to 'None'
+[0.802s] Level 5:colcon.colcon_core.verb:set package 'depth_image_proc' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.802s] Level 5:colcon.colcon_core.verb:set package 'depth_image_proc' build argument 'cmake_clean_cache' from command line to 'False'
+[0.802s] Level 5:colcon.colcon_core.verb:set package 'depth_image_proc' build argument 'cmake_clean_first' from command line to 'False'
+[0.802s] Level 5:colcon.colcon_core.verb:set package 'depth_image_proc' build argument 'cmake_force_configure' from command line to 'False'
+[0.802s] Level 5:colcon.colcon_core.verb:set package 'depth_image_proc' build argument 'ament_cmake_args' from command line to 'None'
+[0.802s] Level 5:colcon.colcon_core.verb:set package 'depth_image_proc' build argument 'catkin_cmake_args' from command line to 'None'
+[0.802s] Level 5:colcon.colcon_core.verb:set package 'depth_image_proc' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.802s] DEBUG:colcon.colcon_core.verb:Building package 'depth_image_proc' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/nasa-knights/vision_ws/nk_ros_pkgs/build/depth_image_proc', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/nasa-knights/vision_ws/nk_ros_pkgs/install/depth_image_proc', 'merge_install': False, 'path': '/home/nasa-knights/vision_ws/nk_ros_pkgs/image_pipeline/depth_image_proc', 'symlink_install': True, 'test_result_base': None}
+[0.810s] Level 5:colcon.colcon_core.verb:set package 'frc_2023_field_description' build argument 'cmake_args' from command line to 'None'
+[0.810s] Level 5:colcon.colcon_core.verb:set package 'frc_2023_field_description' build argument 'cmake_target' from command line to 'None'
+[0.810s] Level 5:colcon.colcon_core.verb:set package 'frc_2023_field_description' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.810s] Level 5:colcon.colcon_core.verb:set package 'frc_2023_field_description' build argument 'cmake_clean_cache' from command line to 'False'
+[0.810s] Level 5:colcon.colcon_core.verb:set package 'frc_2023_field_description' build argument 'cmake_clean_first' from command line to 'False'
+[0.810s] Level 5:colcon.colcon_core.verb:set package 'frc_2023_field_description' build argument 'cmake_force_configure' from command line to 'False'
+[0.810s] Level 5:colcon.colcon_core.verb:set package 'frc_2023_field_description' build argument 'ament_cmake_args' from command line to 'None'
+[0.810s] Level 5:colcon.colcon_core.verb:set package 'frc_2023_field_description' build argument 'catkin_cmake_args' from command line to 'None'
+[0.810s] Level 5:colcon.colcon_core.verb:set package 'frc_2023_field_description' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.810s] DEBUG:colcon.colcon_core.verb:Building package 'frc_2023_field_description' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/nasa-knights/vision_ws/nk_ros_pkgs/build/frc_2023_field_description', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/nasa-knights/vision_ws/nk_ros_pkgs/install/frc_2023_field_description', 'merge_install': False, 'path': '/home/nasa-knights/vision_ws/nk_ros_pkgs/frc_2023_field_description', 'symlink_install': True, 'test_result_base': None}
+[0.819s] Level 5:colcon.colcon_core.verb:set package 'frc_2024_field_description' build argument 'cmake_args' from command line to 'None'
+[0.819s] Level 5:colcon.colcon_core.verb:set package 'frc_2024_field_description' build argument 'cmake_target' from command line to 'None'
+[0.819s] Level 5:colcon.colcon_core.verb:set package 'frc_2024_field_description' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.819s] Level 5:colcon.colcon_core.verb:set package 'frc_2024_field_description' build argument 'cmake_clean_cache' from command line to 'False'
+[0.819s] Level 5:colcon.colcon_core.verb:set package 'frc_2024_field_description' build argument 'cmake_clean_first' from command line to 'False'
+[0.819s] Level 5:colcon.colcon_core.verb:set package 'frc_2024_field_description' build argument 'cmake_force_configure' from command line to 'False'
+[0.819s] Level 5:colcon.colcon_core.verb:set package 'frc_2024_field_description' build argument 'ament_cmake_args' from command line to 'None'
+[0.819s] Level 5:colcon.colcon_core.verb:set package 'frc_2024_field_description' build argument 'catkin_cmake_args' from command line to 'None'
+[0.819s] Level 5:colcon.colcon_core.verb:set package 'frc_2024_field_description' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.819s] DEBUG:colcon.colcon_core.verb:Building package 'frc_2024_field_description' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/nasa-knights/vision_ws/nk_ros_pkgs/build/frc_2024_field_description', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/nasa-knights/vision_ws/nk_ros_pkgs/install/frc_2024_field_description', 'merge_install': False, 'path': '/home/nasa-knights/vision_ws/nk_ros_pkgs/frc_2024_field_description', 'symlink_install': True, 'test_result_base': None}
+[0.827s] Level 5:colcon.colcon_core.verb:set package 'image_publisher' build argument 'cmake_args' from command line to 'None'
+[0.828s] Level 5:colcon.colcon_core.verb:set package 'image_publisher' build argument 'cmake_target' from command line to 'None'
+[0.828s] Level 5:colcon.colcon_core.verb:set package 'image_publisher' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.828s] Level 5:colcon.colcon_core.verb:set package 'image_publisher' build argument 'cmake_clean_cache' from command line to 'False'
+[0.828s] Level 5:colcon.colcon_core.verb:set package 'image_publisher' build argument 'cmake_clean_first' from command line to 'False'
+[0.828s] Level 5:colcon.colcon_core.verb:set package 'image_publisher' build argument 'cmake_force_configure' from command line to 'False'
+[0.828s] Level 5:colcon.colcon_core.verb:set package 'image_publisher' build argument 'ament_cmake_args' from command line to 'None'
+[0.828s] Level 5:colcon.colcon_core.verb:set package 'image_publisher' build argument 'catkin_cmake_args' from command line to 'None'
+[0.828s] Level 5:colcon.colcon_core.verb:set package 'image_publisher' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.828s] DEBUG:colcon.colcon_core.verb:Building package 'image_publisher' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/nasa-knights/vision_ws/nk_ros_pkgs/build/image_publisher', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/nasa-knights/vision_ws/nk_ros_pkgs/install/image_publisher', 'merge_install': False, 'path': '/home/nasa-knights/vision_ws/nk_ros_pkgs/image_pipeline/image_publisher', 'symlink_install': True, 'test_result_base': None}
+[0.836s] Level 5:colcon.colcon_core.verb:set package 'image_rotate' build argument 'cmake_args' from command line to 'None'
+[0.836s] Level 5:colcon.colcon_core.verb:set package 'image_rotate' build argument 'cmake_target' from command line to 'None'
+[0.836s] Level 5:colcon.colcon_core.verb:set package 'image_rotate' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.836s] Level 5:colcon.colcon_core.verb:set package 'image_rotate' build argument 'cmake_clean_cache' from command line to 'False'
+[0.836s] Level 5:colcon.colcon_core.verb:set package 'image_rotate' build argument 'cmake_clean_first' from command line to 'False'
+[0.836s] Level 5:colcon.colcon_core.verb:set package 'image_rotate' build argument 'cmake_force_configure' from command line to 'False'
+[0.836s] Level 5:colcon.colcon_core.verb:set package 'image_rotate' build argument 'ament_cmake_args' from command line to 'None'
+[0.836s] Level 5:colcon.colcon_core.verb:set package 'image_rotate' build argument 'catkin_cmake_args' from command line to 'None'
+[0.836s] Level 5:colcon.colcon_core.verb:set package 'image_rotate' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.836s] DEBUG:colcon.colcon_core.verb:Building package 'image_rotate' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/nasa-knights/vision_ws/nk_ros_pkgs/build/image_rotate', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/nasa-knights/vision_ws/nk_ros_pkgs/install/image_rotate', 'merge_install': False, 'path': '/home/nasa-knights/vision_ws/nk_ros_pkgs/image_pipeline/image_rotate', 'symlink_install': True, 'test_result_base': None}
+[0.844s] Level 5:colcon.colcon_core.verb:set package 'image_view' build argument 'cmake_args' from command line to 'None'
+[0.844s] Level 5:colcon.colcon_core.verb:set package 'image_view' build argument 'cmake_target' from command line to 'None'
+[0.844s] Level 5:colcon.colcon_core.verb:set package 'image_view' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.844s] Level 5:colcon.colcon_core.verb:set package 'image_view' build argument 'cmake_clean_cache' from command line to 'False'
+[0.844s] Level 5:colcon.colcon_core.verb:set package 'image_view' build argument 'cmake_clean_first' from command line to 'False'
+[0.844s] Level 5:colcon.colcon_core.verb:set package 'image_view' build argument 'cmake_force_configure' from command line to 'False'
+[0.844s] Level 5:colcon.colcon_core.verb:set package 'image_view' build argument 'ament_cmake_args' from command line to 'None'
+[0.844s] Level 5:colcon.colcon_core.verb:set package 'image_view' build argument 'catkin_cmake_args' from command line to 'None'
+[0.844s] Level 5:colcon.colcon_core.verb:set package 'image_view' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.844s] DEBUG:colcon.colcon_core.verb:Building package 'image_view' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/nasa-knights/vision_ws/nk_ros_pkgs/build/image_view', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/nasa-knights/vision_ws/nk_ros_pkgs/install/image_view', 'merge_install': False, 'path': '/home/nasa-knights/vision_ws/nk_ros_pkgs/image_pipeline/image_view', 'symlink_install': True, 'test_result_base': None}
+[0.853s] Level 5:colcon.colcon_core.verb:set package 'nk_vision' build argument 'cmake_args' from command line to 'None'
+[0.853s] Level 5:colcon.colcon_core.verb:set package 'nk_vision' build argument 'cmake_target' from command line to 'None'
+[0.853s] Level 5:colcon.colcon_core.verb:set package 'nk_vision' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.853s] Level 5:colcon.colcon_core.verb:set package 'nk_vision' build argument 'cmake_clean_cache' from command line to 'False'
+[0.853s] Level 5:colcon.colcon_core.verb:set package 'nk_vision' build argument 'cmake_clean_first' from command line to 'False'
+[0.853s] Level 5:colcon.colcon_core.verb:set package 'nk_vision' build argument 'cmake_force_configure' from command line to 'False'
+[0.853s] Level 5:colcon.colcon_core.verb:set package 'nk_vision' build argument 'ament_cmake_args' from command line to 'None'
+[0.853s] Level 5:colcon.colcon_core.verb:set package 'nk_vision' build argument 'catkin_cmake_args' from command line to 'None'
+[0.853s] Level 5:colcon.colcon_core.verb:set package 'nk_vision' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.853s] DEBUG:colcon.colcon_core.verb:Building package 'nk_vision' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/nasa-knights/vision_ws/nk_ros_pkgs/build/nk_vision', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/nasa-knights/vision_ws/nk_ros_pkgs/install/nk_vision', 'merge_install': False, 'path': '/home/nasa-knights/vision_ws/nk_ros_pkgs/nk_vision_pkg', 'symlink_install': True, 'test_result_base': None}
+[0.861s] Level 5:colcon.colcon_core.verb:set package 'tracetools_image_pipeline' build argument 'cmake_args' from command line to 'None'
+[0.861s] Level 5:colcon.colcon_core.verb:set package 'tracetools_image_pipeline' build argument 'cmake_target' from command line to 'None'
+[0.861s] Level 5:colcon.colcon_core.verb:set package 'tracetools_image_pipeline' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.861s] Level 5:colcon.colcon_core.verb:set package 'tracetools_image_pipeline' build argument 'cmake_clean_cache' from command line to 'False'
+[0.861s] Level 5:colcon.colcon_core.verb:set package 'tracetools_image_pipeline' build argument 'cmake_clean_first' from command line to 'False'
+[0.861s] Level 5:colcon.colcon_core.verb:set package 'tracetools_image_pipeline' build argument 'cmake_force_configure' from command line to 'False'
+[0.861s] Level 5:colcon.colcon_core.verb:set package 'tracetools_image_pipeline' build argument 'ament_cmake_args' from command line to 'None'
+[0.861s] Level 5:colcon.colcon_core.verb:set package 'tracetools_image_pipeline' build argument 'catkin_cmake_args' from command line to 'None'
+[0.861s] Level 5:colcon.colcon_core.verb:set package 'tracetools_image_pipeline' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.861s] DEBUG:colcon.colcon_core.verb:Building package 'tracetools_image_pipeline' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/nasa-knights/vision_ws/nk_ros_pkgs/build/tracetools_image_pipeline', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/nasa-knights/vision_ws/nk_ros_pkgs/install/tracetools_image_pipeline', 'merge_install': False, 'path': '/home/nasa-knights/vision_ws/nk_ros_pkgs/image_pipeline/tracetools_image_pipeline', 'symlink_install': True, 'test_result_base': None}
+[0.869s] Level 5:colcon.colcon_core.verb:set package 'aruco_opencv' build argument 'cmake_args' from command line to 'None'
+[0.869s] Level 5:colcon.colcon_core.verb:set package 'aruco_opencv' build argument 'cmake_target' from command line to 'None'
+[0.869s] Level 5:colcon.colcon_core.verb:set package 'aruco_opencv' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.869s] Level 5:colcon.colcon_core.verb:set package 'aruco_opencv' build argument 'cmake_clean_cache' from command line to 'False'
+[0.869s] Level 5:colcon.colcon_core.verb:set package 'aruco_opencv' build argument 'cmake_clean_first' from command line to 'False'
+[0.869s] Level 5:colcon.colcon_core.verb:set package 'aruco_opencv' build argument 'cmake_force_configure' from command line to 'False'
+[0.869s] Level 5:colcon.colcon_core.verb:set package 'aruco_opencv' build argument 'ament_cmake_args' from command line to 'None'
+[0.869s] Level 5:colcon.colcon_core.verb:set package 'aruco_opencv' build argument 'catkin_cmake_args' from command line to 'None'
+[0.870s] Level 5:colcon.colcon_core.verb:set package 'aruco_opencv' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.870s] DEBUG:colcon.colcon_core.verb:Building package 'aruco_opencv' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/nasa-knights/vision_ws/nk_ros_pkgs/build/aruco_opencv', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/nasa-knights/vision_ws/nk_ros_pkgs/install/aruco_opencv', 'merge_install': False, 'path': '/home/nasa-knights/vision_ws/nk_ros_pkgs/ros_aruco_opencv/aruco_opencv', 'symlink_install': True, 'test_result_base': None}
+[0.878s] Level 5:colcon.colcon_core.verb:set package 'image_proc' build argument 'cmake_args' from command line to 'None'
+[0.878s] Level 5:colcon.colcon_core.verb:set package 'image_proc' build argument 'cmake_target' from command line to 'None'
+[0.878s] Level 5:colcon.colcon_core.verb:set package 'image_proc' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.878s] Level 5:colcon.colcon_core.verb:set package 'image_proc' build argument 'cmake_clean_cache' from command line to 'False'
+[0.878s] Level 5:colcon.colcon_core.verb:set package 'image_proc' build argument 'cmake_clean_first' from command line to 'False'
+[0.878s] Level 5:colcon.colcon_core.verb:set package 'image_proc' build argument 'cmake_force_configure' from command line to 'False'
+[0.878s] Level 5:colcon.colcon_core.verb:set package 'image_proc' build argument 'ament_cmake_args' from command line to 'None'
+[0.878s] Level 5:colcon.colcon_core.verb:set package 'image_proc' build argument 'catkin_cmake_args' from command line to 'None'
+[0.878s] Level 5:colcon.colcon_core.verb:set package 'image_proc' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.878s] DEBUG:colcon.colcon_core.verb:Building package 'image_proc' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/nasa-knights/vision_ws/nk_ros_pkgs/build/image_proc', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/nasa-knights/vision_ws/nk_ros_pkgs/install/image_proc', 'merge_install': False, 'path': '/home/nasa-knights/vision_ws/nk_ros_pkgs/image_pipeline/image_proc', 'symlink_install': True, 'test_result_base': None}
+[0.886s] Level 5:colcon.colcon_core.verb:set package 'stereo_image_proc' build argument 'cmake_args' from command line to 'None'
+[0.886s] Level 5:colcon.colcon_core.verb:set package 'stereo_image_proc' build argument 'cmake_target' from command line to 'None'
+[0.886s] Level 5:colcon.colcon_core.verb:set package 'stereo_image_proc' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.886s] Level 5:colcon.colcon_core.verb:set package 'stereo_image_proc' build argument 'cmake_clean_cache' from command line to 'False'
+[0.886s] Level 5:colcon.colcon_core.verb:set package 'stereo_image_proc' build argument 'cmake_clean_first' from command line to 'False'
+[0.886s] Level 5:colcon.colcon_core.verb:set package 'stereo_image_proc' build argument 'cmake_force_configure' from command line to 'False'
+[0.886s] Level 5:colcon.colcon_core.verb:set package 'stereo_image_proc' build argument 'ament_cmake_args' from command line to 'None'
+[0.886s] Level 5:colcon.colcon_core.verb:set package 'stereo_image_proc' build argument 'catkin_cmake_args' from command line to 'None'
+[0.886s] Level 5:colcon.colcon_core.verb:set package 'stereo_image_proc' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.886s] DEBUG:colcon.colcon_core.verb:Building package 'stereo_image_proc' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/nasa-knights/vision_ws/nk_ros_pkgs/build/stereo_image_proc', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/nasa-knights/vision_ws/nk_ros_pkgs/install/stereo_image_proc', 'merge_install': False, 'path': '/home/nasa-knights/vision_ws/nk_ros_pkgs/image_pipeline/stereo_image_proc', 'symlink_install': True, 'test_result_base': None}
+[0.894s] Level 5:colcon.colcon_core.verb:set package 'image_pipeline' build argument 'cmake_args' from command line to 'None'
+[0.894s] Level 5:colcon.colcon_core.verb:set package 'image_pipeline' build argument 'cmake_target' from command line to 'None'
+[0.894s] Level 5:colcon.colcon_core.verb:set package 'image_pipeline' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.894s] Level 5:colcon.colcon_core.verb:set package 'image_pipeline' build argument 'cmake_clean_cache' from command line to 'False'
+[0.894s] Level 5:colcon.colcon_core.verb:set package 'image_pipeline' build argument 'cmake_clean_first' from command line to 'False'
+[0.894s] Level 5:colcon.colcon_core.verb:set package 'image_pipeline' build argument 'cmake_force_configure' from command line to 'False'
+[0.894s] Level 5:colcon.colcon_core.verb:set package 'image_pipeline' build argument 'ament_cmake_args' from command line to 'None'
+[0.894s] Level 5:colcon.colcon_core.verb:set package 'image_pipeline' build argument 'catkin_cmake_args' from command line to 'None'
+[0.894s] Level 5:colcon.colcon_core.verb:set package 'image_pipeline' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.894s] DEBUG:colcon.colcon_core.verb:Building package 'image_pipeline' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/nasa-knights/vision_ws/nk_ros_pkgs/build/image_pipeline', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/nasa-knights/vision_ws/nk_ros_pkgs/install/image_pipeline', 'merge_install': False, 'path': '/home/nasa-knights/vision_ws/nk_ros_pkgs/image_pipeline/image_pipeline', 'symlink_install': True, 'test_result_base': None}
+[0.902s] INFO:colcon.colcon_core.executor:Executing jobs using 'parallel' executor
+[0.911s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete
+[0.911s] INFO:colcon.colcon_ros.task.ament_cmake.build:Building ROS package in '/home/nasa-knights/vision_ws/nk_ros_pkgs/image_pipeline/tracetools_image_pipeline' with build type 'ament_cmake'
+[0.911s] INFO:colcon.colcon_cmake.task.cmake.build:Building CMake package in '/home/nasa-knights/vision_ws/nk_ros_pkgs/image_pipeline/tracetools_image_pipeline'
+[0.924s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_core.shell.bat': Not used on non-Windows systems
+[0.924s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.924s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.934s] INFO:colcon.colcon_ros.task.ament_cmake.build:Building ROS package in '/home/nasa-knights/vision_ws/nk_ros_pkgs/ros_aruco_opencv/aruco_opencv_msgs' with build type 'ament_cmake'
+[0.935s] INFO:colcon.colcon_cmake.task.cmake.build:Building CMake package in '/home/nasa-knights/vision_ws/nk_ros_pkgs/ros_aruco_opencv/aruco_opencv_msgs'
+[0.948s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.948s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.962s] INFO:colcon.colcon_ros.task.ament_python.build:Building ROS package in '/home/nasa-knights/vision_ws/nk_ros_pkgs/image_pipeline/camera_calibration' with build type 'ament_python'
+[0.963s] Level 1:colcon.colcon_core.shell:create_environment_hook('camera_calibration', 'ament_prefix_path')
+[0.976s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/nasa-knights/vision_ws/nk_ros_pkgs/install/camera_calibration/share/camera_calibration/hook/ament_prefix_path.ps1'
+[0.977s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/nasa-knights/vision_ws/nk_ros_pkgs/install/camera_calibration/share/camera_calibration/hook/ament_prefix_path.dsv'
+[0.978s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/nasa-knights/vision_ws/nk_ros_pkgs/install/camera_calibration/share/camera_calibration/hook/ament_prefix_path.sh'
+[0.990s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.990s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[1.005s] INFO:colcon.colcon_ros.task.ament_cmake.build:Building ROS package in '/home/nasa-knights/vision_ws/nk_ros_pkgs/image_pipeline/depth_image_proc' with build type 'ament_cmake'
+[1.005s] INFO:colcon.colcon_cmake.task.cmake.build:Building CMake package in '/home/nasa-knights/vision_ws/nk_ros_pkgs/image_pipeline/depth_image_proc'
+[1.017s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[1.017s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[1.037s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/nasa-knights/vision_ws/nk_ros_pkgs/build/tracetools_image_pipeline': /usr/bin/cmake /home/nasa-knights/vision_ws/nk_ros_pkgs/image_pipeline/tracetools_image_pipeline -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/nasa-knights/vision_ws/nk_ros_pkgs/install/tracetools_image_pipeline
+[1.040s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/nasa-knights/vision_ws/nk_ros_pkgs/build/aruco_opencv_msgs': /usr/bin/cmake /home/nasa-knights/vision_ws/nk_ros_pkgs/ros_aruco_opencv/aruco_opencv_msgs -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/nasa-knights/vision_ws/nk_ros_pkgs/install/aruco_opencv_msgs
+[1.382s] INFO:colcon.colcon_core.task.python.build:Building Python package in '/home/nasa-knights/vision_ws/nk_ros_pkgs/image_pipeline/camera_calibration'
+[1.394s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[1.394s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[1.407s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/nasa-knights/vision_ws/nk_ros_pkgs/build/depth_image_proc': /usr/bin/cmake /home/nasa-knights/vision_ws/nk_ros_pkgs/image_pipeline/depth_image_proc -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/nasa-knights/vision_ws/nk_ros_pkgs/install/depth_image_proc
+[1.678s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/nasa-knights/vision_ws/nk_ros_pkgs/build/aruco_opencv_msgs' returned '1': /usr/bin/cmake /home/nasa-knights/vision_ws/nk_ros_pkgs/ros_aruco_opencv/aruco_opencv_msgs -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/nasa-knights/vision_ws/nk_ros_pkgs/install/aruco_opencv_msgs
+[1.685s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/nasa-knights/vision_ws/nk_ros_pkgs/build/tracetools_image_pipeline' returned '1': /usr/bin/cmake /home/nasa-knights/vision_ws/nk_ros_pkgs/image_pipeline/tracetools_image_pipeline -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/nasa-knights/vision_ws/nk_ros_pkgs/install/tracetools_image_pipeline
+[1.691s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(aruco_opencv_msgs)
+[1.707s] Level 1:colcon.colcon_core.environment:checking '/home/nasa-knights/vision_ws/nk_ros_pkgs/install/aruco_opencv_msgs' for CMake module files
+[1.707s] Level 1:colcon.colcon_core.environment:checking '/home/nasa-knights/vision_ws/nk_ros_pkgs/install/aruco_opencv_msgs' for CMake config files
+[1.708s] Level 1:colcon.colcon_core.environment:checking '/home/nasa-knights/vision_ws/nk_ros_pkgs/install/aruco_opencv_msgs/bin'
+[1.708s] Level 1:colcon.colcon_core.environment:checking '/home/nasa-knights/vision_ws/nk_ros_pkgs/install/aruco_opencv_msgs/lib/pkgconfig/aruco_opencv_msgs.pc'
+[1.708s] Level 1:colcon.colcon_core.environment:checking '/home/nasa-knights/vision_ws/nk_ros_pkgs/install/aruco_opencv_msgs/lib/python3.10/site-packages'
+[1.708s] Level 1:colcon.colcon_core.environment:checking '/home/nasa-knights/vision_ws/nk_ros_pkgs/install/aruco_opencv_msgs/bin'
+[1.720s] INFO:colcon.colcon_core.shell:Creating package script '/home/nasa-knights/vision_ws/nk_ros_pkgs/install/aruco_opencv_msgs/share/aruco_opencv_msgs/package.ps1'
+[1.721s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/nasa-knights/vision_ws/nk_ros_pkgs/install/aruco_opencv_msgs/share/aruco_opencv_msgs/package.dsv'
+[1.721s] INFO:colcon.colcon_core.shell:Creating package script '/home/nasa-knights/vision_ws/nk_ros_pkgs/install/aruco_opencv_msgs/share/aruco_opencv_msgs/package.sh'
+[1.722s] INFO:colcon.colcon_core.shell:Creating package script '/home/nasa-knights/vision_ws/nk_ros_pkgs/install/aruco_opencv_msgs/share/aruco_opencv_msgs/package.bash'
+[1.724s] INFO:colcon.colcon_core.shell:Creating package script '/home/nasa-knights/vision_ws/nk_ros_pkgs/install/aruco_opencv_msgs/share/aruco_opencv_msgs/package.zsh'
+[1.725s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/nasa-knights/vision_ws/nk_ros_pkgs/install/aruco_opencv_msgs/share/colcon-core/packages/aruco_opencv_msgs)
+[1.852s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:closing loop
+[1.852s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:loop closed
+[1.852s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete finished with '1'
+[1.852s] DEBUG:colcon.colcon_core.event_reactor:joining thread
+[1.869s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.terminal_notifier': Not used on non-Darwin systems
+[1.869s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.win32': Not used on non-Windows systems
+[1.869s] INFO:colcon.colcon_notification.desktop_notification:Sending desktop notification using 'notify2'
+[1.890s] DEBUG:colcon.colcon_core.event_reactor:joined thread
+[1.903s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/nasa-knights/vision_ws/nk_ros_pkgs/install/local_setup.ps1'
+[1.904s] INFO:colcon.colcon_core.shell:Creating prefix util module '/home/nasa-knights/vision_ws/nk_ros_pkgs/install/_local_setup_util_ps1.py'
+[1.906s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/nasa-knights/vision_ws/nk_ros_pkgs/install/setup.ps1'
+[1.925s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/nasa-knights/vision_ws/nk_ros_pkgs/install/local_setup.sh'
+[1.926s] INFO:colcon.colcon_core.shell:Creating prefix util module '/home/nasa-knights/vision_ws/nk_ros_pkgs/install/_local_setup_util_sh.py'
+[1.926s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/nasa-knights/vision_ws/nk_ros_pkgs/install/setup.sh'
+[1.941s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/nasa-knights/vision_ws/nk_ros_pkgs/install/local_setup.bash'
+[1.941s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/nasa-knights/vision_ws/nk_ros_pkgs/install/setup.bash'
+[1.955s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/nasa-knights/vision_ws/nk_ros_pkgs/install/local_setup.zsh'
+[1.956s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/nasa-knights/vision_ws/nk_ros_pkgs/install/setup.zsh'
