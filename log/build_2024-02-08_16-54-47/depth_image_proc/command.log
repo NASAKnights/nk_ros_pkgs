@@ -1,1 +1,0 @@
-Invoking command in '/home/nasa-knights/vision_ws/nk_ros_pkgs/build/depth_image_proc': /usr/bin/cmake /home/nasa-knights/vision_ws/nk_ros_pkgs/image_pipeline/depth_image_proc -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/nasa-knights/vision_ws/nk_ros_pkgs/install/depth_image_proc
