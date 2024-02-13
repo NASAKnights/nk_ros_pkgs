@@ -33,6 +33,7 @@ To run the pipeline you can use the following command:
 
 ```bash
 source vision_ws/install/setup.bash # This will tell the system where to find the code that you just built is and needs to be run in every terminal
+source /opt/ros/humble/setup.bash # If other setup bash doesn't work, use this
 ros2 launch nk_vision nk_vision.launch.py
 ```
 

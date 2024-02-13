@@ -49,6 +49,8 @@ class PoseEstimationNode(Node):
         self.pose = Pose()
         self.recent_timestamp = {}
 
+        self.finalEst = []
+
         self.rate = 20
         self.acceptable_timeout = 1.0
         
@@ -86,18 +88,13 @@ class PoseEstimationNode(Node):
 
         
 
-    def publish_estimate(self, _t):
-        rotation = _t.transfrom.rotation
-        position_x = _t.trasnform.translation.x
-        position_x = _t.trasnform.translation.x
-        position_x = _t.trasnform.translation.x
             
 
     def find_avg_pose(self):
         """ Finds the average pose from all sources
         """
         if (len(self.pose_estimates) != 0 ):
-            self.get_logger().info('Recent Markers Found, fusinnnnnnnnnng', throttle_duration_sec = 1.0)
+            self.get_logger().info('Recent Markers Found, fusing', throttle_duration_sec = 1.0)
             self.find_avg_position()
             self.find_avg_orientation()
             self.pose.position.x = self.avg_position[0]
@@ -120,11 +117,13 @@ class PoseEstimationNode(Node):
             self.tf_broadcaster.sendTransform(t)
             ## prints average points into terminal when seeing a marker, and then resets the pose_estimates so it will repeat the loop.
             self.get_logger().info(f'{t}', throttle_duration_sec = .5)
-            self.publish_estimate(self, self.tf_broadcaster)
             self.pose_estimates = {}
-
         else:
             self.get_logger().info('There are no markers', throttle_duration_sec = .5)
+
+    def publish_estimate(_self, _t):
+            # _self.pubs[_self.transfer_topics.index(link)].set(_self.t)
+        _self.t.set
 
 
     def check_Timestamp(self, msg: TFMessage):

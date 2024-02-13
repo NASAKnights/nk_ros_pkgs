@@ -63,25 +63,171 @@ Visualization Manager:
           Value: true
         base_link_2:
           Value: true
+        base_link_3:
+          Value: true
         camera_1:
           Value: true
         camera_2:
           Value: true
         marker_1:
           Value: true
+        marker_10:
+          Value: true
+        marker_10_0:
+          Value: true
+        marker_10_1:
+          Value: true
+        marker_10_2:
+          Value: true
+        marker_10_3:
+          Value: true
+        marker_11:
+          Value: true
+        marker_11_0:
+          Value: true
+        marker_11_1:
+          Value: true
+        marker_11_2:
+          Value: true
+        marker_11_3:
+          Value: true
+        marker_12:
+          Value: true
+        marker_12_0:
+          Value: true
+        marker_12_1:
+          Value: true
+        marker_12_2:
+          Value: true
+        marker_12_3:
+          Value: true
+        marker_13:
+          Value: true
+        marker_13_0:
+          Value: true
+        marker_13_1:
+          Value: true
+        marker_13_2:
+          Value: true
+        marker_13_3:
+          Value: true
+        marker_14:
+          Value: true
+        marker_14_0:
+          Value: true
+        marker_14_1:
+          Value: true
+        marker_14_2:
+          Value: true
+        marker_14_3:
+          Value: true
+        marker_15:
+          Value: true
+        marker_15_0:
+          Value: true
+        marker_15_1:
+          Value: true
+        marker_15_2:
+          Value: true
+        marker_15_3:
+          Value: true
+        marker_16:
+          Value: true
+        marker_16_0:
+          Value: true
+        marker_16_1:
+          Value: true
+        marker_16_2:
+          Value: true
+        marker_16_3:
+          Value: true
+        marker_1_0:
+          Value: true
+        marker_1_1:
+          Value: true
+        marker_1_2:
+          Value: true
+        marker_1_3:
+          Value: true
         marker_2:
+          Value: true
+        marker_2_0:
+          Value: true
+        marker_2_1:
+          Value: true
+        marker_2_2:
+          Value: true
+        marker_2_3:
           Value: true
         marker_3:
           Value: true
+        marker_3_0:
+          Value: true
+        marker_3_1:
+          Value: true
+        marker_3_2:
+          Value: true
+        marker_3_3:
+          Value: true
         marker_4:
+          Value: true
+        marker_4_0:
+          Value: true
+        marker_4_1:
+          Value: true
+        marker_4_2:
+          Value: true
+        marker_4_3:
           Value: true
         marker_5:
           Value: true
+        marker_5_0:
+          Value: true
+        marker_5_1:
+          Value: true
+        marker_5_2:
+          Value: true
+        marker_5_3:
+          Value: true
         marker_6:
+          Value: true
+        marker_6_0:
+          Value: true
+        marker_6_1:
+          Value: true
+        marker_6_2:
+          Value: true
+        marker_6_3:
           Value: true
         marker_7:
           Value: true
+        marker_7_0:
+          Value: true
+        marker_7_1:
+          Value: true
+        marker_7_2:
+          Value: true
+        marker_7_3:
+          Value: true
         marker_8:
+          Value: true
+        marker_8_0:
+          Value: true
+        marker_8_1:
+          Value: true
+        marker_8_2:
+          Value: true
+        marker_8_3:
+          Value: true
+        marker_9:
+          Value: true
+        marker_9_0:
+          Value: true
+        marker_9_1:
+          Value: true
+        marker_9_2:
+          Value: true
+        marker_9_3:
           Value: true
         world:
           Value: true
@@ -91,22 +237,170 @@ Visualization Manager:
       Show Axes: true
       Show Names: true
       Tree:
+        base_link_3:
+          {}
         world:
           marker_1:
             {}
+          marker_10:
+            {}
+          marker_10_0:
+            {}
+          marker_10_1:
+            {}
+          marker_10_2:
+            {}
+          marker_10_3:
+            {}
+          marker_11:
+            {}
+          marker_11_0:
+            {}
+          marker_11_1:
+            {}
+          marker_11_2:
+            {}
+          marker_11_3:
+            {}
+          marker_12:
+            {}
+          marker_12_0:
+            {}
+          marker_12_1:
+            {}
+          marker_12_2:
+            {}
+          marker_12_3:
+            {}
+          marker_13:
+            {}
+          marker_13_0:
+            {}
+          marker_13_1:
+            {}
+          marker_13_2:
+            {}
+          marker_13_3:
+            {}
+          marker_14:
+            {}
+          marker_14_0:
+            {}
+          marker_14_1:
+            {}
+          marker_14_2:
+            {}
+          marker_14_3:
+            {}
+          marker_15:
+            {}
+          marker_15_0:
+            {}
+          marker_15_1:
+            {}
+          marker_15_2:
+            {}
+          marker_15_3:
+            {}
+          marker_16:
+            {}
+          marker_16_0:
+            {}
+          marker_16_1:
+            {}
+          marker_16_2:
+            {}
+          marker_16_3:
+            {}
+          marker_1_0:
+            {}
+          marker_1_1:
+            {}
+          marker_1_2:
+            {}
+          marker_1_3:
+            {}
           marker_2:
+            camera_2:
+              base_link_2:
+                {}
+          marker_2_0:
+            {}
+          marker_2_1:
+            {}
+          marker_2_2:
+            {}
+          marker_2_3:
             {}
           marker_3:
             {}
+          marker_3_0:
+            {}
+          marker_3_1:
+            {}
+          marker_3_2:
+            {}
+          marker_3_3:
+            {}
           marker_4:
+            {}
+          marker_4_0:
+            {}
+          marker_4_1:
+            {}
+          marker_4_2:
+            {}
+          marker_4_3:
             {}
           marker_5:
             {}
+          marker_5_0:
+            {}
+          marker_5_1:
+            {}
+          marker_5_2:
+            {}
+          marker_5_3:
+            {}
           marker_6:
+            {}
+          marker_6_0:
+            {}
+          marker_6_1:
+            {}
+          marker_6_2:
+            {}
+          marker_6_3:
             {}
           marker_7:
             {}
+          marker_7_0:
+            {}
+          marker_7_1:
+            {}
+          marker_7_2:
+            {}
+          marker_7_3:
+            {}
           marker_8:
+            {}
+          marker_8_0:
+            {}
+          marker_8_1:
+            {}
+          marker_8_2:
+            {}
+          marker_8_3:
+            {}
+          marker_9:
+            {}
+          marker_9_0:
+            {}
+          marker_9_1:
+            {}
+          marker_9_2:
+            {}
+          marker_9_3:
             {}
       Update Interval: 0
       Value: true
@@ -128,38 +422,6 @@ Visualization Manager:
         Expand Link Details: false
         Expand Tree: false
         Link Tree Style: Links in Alphabetic Order
-        marker_1:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        marker_2:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        marker_3:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        marker_4:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        marker_5:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        marker_6:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        marker_7:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        marker_8:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
         world:
           Alpha: 1
           Show Axes: false
@@ -188,7 +450,7 @@ Visualization Manager:
         Value: /aruco_tracker_1/debug
       Value: true
     - Class: rviz_default_plugins/Image
-      Enabled: true
+      Enabled: false
       Max Value: 1
       Median window: 5
       Min Value: 0
@@ -200,7 +462,7 @@ Visualization Manager:
         History Policy: Keep Last
         Reliability Policy: Best Effort
         Value: /aruco_tracker_2/debug
-      Value: true
+      Value: false
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -247,25 +509,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 12.100168228149414
+      Distance: 1.3971937894821167
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 4.175710201263428
-        Y: 3.0959630012512207
-        Z: 0.4863063097000122
+        X: 14.813211441040039
+        Y: 2.7921743392944336
+        Z: 2.5308961868286133
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.35539743304252625
+      Pitch: 0.6253973841667175
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 2.195396900177002
+      Yaw: 1.980395793914795
     Saved: ~
 Window Geometry:
   Displays:
@@ -275,7 +537,7 @@ Window Geometry:
   Hide Right Dock: false
   Image:
     collapsed: false
-  QMainWindow State: 000000ff00000000fd00000004000000000000022c000004a6fc020000000cfb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005c00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb0000000a0049006d00610067006503000005b40000028e00000414000003a3fb000000100044006900730070006c006100790073010000003d000004a6000000c900fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000000c00430061006d006500720061000000038a000001590000000000000000fb0000000c00430061006d00650072006102000003e5000002e100000414000001edfb0000000a0049006d0061006700650300000666000002c5000005d1000002b0000000010000015f000004a6fc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073010000003d000004a6000000a400fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000006950000005afc0100000002fb0000000800540069006d0065010000000000000695000002fb00fffffffb0000000800540069006d00650100000000000004500000000000000000000002fe000004a600000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd00000004000000000000022c000004a6fc020000000cfb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005c00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb0000000a0049006d00610067006503000005b4000001fd00000414000003a3fb000000100044006900730070006c006100790073010000003d000004a6000000c900fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000000c00430061006d006500720061000000038a000001590000000000000000fb0000000c00430061006d00650072006102000003e5000002e100000414000001edfb0000000a0049006d006100670065020000042f000002c5000005d1000002b0000000010000015f000004a6fc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073010000003d000004a6000000a400fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000006950000005afc0100000002fb0000000800540069006d0065010000000000000695000002fb00fffffffb0000000800540069006d00650100000000000004500000000000000000000002fe000004a600000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Selection:
     collapsed: false
   Time:
@@ -286,4 +548,4 @@ Window Geometry:
     collapsed: false
   Width: 1685
   X: 70
-  Y: 242
+  Y: 27
