@@ -57,7 +57,7 @@ class PoseEstimationNode(Node):
         self.tfBuffer = tf2_ros.Buffer()
         self.listener = tf2_ros.TransformListener(self.tfBuffer, self)
 
-        
+        # self.check_timestamp_timer = self.create_timer(2.5, self.check_Timestamp)
 
         self.tf_subscriber = self.create_subscription(
             TFMessage,
@@ -73,26 +73,11 @@ class PoseEstimationNode(Node):
         timer_period = self.acceptable_timeout
         self.timer = self.create_timer(timer_period, self.find_avg_pose)
         
-    
-
-    def read_external_measurements(self):
-        """ Reads the measurements from all sources defined in pose_sources
-        """
-        for link in self.pose_sources: 
-            try:
-                trans = self.tfBuffer.lookup_transform(link, 'world', self.get_clock().now())
-                self.pose_estimates[link] = trans
-
-            except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
-                continue
-
-        
-
-            
 
     def find_avg_pose(self):
         """ Finds the average pose from all sources
         """
+        self.get_logger().info(f'Find average pose :)')
         if (len(self.pose_estimates) != 0 ):
             self.get_logger().info('Recent Markers Found, fusing', throttle_duration_sec = 1.0)
             self.find_avg_position()
@@ -116,23 +101,22 @@ class PoseEstimationNode(Node):
             t.transform.translation.z = self.pose.position.z
             self.tf_broadcaster.sendTransform(t)
             ## prints average points into terminal when seeing a marker, and then resets the pose_estimates so it will repeat the loop.
-            self.get_logger().info(f'{t}', throttle_duration_sec = .5)
+            # self.get_logger().info(f'{t}', throttle_duration_sec = .5)
             self.pose_estimates = {}
         else:
             self.get_logger().info('There are no markers', throttle_duration_sec = .5)
-
-    def publish_estimate(_self, _t):
-            # _self.pubs[_self.transfer_topics.index(link)].set(_self.t)
-        _self.t.set
-
 
     def check_Timestamp(self, msg: TFMessage):
         ## reset the dict to allow for clean data again
         for base_link in self.pose_sources:
             try:
                 world_to_base_link = self.tfBuffer.lookup_transform(base_link, "world", time.Time())
-                self.pose_estimates[world_to_base_link.child_frame_id] = world_to_base_link._transform
-                self.recent_timestamp[world_to_base_link.child_frame_id] = world_to_base_link.header.stamp
+                # self.pose_estimates[base_link] = world_to_base_link._transform
+                self.pose_estimates[world_to_base_link.header.frame_id] = world_to_base_link._transform
+                
+                # self.recent_timestamp[base_link] = world_to_base_link.header.stamp
+                self.recent_timestamp[world_to_base_link.header.frame_id] = world_to_base_link.header.stamp
+                
                 
             except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
                 continue
@@ -174,14 +158,15 @@ class PoseEstimationNode(Node):
         """Find average position, by taking location from camera pose estimate we can find the average position.
         """
         positions = np.ndarray(shape = (len(self.pose_estimates),3))
+        self.get_logger().info("before for Aver pos")
         for i, pose in enumerate(self.pose_estimates):
+            self.get_logger().info(f'{i} how many poses can a pose pose')
             # if self.is_valid_measurement(pose.header):
             positions[i,0] = self.pose_estimates[pose].translation.x
             positions[i,1] = self.pose_estimates[pose].translation.y
             positions[i,2] = self.pose_estimates[pose].translation.z
-        # print(positions)
+
         self.avg_position = np.mean(positions, 0)
-        # print(self.avg_position)
 
 
     def find_avg_orientation(self):

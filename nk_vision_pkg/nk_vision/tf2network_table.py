@@ -75,11 +75,9 @@ class TF2NetworkTable(Node):
         for link in self.transfer_topics: 
             # self.get_logger().info(f'{link}')
             try:
-                self.get_logger().info("help")
                 transform: TransformStamped = self.tfBuffer.lookup_transform(link, 'world', time.Time())
                 translation = transform.transform.translation
                 rotation = transform.transform.rotation
-                self.get_logger().info('ahhh') 
                 seconds, nanoseconds = transform.header.stamp.sec,transform.header.stamp.nanosec
                 current_time_ros = float (nanoseconds) / 1e9 \
                     + float(seconds) 
@@ -88,11 +86,8 @@ class TF2NetworkTable(Node):
                 else:
                     current_time_robot = 0
                 
-
                 pose = [translation.x, translation.y, translation.z, rotation.x, rotation.y, rotation.z, rotation.w, current_time_robot]            
                 self.pubs[self.transfer_topics.index(link)].set(pose)
-                self.get_logger().info(f'{pose} : {link}')
-
 
 
             except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
