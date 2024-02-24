@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<robot name="robot_2024">
+
+	<link name="base_link">
+		<visual>
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+				<mesh filename="package://robot_2024_description/meshes/base_link.stl"/>
+			</geometry>
+			<material name="Cyan">
+				<color rgba="0 1.0 1.0 1.0"/>
+			</material>
+      	</visual>
+   
+		<collision>
+			<origin xyz="0 0 0" rpy="0 0 0"/>
+			<geometry>
+				<mesh filename="package://robot_2024_description/meshes/base_link.stl"/>
+			</geometry>
+		</collision>
+	</link>
+
+	<joint name="arm_joint" type="revolute">
+		<parent link="base_link"/>
+		<child link="arm_link"/>
+		<axis xyz="0 1 0"/>
+		<limit lower="-2.0" upper="0.07" effort="100.0" velocity="1.0"/>
+		<origin xyz="-0.146 0 0.261" rpy="0 0 0" />
+	</joint>
+
+	<link name="arm_link">
+		<visual>
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+				<mesh filename="package://robot_2024_description/meshes/arm_link.stl"/>
+			</geometry>
+			<material name="Cyan">
+				<color rgba="0 1.0 1.0 1.0"/>
+			</material>
+      	</visual>
+   
+		<collision>
+			<origin xyz="0 0 0" rpy="0 0 0"/>
+			<geometry>
+				<mesh filename="package://robot_2024_description/meshes/arm_link.stl"/>
+			</geometry>
+		</collision>
+	</link>
+
+
+</robot>

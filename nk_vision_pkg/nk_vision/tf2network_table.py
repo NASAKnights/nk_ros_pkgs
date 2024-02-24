@@ -23,6 +23,7 @@ logging.basicConfig(level=logging.DEBUG)
 
 TEAM = 122
 NTABLE_NAME = "ROS2Bridge"
+RATE = 50
 
 class TF2NetworkTable(Node):
     """  
@@ -45,7 +46,8 @@ class TF2NetworkTable(Node):
             'tf',
             self.read_external_measurements,
             10)
-
+        self.period = 1/RATE
+        self.last_time: time.Time = time.Time()
         # Network Table
         self.inst = ntcore.NetworkTableInstance.getDefault()
         self.inst.startClient4("vision_client")
@@ -53,14 +55,14 @@ class TF2NetworkTable(Node):
         self.inst.startDSClient()
         self.inst.setServer("host", ntcore.NetworkTableInstance.kDefaultPort4)
         table = self.inst.getTable(NTABLE_NAME)
-        # while not self.inst.isConnected():
-        #     self.inst = ntcore.NetworkTableInstance.getDefault()
-        #     table = self.inst.getTable(NTABLE_NAME)
-        #     self.inst.startClient4("vision_client")
-        #     self.inst.setServerTeam(TEAM) # where TEAM=190, 294, etc, or use inst.setServer("hostname") or similar
-        #     self.inst.startDSClient()
-        #     self.inst.setServer("host", ntcore.NetworkTableInstance.kDefaultPort4)
-        #     self.get_logger().info('Trying to connect to the robot', throttle_duration_sec = 1.0)
+        while not self.inst.isConnected():
+            self.inst = ntcore.NetworkTableInstance.getDefault()
+            table = self.inst.getTable(NTABLE_NAME)
+            self.inst.startClient4("vision_client")
+            self.inst.setServerTeam(TEAM) # where TEAM=190, 294, etc, or use inst.setServer("hostname") or similar
+            self.inst.startDSClient()
+            self.inst.setServer("host", ntcore.NetworkTableInstance.kDefaultPort4)
+            self.get_logger().info('Trying to connect to the robot', throttle_duration_sec = 1.0)
         
         self.pubs: list() = []
         # test = table.getDoubleArrayTopic('').publish()
@@ -71,27 +73,27 @@ class TF2NetworkTable(Node):
     def read_external_measurements(self, msg: TFMessage):
         """ Reads the measurements from all sources defined in pose_sources
         """
-        # self.get_logger().info(f'{self.transfer_topics}')
-        for link in self.transfer_topics: 
-            # self.get_logger().info(f'{link}')
-            try:
-                transform: TransformStamped = self.tfBuffer.lookup_transform(link, 'world', time.Time())
-                translation = transform.transform.translation
-                rotation = transform.transform.rotation
-                seconds, nanoseconds = transform.header.stamp.sec,transform.header.stamp.nanosec
-                current_time_ros = float (nanoseconds) / 1e9 \
-                    + float(seconds) 
-                if (self.inst.getServerTimeOffset() != None):
-                    current_time_robot = self.inst.getServerTimeOffset() + current_time_ros
-                else:
-                    current_time_robot = 0
-                
-                pose = [translation.x, translation.y, translation.z, rotation.x, rotation.y, rotation.z, rotation.w, current_time_robot]            
-                self.pubs[self.transfer_topics.index(link)].set(pose)
+        if time.Time() - self.last_time > self.period:
+            for link in self.transfer_topics: 
+                try:
+                    transform: TransformStamped = self.tfBuffer.lookup_transform(link, 'world', time.Time())
+                    translation = transform.transform.translation
+                    rotation = transform.transform.rotation
+                    seconds, nanoseconds = transform.header.stamp.sec,transform.header.stamp.nanosec
+                    current_time_ros = float (nanoseconds) / 1e9 \
+                        + float(seconds) 
+                    if (self.inst.getServerTimeOffset() != None):
+                        current_time_robot = self.inst.getServerTimeOffset() + current_time_ros
+                    else:
+                        current_time_robot = 0
+                    
+                    pose = [translation.x, translation.y, translation.z, rotation.x, rotation.y, rotation.z, rotation.w, current_time_robot]            
+                    self.pubs[self.transfer_topics.index(link)].set(pose)
 
 
-            except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
-                continue
+                except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
+                    continue
+            self.last_time = time.Time()
 
     # def tf_callback(self, msg: TFMessage):
     #     for transform_message in msg.transforms:

@@ -49,14 +49,14 @@ class NetworkTable2TF(Node):
         self.inst.startDSClient()
         self.inst.setServer("host", ntcore.NetworkTableInstance.kDefaultPort4)
         table = self.inst.getTable(NTABLE_NAME)
-        # while not self.inst.isConnected():
-        #     self.inst = ntcore.NetworkTableInstance.getDefault()
-        #     table = self.inst.getTable(NTABLE_NAME)
-        #     self.inst.startClient4("pose_client")
-        #     self.inst.setServerTeam(TEAM) # where TEAM=190, 294, etc, or use inst.setServer("hostname") or similar
-        #     self.inst.startDSClient()
-        #     self.inst.setServer("host", ntcore.NetworkTableInstance.kDefaultPort4)
-        #     self.get_logger().info('Trying to connect to the robot', throttle_duration_sec = 1.0)
+        while not self.inst.isConnected():
+            self.inst = ntcore.NetworkTableInstance.getDefault()
+            table = self.inst.getTable(NTABLE_NAME)
+            self.inst.startClient4("pose_client")
+            self.inst.setServerTeam(TEAM) # where TEAM=190, 294, etc, or use inst.setServer("hostname") or similar
+            self.inst.startDSClient()
+            self.inst.setServer("host", ntcore.NetworkTableInstance.kDefaultPort4)
+            self.get_logger().info('Trying to connect to the robot', throttle_duration_sec = 1.0)
         
         self.subs = {}
         for topic in self.transfer_topics:

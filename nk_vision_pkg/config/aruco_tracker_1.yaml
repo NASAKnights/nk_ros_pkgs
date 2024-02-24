@@ -2,7 +2,7 @@
   ros__parameters:
     cam_base_topic: camera_1/image_raw
 
-    marker_dict: APRILTAG_16h5
+    marker_dict: APRILTAG_36h11
 
     image_sub_qos:
       reliability: 2 # 0 - system default, 1 - reliable, 2 - best effort
@@ -11,7 +11,7 @@
 
     publish_tf: true
     markers_static: true
-    marker_size: 0.156
+    marker_size: 0.1651
 
     # Dynamically reconfigurable Detector parameters
     # https://docs.opencv.org/4.2.0/d5/dae/tutorial_aruco_detection.html

@@ -54,7 +54,7 @@ def generate_launch_description():
             arguments=[device_0],
             parameters=[{'use_sim_time': use_sim_time,
                          'filename': device_0,
-                         'publish_rate': 100.0,
+                         'publish_rate': 50.0,
                          'camera_info_url': 'package://nk_vision/config/arducam.yaml',
                          'frame_id': 'camera_2'}],
             remappings=[('image_raw', '/camera_2/image_raw'),
@@ -64,7 +64,7 @@ def generate_launch_description():
             package='image_publisher', executable='image_publisher_node', output='screen',
             arguments=[device_1],
             parameters=[{'use_sim_time': use_sim_time,
-                         'publish_rate': 100.0,
+                         'publish_rate': 50.0,
                          'filename': device_1,
                          'camera_info_url': 'package://nk_vision/config/arducam.yaml',
                          'frame_id': 'camera_1'}],
@@ -86,7 +86,7 @@ def generate_launch_description():
                 get_package_share_directory('frc_2024_field_description') + '/launch/main.launch.py')),
         
         IncludeLaunchDescription(AnyLaunchDescriptionSource(
-                get_package_share_directory('cubert_description') + '/launch/main.launch.py')),
+                get_package_share_directory('robot_2024_description') + '/launch/main.launch.py')),
 
         launch_ros.actions.Node(
             package='nk_vision', executable='pose_estimation.py', output='screen'),

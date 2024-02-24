@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<robot name="cubert_2">
+
+ 	<link name="base_link_2"/>
+  
+	<joint name="b2c2" type="fixed">
+		<parent link="camera_2"/>
+		<child link="base_link_2"/>
+		<origin xyz="0.1 -0.25 0.1" rpy="0 0 1.57"/> <!-- TODO Update ME-->
+	</joint>
+
+	<link name="camera_2"/>
+
+</robot>

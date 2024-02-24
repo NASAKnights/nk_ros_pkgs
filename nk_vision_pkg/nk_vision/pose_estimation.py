@@ -15,7 +15,6 @@ import rclpy.time as time
 from tf2_msgs.msg import TFMessage
 from tf2_ros import TransformBroadcaster
 from geometry_msgs.msg import TransformStamped
-from networktables import NetworkTables
 import ntcore
 import logging
 logging.basicConfig(level=logging.DEBUG)
