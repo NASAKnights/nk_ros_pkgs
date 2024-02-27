@@ -3,6 +3,7 @@
 
 import argparse
 import rclpy
+import time
 from rclpy.node import Node
 from rclpy.qos import qos_profile_sensor_data
 import numpy as np
@@ -11,12 +12,12 @@ from scipy.spatial.transform.rotation import Rotation
 import numpy.matlib as npm
 from geometry_msgs.msg import PoseArray, Pose, Transform, Quaternion
 from rcl_interfaces.msg import ParameterDescriptor, ParameterType
-import rclpy.time as time
+import rclpy.time as rostime
 from tf2_msgs.msg import TFMessage
 from tf2_ros import TransformBroadcaster
 from geometry_msgs.msg import TransformStamped
 from networktables import NetworkTables
-import NetworkTableEntry
+from networktables.entry import NetworkTableEntry
 import ntcore
 import logging
 logging.basicConfig(level=logging.DEBUG)
@@ -41,13 +42,6 @@ class TF2NetworkTable(Node):
         # TF setup 
         self.tfBuffer = tf2_ros.Buffer()
         self.listener = tf2_ros.TransformListener(self.tfBuffer, self)
-        self.tf_subscriber = self.create_subscription(
-            TFMessage,
-            'tf',
-            self.read_external_measurements,
-            10)
-        self.period = 1/RATE
-        self.last_time: time.Time = time.Time()
         # Network Table
         self.inst = ntcore.NetworkTableInstance.getDefault()
         self.inst.startClient4("vision_client")
@@ -56,6 +50,7 @@ class TF2NetworkTable(Node):
         self.inst.setServer("host", ntcore.NetworkTableInstance.kDefaultPort4)
         table = self.inst.getTable(NTABLE_NAME)
         while not self.inst.isConnected():
+            time.sleep(0.25)
             self.inst = ntcore.NetworkTableInstance.getDefault()
             table = self.inst.getTable(NTABLE_NAME)
             self.inst.startClient4("vision_client")
@@ -69,49 +64,33 @@ class TF2NetworkTable(Node):
         # test.set()
         for topic in self.transfer_topics:
             self.pubs.append(table.getDoubleArrayTopic(topic).publish())
+            
+        self.timer_callback = self.create_timer(
+            1/RATE,
+            self.read_external_measurements)
 
-    def read_external_measurements(self, msg: TFMessage):
+    def read_external_measurements(self):
         """ Reads the measurements from all sources defined in pose_sources
         """
-        time_since_last: time.Duration = (time.Time() - self.last_time)
-        
-        if time_since_last.to_msg().sec + time_since_last.to_msg().nanosec/1e9 > self.period:
-            for link in self.transfer_topics: 
-                try:
-                    transform: TransformStamped = self.tfBuffer.lookup_transform(link, 'world', time.Time())
-                    translation = transform.transform.translation
-                    rotation = transform.transform.rotation
-                    seconds, nanoseconds = transform.header.stamp.sec,transform.header.stamp.nanosec
-                    current_time_ros = float (nanoseconds) / 1e9 \
-                        + float(seconds) 
-                    if (self.inst.getServerTimeOffset() != None):
-                        current_time_robot = self.inst.getServerTimeOffset() + current_time_ros
-                    else:
-                        current_time_robot = 0
-                    
-                    pose = [translation.x, translation.y, translation.z, rotation.x, rotation.y, rotation.z, rotation.w, current_time_robot]            
-                    self.pubs[self.transfer_topics.index(link)].set(pose)
+        for link in self.transfer_topics: 
+            try:
+                transform: TransformStamped = self.tfBuffer.lookup_transform(link, 'world', rostime.Time())
+                translation = transform.transform.translation
+                rotation = transform.transform.rotation
+                seconds, nanoseconds = transform.header.stamp.sec,transform.header.stamp.nanosec
+                current_time_ros = float (nanoseconds) / 1e9 \
+                    + float(seconds) 
+                if (self.inst.getServerTimeOffset() != None):
+                    current_time_robot = self.inst.getServerTimeOffset() + current_time_ros
+                else:
+                    current_time_robot = 0
+                
+                pose = [translation.x, translation.y, translation.z, rotation.x, rotation.y, rotation.z, rotation.w, current_time_robot]            
+                self.pubs[self.transfer_topics.index(link)].set(pose)
 
 
-                except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
-                    continue
-            self.last_time = time.Time()
-
-    # def tf_callback(self, msg: TFMessage):
-    #     for transform_message in msg.transforms:
-    #         transform_message: TransformStamped
-    #         self.get_logger().info(f'{self.transfer_topics}')
-    #         if transform_message.child_frame_id in self.transfer_topics:
-    #             translation = transform_message.transform.translation
-    #             rotation = transform_message.transform.rotation
-    #             current_time_ros = float(transform_message.header.stamp.nanosec) / 1e9 \
-    #                 + float(transform_message.header.stamp.sec)            
-    #             current_time_robot = self.inst.getServerTimeOffset() + current_time_ros
-    #             pose = [translation.x, translation.y, translation.z, rotation.x, rotation.y, rotation.z, rotation.w, current_time_robot]
-    #             self.pubs[self.transfer_topics.index(transform_message.child_frame_id)].set(pose)
-    #             self.get_logger().info(f'tf Mess child frame {transform_message.child_frame_id}', throttle_duration_sec = 1.0)
-
-
+            except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
+                continue
    
 def main(args = None):
     rclpy.init(args = args)

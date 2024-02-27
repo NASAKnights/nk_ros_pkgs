@@ -3,6 +3,7 @@
 
 import argparse
 import rclpy
+import time
 from rclpy.node import Node
 from rclpy.qos import qos_profile_sensor_data
 import numpy as np
@@ -11,7 +12,6 @@ from scipy.spatial.transform.rotation import Rotation
 import numpy.matlib as npm
 from geometry_msgs.msg import PoseArray, Pose, Transform, Quaternion
 from rcl_interfaces.msg import ParameterDescriptor, ParameterType
-import rclpy.time as time
 from tf2_msgs.msg import TFMessage
 from tf2_ros import TransformBroadcaster
 from geometry_msgs.msg import TransformStamped
@@ -50,6 +50,7 @@ class NetworkTable2TF(Node):
         self.inst.setServer("host", ntcore.NetworkTableInstance.kDefaultPort4)
         table = self.inst.getTable(NTABLE_NAME)
         while not self.inst.isConnected():
+            time.sleep(0.25)
             self.inst = ntcore.NetworkTableInstance.getDefault()
             table = self.inst.getTable(NTABLE_NAME)
             self.inst.startClient4("pose_client")
@@ -62,7 +63,7 @@ class NetworkTable2TF(Node):
         for topic in self.transfer_topics:
             self.subs[topic] = table.getDoubleArrayTopic(topic).subscribe([])
 
-        self.timer = self.create_timer(RATE, self.transfer_data)
+        self.timer = self.create_timer(1/RATE, self.transfer_data)
 
     def transfer_data(self):
         tfs = []
