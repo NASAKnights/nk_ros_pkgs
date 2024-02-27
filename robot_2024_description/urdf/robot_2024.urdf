@@ -46,6 +46,18 @@
 			</geometry>
 		</collision>
 	</link>
+	<joint name="b2c1_test" type="fixed">
+		<child link="c1"/>
+		<parent link="base_link"/>
+		<origin xyz="-0.22814 0.068 0.2617" rpy="-2.06123 -3.14957 1.5708"/>
+	</joint>
+	<joint name="b2c2_test" type="fixed">
+		<child link="c2"/>
+		<parent link="base_link"/>
+		<origin xyz="-0.247 0.068 0.2261" rpy="0.0 -1.0664 0.0"/> <!-- TODO Update ME-->
+	</joint>
+	<link name="c1"/>
+	<link name="c2"/>
 
 
 </robot>

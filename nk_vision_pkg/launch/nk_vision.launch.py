@@ -88,8 +88,8 @@ def generate_launch_description():
         IncludeLaunchDescription(AnyLaunchDescriptionSource(
                 get_package_share_directory('robot_2024_description') + '/launch/main.launch.py')),
 
-        launch_ros.actions.Node(
-            package='nk_vision', executable='pose_estimation.py', output='screen'),
+        # launch_ros.actions.Node(
+        #     package='nk_vision', executable='pose_estimation.py', output='screen'),
         
         launch_ros.actions.Node(
             package='nk_vision', executable='tf2network_table.py', output='screen',

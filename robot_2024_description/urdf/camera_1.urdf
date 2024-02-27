@@ -1,14 +1,38 @@
 <?xml version="1.0"?>
 <robot name="cubert_1">
 
- 	<link name="base_link_1"/>
+	<link name="base_link_1">
+		<visual>
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+				<mesh filename="package://robot_2024_description/meshes/base_link.stl"/>
+			</geometry>
+			<material name="Red">
+				<color rgba="1 0 0 0.1"/>
+			</material>
+      	</visual>
+   
+		<collision>
+			<origin xyz="0 0 0" rpy="0 0 0"/>
+			<geometry>
+				<mesh filename="package://robot_2024_description/meshes/base_link.stl"/>
+			</geometry>
+		</collision>
+	</link>
 
 	<joint name="b2c1" type="fixed">
-		<parent link="camera_1"/>
+		<parent link="camera_1_plane"/>
 		<child link="base_link_1"/>
-		<origin xyz="0.1 -0.25 0.1" rpy="0 0 1.57"/> <!-- TODO Update ME-->
+		<origin xyz="0.07008632370852994 -0.12291145073927642 -0.3242521119533219" rpy="-0.007984225556421502 1.080362624275041 1.570788528447058"/>
 	</joint>
 
 	<link name="camera_1"/>
+	<link name="camera_1_plane"/>
+
+	<joint name="camera2camera" type="fixed">
+		<parent link="camera_1"/>
+		<child link="camera_1_plane"/>
+		<origin xyz="0 0 0" rpy="0 0 3.14"/>
+	</joint>
 
 </robot>

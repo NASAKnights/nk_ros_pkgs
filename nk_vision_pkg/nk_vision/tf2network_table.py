@@ -16,7 +16,7 @@ from tf2_msgs.msg import TFMessage
 from tf2_ros import TransformBroadcaster
 from geometry_msgs.msg import TransformStamped
 from networktables import NetworkTables
-from networktables.entry import NetworkTableEntry
+import NetworkTableEntry
 import ntcore
 import logging
 logging.basicConfig(level=logging.DEBUG)
@@ -73,7 +73,9 @@ class TF2NetworkTable(Node):
     def read_external_measurements(self, msg: TFMessage):
         """ Reads the measurements from all sources defined in pose_sources
         """
-        if time.Time() - self.last_time > self.period:
+        time_since_last: time.Duration = (time.Time() - self.last_time)
+        
+        if time_since_last.to_msg().sec + time_since_last.to_msg().nanosec/1e9 > self.period:
             for link in self.transfer_topics: 
                 try:
                     transform: TransformStamped = self.tfBuffer.lookup_transform(link, 'world', time.Time())
