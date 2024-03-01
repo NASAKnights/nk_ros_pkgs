@@ -45,26 +45,14 @@ class TF2NetworkTable(Node):
         # Network Table
         self.inst = ntcore.NetworkTableInstance.getDefault()
         self.inst.startClient4("vision_client")
-        self.inst.setServerTeam(TEAM) # where TEAM=190, 294, etc, or use inst.setServer("hostname") or similar
+        self.inst.setServerTeam(TEAM) 
         self.inst.startDSClient()
         self.inst.setServer("host", ntcore.NetworkTableInstance.kDefaultPort4)
-        table = self.inst.getTable(NTABLE_NAME)
+        self.table = self.inst.getTable(NTABLE_NAME)
         while not self.inst.isConnected():
             time.sleep(0.25)
-            self.inst = ntcore.NetworkTableInstance.getDefault()
-            table = self.inst.getTable(NTABLE_NAME)
-            self.inst.startClient4("vision_client")
-            self.inst.setServerTeam(TEAM) # where TEAM=190, 294, etc, or use inst.setServer("hostname") or similar
-            self.inst.startDSClient()
-            self.inst.setServer("host", ntcore.NetworkTableInstance.kDefaultPort4)
-            self.get_logger().info('Trying to connect to the robot', throttle_duration_sec = 1.0)
+            self.reconnect()
         
-        self.pubs: list() = []
-        # test = table.getDoubleArrayTopic('').publish()
-        # test.set()
-        for topic in self.transfer_topics:
-            self.pubs.append(table.getDoubleArrayTopic(topic).publish())
-            
         self.timer_callback = self.create_timer(
             1/RATE,
             self.read_external_measurements)
@@ -72,16 +60,19 @@ class TF2NetworkTable(Node):
     def read_external_measurements(self):
         """ Reads the measurements from all sources defined in pose_sources
         """
+        while not self.inst.isConnected():
+            time.sleep(0.05)
+            self.reconnect()
         for link in self.transfer_topics: 
             try:
-                transform: TransformStamped = self.tfBuffer.lookup_transform(link, 'world', rostime.Time())
+                transform: TransformStamped = self.tfBuffer.lookup_transform('world', link, rostime.Time())
                 translation = transform.transform.translation
                 rotation = transform.transform.rotation
                 seconds, nanoseconds = transform.header.stamp.sec,transform.header.stamp.nanosec
                 current_time_ros = float (nanoseconds) / 1e9 \
                     + float(seconds) 
                 if (self.inst.getServerTimeOffset() != None):
-                    current_time_robot = self.inst.getServerTimeOffset() + current_time_ros
+                    current_time_robot = self.inst.getServerTimeOffset()/1e6 + current_time_ros
                 else:
                     current_time_robot = 0
                 
@@ -89,9 +80,22 @@ class TF2NetworkTable(Node):
                 self.pubs[self.transfer_topics.index(link)].set(pose)
 
 
-            except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
+            except:
                 continue
    
+    def reconnect(self):
+        self.inst = ntcore.NetworkTableInstance.getDefault()
+        self.table = self.inst.getTable(NTABLE_NAME)
+        self.inst.startClient4("vision_client")
+        self.inst.setServerTeam(TEAM)
+        self.inst.startDSClient()
+        self.inst.setServer("host", ntcore.NetworkTableInstance.kDefaultPort4)
+        self.get_logger().info('Trying to connect to the robot', throttle_duration_sec = 1.0)
+        self.pubs: list() = []
+        for topic in self.transfer_topics:
+            self.pubs.append(self.table.getDoubleArrayTopic(topic).publish())
+            
+        
 def main(args = None):
     rclpy.init(args = args)
 

@@ -45,50 +45,56 @@ class NetworkTable2TF(Node):
         # Network Table
         self.inst = ntcore.NetworkTableInstance.getDefault()
         self.inst.startClient4("pose_client")
-        self.inst.setServerTeam(TEAM) # where TEAM=190, 294, etc, or use inst.setServer("hostname") or similar
+        self.inst.setServerTeam(TEAM)
         self.inst.startDSClient()
         self.inst.setServer("host", ntcore.NetworkTableInstance.kDefaultPort4)
-        table = self.inst.getTable(NTABLE_NAME)
+        self.table = self.inst.getTable(NTABLE_NAME)
         while not self.inst.isConnected():
             time.sleep(0.25)
-            self.inst = ntcore.NetworkTableInstance.getDefault()
-            table = self.inst.getTable(NTABLE_NAME)
-            self.inst.startClient4("pose_client")
-            self.inst.setServerTeam(TEAM) # where TEAM=190, 294, etc, or use inst.setServer("hostname") or similar
-            self.inst.startDSClient()
-            self.inst.setServer("host", ntcore.NetworkTableInstance.kDefaultPort4)
-            self.get_logger().info('Trying to connect to the robot', throttle_duration_sec = 1.0)
-        
-        self.subs = {}
-        for topic in self.transfer_topics:
-            self.subs[topic] = table.getDoubleArrayTopic(topic).subscribe([])
+            self.reconnect()
 
         self.timer = self.create_timer(1/RATE, self.transfer_data)
 
     def transfer_data(self):
         tfs = []
+        while not self.inst.isConnected():
+            time.sleep(0.05)
+            self.reconnect()
         for name, sub in self.subs.items():
             val = sub.get()
             if val != []:
-                ros_time = val[7] - self.inst.getServerTimeOffset()
-                ros_seconds = int(ros_time)
-                ros_nanosec = int((ros_time - ros_seconds)*1e9)
-                t = TransformStamped()
-                t.child_frame_id = "world"
-                t.header.stamp.sec = ros_seconds
-                t.header.stamp.nanosec = ros_nanosec
-                t.header.frame_id = name
-                t.transform.translation.x = val[0]
-                t.transform.translation.y = val[1]
-                t.transform.translation.z = val[2]
-                t.transform.rotation.x = val[3]
-                t.transform.rotation.y = val[4]
-                t.transform.rotation.z = val[5]
-                t.transform.rotation.w = val[6]
-                tfs.append(t)
+                if (self.inst.getServerTimeOffset() != None):
+                    ros_time =  val[7] - self.inst.getServerTimeOffset()/1e6
+                    ros_seconds = int(ros_time)
+                    ros_nanosec = int((ros_time - ros_seconds)*1e9)
+                    t = TransformStamped()
+                    t.header.frame_id = "world"
+                    t.child_frame_id = name
+                    t.header.stamp.sec = ros_seconds
+                    t.header.stamp.nanosec = ros_nanosec
+                    t.transform.translation.x = val[0]
+                    t.transform.translation.y = val[1]
+                    t.transform.translation.z = val[2]
+                    t.transform.rotation.x = val[3]
+                    t.transform.rotation.y = val[4]
+                    t.transform.rotation.z = val[5]
+                    t.transform.rotation.w = val[6]
+                    tfs.append(t)
         
         self.tf_broadcaster.sendTransform(tfs)
         
+    def reconnect(self):
+        self.inst = ntcore.NetworkTableInstance.getDefault()
+        self.table = self.inst.getTable(NTABLE_NAME)
+        self.inst.startClient4("vision_client")
+        self.inst.setServerTeam(TEAM)
+        self.inst.startDSClient()
+        self.inst.setServer("host", ntcore.NetworkTableInstance.kDefaultPort4)
+        self.get_logger().info('Trying to connect to the robot', throttle_duration_sec = 1.0)
+        
+        self.subs = {}
+        for topic in self.transfer_topics:
+            self.subs[topic] = self.table.getDoubleArrayTopic(topic).subscribe([])
    
 def main(args = None):
     rclpy.init(args = args)
