@@ -20,11 +20,15 @@ from networktables import NetworkTables
 from networktables.entry import NetworkTableEntry
 import ntcore
 import logging
+from scipy.spatial.transform import Rotation
+
 logging.basicConfig(level=logging.DEBUG)
 
 TEAM = 122
 NTABLE_NAME = "ROS2Bridge"
 RATE = 50
+Z_MAX = 1
+ANGLE_MAX =30
 
 class TF2NetworkTable(Node):
     """  
@@ -66,6 +70,8 @@ class TF2NetworkTable(Node):
         for link in self.transfer_topics: 
             try:
                 transform: TransformStamped = self.tfBuffer.lookup_transform('world', link, rostime.Time())
+                if(self.check_data(transform.transform) == False):
+                 continue
                 translation = transform.transform.translation
                 rotation = transform.transform.rotation
                 seconds, nanoseconds = transform.header.stamp.sec,transform.header.stamp.nanosec
@@ -94,6 +100,17 @@ class TF2NetworkTable(Node):
         self.pubs: list() = []
         for topic in self.transfer_topics:
             self.pubs.append(self.table.getDoubleArrayTopic(topic).publish())
+
+    def check_data(self,transform:Transform):
+        if(transform._translation.z > Z_MAX):
+            return False
+        orientation_list = [transform.rotation.x, transform.rotation.y, transform.rotation.z, transform.rotation.w]
+        rot = Rotation.from_quat(orientation_list)
+        (roll, pitch, yaw) = rot.as_euler("xyz",True)
+        if(ANGLE_MAX > 40 or ANGLE_MAX > 40):
+             return False
+        return True
+
             
         
 def main(args = None):
