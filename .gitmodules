@@ -8,4 +8,4 @@
 	branch = humble
 [submodule "realsense-ros"]
 	path = realsense-ros
-	url = https://github.com/IntelRealSense/realsense-ros.git
+	url = https://github.com/IntelRealSense/realsense-ros
