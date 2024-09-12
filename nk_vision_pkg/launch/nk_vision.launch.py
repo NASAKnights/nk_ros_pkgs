@@ -31,9 +31,9 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
+from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, ExecuteProcess
 from launch.substitutions import LaunchConfiguration
-from launch.launch_description_sources import AnyLaunchDescriptionSource
+from launch.launch_description_sources import AnyLaunchDescriptionSource, PythonLaunchDescriptionSource
 import launch_ros.actions
 from ament_index_python.packages import get_package_share_directory
 
@@ -44,58 +44,105 @@ def generate_launch_description():
     use_sim_time = LaunchConfiguration('use_sim_time', default='false')
     return LaunchDescription([
 
-        DeclareLaunchArgument(
-            'use_sim_time',
-            default_value='false',
-            description='Use simulation clock if true'),
-
-        launch_ros.actions.Node(
-            package='image_publisher', executable='image_publisher_node', output='screen',
-            arguments=[device_0],
-            parameters=[{'use_sim_time': use_sim_time,
-                         'filename': device_0,
-                         'publish_rate': 50.0,
-                         'camera_info_url': 'package://nk_vision/config/arducam.yaml',
-                         'frame_id': 'camera_2'}],
-            remappings=[('image_raw', '/camera_2/image_raw'),
-                        ('camera_info', '/camera_2/camera_info')]),
-
-        launch_ros.actions.Node(
-            package='image_publisher', executable='image_publisher_node', output='screen',
-            arguments=[device_1],
-            parameters=[{'use_sim_time': use_sim_time,
-                         'publish_rate': 50.0,
-                         'filename': device_1,
-                         'camera_info_url': 'package://nk_vision/config/arducam.yaml',
-                         'frame_id': 'camera_1'}],
-            remappings=[('image_raw', '/camera_1/image_raw'),
-                        ('camera_info', '/camera_1/camera_info')]),
-
-        launch_ros.actions.Node(
-            package='rviz2', executable='rviz2', output='screen',
-            arguments=['-d', get_package_share_directory('nk_vision') + '/config/config_file.rviz']
-        ),
-
-        IncludeLaunchDescription(AnyLaunchDescriptionSource(
-                get_package_share_directory('nk_vision') + '/launch/aruco_tracker_1.launch.xml')),
-
-        IncludeLaunchDescription(AnyLaunchDescriptionSource(
-                get_package_share_directory('nk_vision') + '/launch/aruco_tracker_2.launch.xml')),
-
-        IncludeLaunchDescription(AnyLaunchDescriptionSource(
-                get_package_share_directory('frc_2024_field_description') + '/launch/main.launch.py')),
-        
-        IncludeLaunchDescription(AnyLaunchDescriptionSource(
-                get_package_share_directory('robot_2024_description') + '/launch/main.launch.py')),
+        # DeclareLaunchArgument(
+        #     'use_sim_time',
+        #     default_value='false',
+        #     description='Use simulation clock if true'),
 
         # launch_ros.actions.Node(
-        #     package='nk_vision', executable='pose_estimation.py', output='screen'),
+        #     package='image_publisher', executable='image_publisher_node', output='screen',
+        #     arguments=[device_0],
+        #     parameters=[{'use_sim_time': use_sim_time,
+        #                  'filename': device_0,
+        #                  'publish_rate': 50.0,
+        #                  'camera_info_url': 'package://nk_vision/config/arducam.yaml',
+        #                  'frame_id': 'camera_2'}],
+        #     remappings=[('image_raw', '/camera_2/image_raw'),
+        #                 ('camera_info', '/camera_2/camera_info')]),g
+
+        # launch_ros.actions.Node(
+        #     package='image_publisher', executable='image_publisher_node', output='screen',
+        #     arguments=[device_1],
+        #     parameters=[{'use_sim_time': use_sim_time,
+        #                  'publish_rate': 50.0,
+        #                  'filename': device_1,
+        #                  'camera_info_url': 'package://nk_vision/config/arducam.yaml',
+        #                  'frame_id': 'camera_1'}],
+        #     remappings=[('image_raw', '/camera_1/image_raw'),
+        #                 ('camera_info', '/camera_1/camera_info')]),
+
+        # launch_ros.actions.Node(
+        #     package='rviz2', executable='rviz2', output='screen',
+        #     arguments=['-d', get_package_share_directory('nk_vision') + '/config/config_file.rviz']
+        # ),
+
+        # IncludeLaunchDescription(AnyLaunchDescriptionSource(
+        #         get_package_share_directory('nk_vision') + '/launch/aruco_tracker_1.launch.xml')),
+
+        # IncludeLaunchDescription(AnyLaunchDescriptionSource(
+        #         get_package_share_directory('nk_vision') + '/launch/aruco_tracker_2.launch.xml')),
+
+        # IncludeLaunchDescription(AnyLaunchDescriptionSource(
+        #         get_package_share_directory('frc_2024_field_description') + '/launch/main.launch.py')),
         
-        launch_ros.actions.Node(
-            package='nk_vision', executable='tf2network_table.py', output='screen',
-            parameters=[{'transfer_topics': ["base_link_1", "base_link_2", "base_link_3"]}]),
+        # IncludeLaunchDescription(AnyLaunchDescriptionSource(
+        #         get_package_share_directory('robot_2024_description') + '/launch/main.launch.py')),
+
+        # # launch_ros.actions.Node(
+        # #     package='nk_vision', executable='pose_estimation.py', output='screen'),
         
-        launch_ros.actions.Node(
-            package='nk_vision', executable='network_table2tf.py', output='screen',
-            parameters=[{'transfer_topics': ["base_link"]}]),
+        # launch_ros.actions.Node(
+        #     package='nk_vision', executable='tf2network_table.py', output='screen',
+        #     parameters=[{'transfer_topics': ["base_link_1", "base_link_2", "base_link_3"]}]),
+        
+        # launch_ros.actions.Node(
+        #     package='nk_vision', executable='network_table2tf.py', output='screen',
+        #     parameters=[{'transfer_topics': ["base_link"]}]),
+
+        # ExecuteProcess(
+        #     cmd=['ros2', 'bag', 'record', 
+        #          '/tf',
+        #          '/camera_1/robot_description',
+        #          '/camera_2/robot_description',
+        #          '/robot_description',
+        #          '/joint_states',
+        #          '/tf',
+        #           '/field/robot_description',
+        #           '-o',
+        #           '/home/nasa-knights/vision_logs/data'],
+        #     output='screen'
+        # ),
+
+        IncludeLaunchDescription(PythonLaunchDescriptionSource(
+                get_package_share_directory('realsense2_camera') + '/launch/rs_launch.py'),
+                launch_arguments=[('camera_name', 'rs_cam_1'),
+                        #    ("serial_no", "'036222071448'"),
+                           ('enable_color', 'true'),
+                           ('rgb_camera.color_format', 'RGB8'),
+                           ('rgb_camera.enable_auto_exposure', 'true'),
+                           ('enable_depth', 'true'),
+                           ('enable_infra', 'false'),
+                           ('enable_infra1', 'false'),
+                           ('enable_infra2', 'false'),
+                           ('depth_module.depth_profile', '640,480,15'),
+                           ('depth_module.depth_format', 'Z16'),
+                           ('depth_module.infra_format', 'RGB8'),
+                           ('depth_module.hdr_enabled', 'false'),
+                           ('depth_module.enable_auto_exposure', 'true'),
+                           ('enable_sync', 'true'),
+                           ('enable_rgbd', 'true'),
+                        #    ('enable_gyro'),
+                        #    ('enable_accel'),
+                        #    ('clip_distance'),
+                           ('publish_tf', 'true'),
+                           ('tf_publish_rate', '10.0'),
+                           ('pointcloud.enable', 'true'),
+                           ('align_depth.enable', 'true'),
+                           ('decimation_filter.enable', 'false'),
+                           ('spatial_filter.enable', 'true'),
+                           ('temporal_filter.enable', 'true'),
+                           ('disparity_filter.enable', 'false'),
+                           ('hole_filling_filter.enable', 'false'),
+                           ('reconnect_timeout', '30.0' )]
+                )
     ])

@@ -80,6 +80,7 @@ class PoseEstimationNode(Node):
         if (len(self.pose_estimates) != 0 ):
             self.get_logger().info('Recent Markers Found, fusing', throttle_duration_sec = 1.0)
             self.find_avg_position()
+            self.pose_sources
             self.find_avg_orientation()
             self.pose.position.x = self.avg_position[0]
             self.pose.position.y = self.avg_position[1]

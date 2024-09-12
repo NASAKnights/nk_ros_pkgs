@@ -6,3 +6,6 @@
 	path = ros_aruco_opencv
 	url = https://github.com/NASAKnights/ros_aruco_opencv
 	branch = humble
+[submodule "realsense-ros"]
+	path = realsense-ros
+	url = https://github.com/IntelRealSense/realsense-ros.git
