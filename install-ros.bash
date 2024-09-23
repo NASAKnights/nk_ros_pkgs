@@ -24,7 +24,7 @@ sudo apt upgrade -y
 
 sudo apt install ros-humble-desktop -y
 
-sudo apt install ros-humble-aruco ros-humble-usb-cam ros-humble-image-pipeline python3-pip -y
+sudo apt install ros-humble-aruco ros-humble-usb-cam ros-humble-image-pipeline ros-humble-diagnostic-updater python3-pip -y
 
 pip install numpy==1.23.0 # Default version breaks with dependent packages
 
