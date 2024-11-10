@@ -1,11 +1,11 @@
 [submodule "image_pipeline"]
-	path = image_pipeline
+	path = src/image_pipeline
 	url = https://github.com/NASAKnights/image_pipeline
 	branch = humble
 [submodule "ros_aruco_opencv"]
-	path = ros_aruco_opencv
+	path = src/ros_aruco_opencv
 	url = https://github.com/NASAKnights/ros_aruco_opencv
 	branch = humble
 [submodule "realsense-ros"]
-	path = realsense-ros
+	path = src/realsense-ros
 	url = https://github.com/IntelRealSense/realsense-ros

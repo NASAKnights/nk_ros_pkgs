@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>icp_obj_pose</name>
+  <version>0.1.0</version>
+  <description>
+    FRC Team 122 Vision setup
+  </description>
+
+  <maintainer email="tristanohancock@gmail.com">Tristan Hancock</maintainer>
+
+  <license>BSD</license>
+  <author>Tristan Hancock</author>
+
+  <buildtool_depend>ament_cmake_auto</buildtool_depend>
+
+  <depend>rclcpp</depend>
+  <depend>rclcpp_components</depend>
+  <depend>sensor_msgs</depend>
+  <depend>backward_ros</depend>
+  <depend>PCL</depend>
+  <depend>pcl_conversions</depend>
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

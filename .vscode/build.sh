@@ -2,7 +2,7 @@
 set -e
 source /opt/ros/humble/setup.bash
 # Set the default build type
-BUILD_TYPE=RelWithDebInfo
+BUILD_TYPE=Debug
 colcon build \
         --merge-install \
         --symlink-install \
