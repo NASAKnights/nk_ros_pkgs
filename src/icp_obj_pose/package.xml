@@ -4,7 +4,7 @@
   <name>icp_obj_pose</name>
   <version>0.1.0</version>
   <description>
-    FRC Team 122 Vision setup
+    FRC Team 122 Object Tracking Package that uses color filtering and ICP pointcloud alignment from a stereo camera.
   </description>
 
   <maintainer email="tristanohancock@gmail.com">Tristan Hancock</maintainer>

@@ -58,6 +58,12 @@
 	</joint>
 	<link name="c1"/>
 	<link name="c2"/>
+	<link name="rs_cam_1_link"/>
+	<joint name="b2realsense" type="fixed">
+		<child link="rs_cam_1_link"/>
+		<parent link="base_link"/>
+		<origin xyz="0.32 0.068 0.17" rpy="0.0 0.122173 0.0"/>
+	</joint>
 
 
 </robot>

@@ -32,7 +32,7 @@
         auto end = std::chrono::high_resolution_clock::now();                                      \
         auto duration =                                                                            \
             std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();            \
-        RCLCPP_INFO(logger, "%s duration: %ld ms", #func_name, duration);                          \
+        RCLCPP_DEBUG(logger, "%s duration: %ld ms", #func_name, duration);                         \
     }
 
 namespace icp_object_pose
@@ -53,15 +53,10 @@ public:
         std::string file_path;
         this->get_parameter("reference_ply_filepath", file_path);
 
-        // Set up subscribers for depth and color image topics
-        depth_subscriber_.subscribe(this, _pointcloud_topic);
-        image_subscriber_.subscribe(this, _image_topic);
-
-        // Synchronize depth and image topics, with a queue size of 1
-        sync_.reset(new message_filters::Synchronizer<MySyncPolicy>(
-            MySyncPolicy(1), depth_subscriber_, image_subscriber_));
-        sync_->registerCallback(
-            std::bind(&ICPNode::callback, this, std::placeholders::_1, std::placeholders::_2));
+        // Set up subscribers for pointcloud, with queue size of 1
+        sub_ = this->create_subscription<sensor_msgs::msg::PointCloud2>(
+            _pointcloud_topic, rclcpp::QoS(1),
+            std::bind(&ICPNode::callback, this, std::placeholders::_1));
 
         pub_filtered_ =
             this->create_publisher<sensor_msgs::msg::PointCloud2>("filtered_pointcloud", 10);
@@ -102,13 +97,6 @@ public:
     }
 
 private:
-    using MySyncPolicy =
-        message_filters::sync_policies::ApproximateTime<sensor_msgs::msg::PointCloud2,
-                                                        sensor_msgs::msg::Image>;
-    std::shared_ptr<message_filters::Synchronizer<MySyncPolicy>> sync_;
-    message_filters::Subscriber<sensor_msgs::msg::PointCloud2>   depth_subscriber_;
-    message_filters::Subscriber<sensor_msgs::msg::Image>         image_subscriber_;
-
     // Subscriber
     rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr sub_;
     Eigen::Matrix4f                                                _object_pose;
@@ -209,76 +197,14 @@ private:
         std::vector<int> indices;
         pcl::removeNaNFromPointCloud(*cloud, *cloud, indices);
     }
-    void filterColor(const pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud, const cv::Mat& image,
-                     pcl::PointCloud<pcl::PointXYZ>::Ptr& filtered_cloud)
-    {
-        filtered_cloud->clear();
 
-        // Ensure the cloud is organized and has matching dimensions with the image
-        if(!cloud->isOrganized())
-        {
-            throw std::runtime_error(
-                "Point cloud must be ordered! Change Camera Launch Configuration!");
-        }
-
-        // Resize the image to match the cloud dimensions if necessary
-        cv::Mat resized_image;
-        if(image.rows != cloud->height || image.cols != cloud->width)
-        {
-            cv::resize(image, resized_image, cv::Size(cloud->width, cloud->height), 0.0, 0.0,
-                       cv::INTER_NEAREST);
-        }
-        else
-        {
-            resized_image = image;
-        }
-
-        cv::Mat hsv_image;
-        cv::cvtColor(resized_image, hsv_image, cv::COLOR_BGR2HSV);
-
-        // Iterate through each point in the organized point cloud
-        for(int v = 0; v < cloud->height; ++v)
-        {
-            for(int u = 0; u < cloud->width; ++u)
-            {
-                const auto& point = cloud->at(u, v);
-
-                // Get the HSV color from the image at pixel (u, v)
-                cv::Vec3b hsv        = hsv_image.at<cv::Vec3b>(v, u);
-                int       hue        = hsv[0];
-                int       saturation = hsv[1];
-                int       value      = hsv[2];
-
-                // Check if the HSV values fall within the specified range
-                if(hue >= _hue_min && hue <= _hue_max && saturation >= _saturation_min &&
-                   saturation <= _saturation_max && value >= _value_min && value <= _value_max)
-                {
-                    filtered_cloud->push_back(point);
-                }
-            }
-        }
-    }
-
-    void callback(const sensor_msgs::msg::PointCloud2::ConstSharedPtr& cloud_msg,
-                  const sensor_msgs::msg::Image::ConstSharedPtr&       image_msg)
+    void callback(const sensor_msgs::msg::PointCloud2::ConstSharedPtr& cloud_msg)
     {
         // Convert PointCloud2 message to PCL point cloud
         RCLCPP_INFO_THROTTLE(get_logger(), *(get_clock()), 1000, "Input has %d points.",
                              cloud_msg->data.size());
         pcl::PointCloud<pcl::PointXYZRGB>::Ptr depth_cloud(new pcl::PointCloud<pcl::PointXYZRGB>());
         pcl::fromROSMsg(*cloud_msg, *depth_cloud);
-
-        // Convert ROS image to OpenCV image
-        cv_bridge::CvImagePtr cv_ptr;
-        try
-        {
-            cv_ptr = cv_bridge::toCvCopy(image_msg, sensor_msgs::image_encodings::BGR8);
-        }
-        catch(cv_bridge::Exception& e)
-        {
-            RCLCPP_ERROR(this->get_logger(), "cv_bridge exception: %s", e.what());
-            return;
-        }
 
         // Apply voxel grid filter if specified
         if(_voxel_size > 0.0)
