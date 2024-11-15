@@ -52,7 +52,7 @@ def generate_launch_description():
 
         launch_ros.actions.Node(
             package='camera_calibration', executable='cameracalibrator', output='screen',
-            arguments=['--size','10x7','--square', '0.0429'], 
+            arguments=['--size','10x7','--square', '0.0254'], 
             remappings=[('image', '/camera_1/image_raw'),
                         ('camera', '/camra_1')]
             )
