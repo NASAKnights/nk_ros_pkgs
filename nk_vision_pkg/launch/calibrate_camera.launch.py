@@ -43,19 +43,16 @@ def generate_launch_description():
     return LaunchDescription([
 
         launch_ros.actions.Node(
-            package='image_publisher', executable='image_publisher_node', output='screen',
-            arguments=[device_1],
-            parameters=[{'filename': device_1,
-                         'publish_rate': 100.0,
-                         'camera_info_url': 'package://nk_vision/config/arducam.yaml',
-                         'frame_id': 'camera_1'}],
-            remappings=[('image_raw', '/camera_1/image_raw'),
-                        ('camera_info', '/camera_1/camera_info')]),
+            package='camera_ros', executable='camera_node', output='screen',
+            parameters=[{'width' : 1280,
+                         'height' : 800,
+                         'camera': 0,}],
+            remappings=[('/camera/image_raw', '/camera_1/image_raw'),
+                        ('/camera/camera_info', '/camera_1/camera_info')]),
 
         launch_ros.actions.Node(
             package='camera_calibration', executable='cameracalibrator', output='screen',
-            parameters=[{'size': '10x7',
-                         'square': 0.0429,}],
+            arguments=['--size','10x7','--square', '0.0254'], 
             remappings=[('image', '/camera_1/image_raw'),
                         ('camera', '/camera_1')]
             )
