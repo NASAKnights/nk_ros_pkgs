@@ -236,7 +236,7 @@ private:
                     pcl::PointCloud<pcl::PointXYZRGB>::Ptr aligned_cloud)
     {
         icp_.setInputTarget(filtered_cloud);
-        icp_.align(*aligned_cloud, _object_pose);
+        icp_.align(*aligned_cloud); //, _object_pose);
         _object_pose = icp_.getFinalTransformation();
     }
 
