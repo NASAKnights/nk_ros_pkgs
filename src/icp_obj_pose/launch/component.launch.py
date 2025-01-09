@@ -29,7 +29,7 @@ def generate_launch_description():
         ),
         DeclareLaunchArgument(
             'voxel_size',
-            default_value='0.0225',
+            default_value='0.025',
             description='Voxel size for point cloud downsampling'
         ),
         DeclareLaunchArgument(
@@ -143,7 +143,7 @@ def generate_launch_description():
                 )
             ],
             output='screen',
-            # arguments=['--ros-args', '--log-level', 'debug'],
+            arguments=['--ros-args', '--log-level', 'debug'],
             # prefix=['gdb -ex run --args']
         )
     ])

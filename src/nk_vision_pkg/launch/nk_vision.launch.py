@@ -90,7 +90,7 @@ def generate_launch_description():
 
         launch_ros.actions.Node(
             package='nk_vision', executable='tf2network_table.py', output='screen',
-            parameters=[{'transfer_topics': ["base_link_1", "base_link_2", "base_link_3", "note"]}]),
+            parameters=[{'transfer_topics': ["world:base_link_1", "world:base_link_2", "world:base_link_3", "base_link:note"]}]),
         
         launch_ros.actions.Node(
             package='nk_vision', executable='network_table2tf.py', output='screen',

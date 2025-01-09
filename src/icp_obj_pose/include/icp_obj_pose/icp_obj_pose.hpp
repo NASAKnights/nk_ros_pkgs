@@ -216,7 +216,6 @@ private:
 
         if(depth_cloud->size() > 0)
         {
-
             // Perform ICP alignment
             pcl::PointCloud<pcl::PointXYZRGB>::Ptr aligned_cloud(
                 new pcl::PointCloud<pcl::PointXYZRGB>());

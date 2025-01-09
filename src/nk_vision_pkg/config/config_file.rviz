@@ -66,6 +66,8 @@ Visualization Manager:
           Value: true
         base_link_1:
           Value: true
+        base_link_2:
+          Value: true
         c1:
           Value: true
         c2:
@@ -73,6 +75,10 @@ Visualization Manager:
         camera_1:
           Value: true
         camera_1_plane:
+          Value: true
+        camera_2:
+          Value: true
+        camera_2_plane:
           Value: true
         marker_1:
           Value: true
@@ -234,6 +240,28 @@ Visualization Manager:
           Value: true
         marker_9_3:
           Value: true
+        note:
+          Value: true
+        rs_cam_1_aligned_depth_to_infra1_frame:
+          Value: true
+        rs_cam_1_color_frame:
+          Value: true
+        rs_cam_1_color_optical_frame:
+          Value: true
+        rs_cam_1_depth_frame:
+          Value: true
+        rs_cam_1_depth_optical_frame:
+          Value: true
+        rs_cam_1_infra1_frame:
+          Value: true
+        rs_cam_1_infra1_optical_frame:
+          Value: true
+        rs_cam_1_infra2_frame:
+          Value: true
+        rs_cam_1_infra2_optical_frame:
+          Value: true
+        rs_cam_1_link:
+          Value: true
         world:
           Value: true
       Marker Scale: 1
@@ -243,6 +271,27 @@ Visualization Manager:
       Show Names: true
       Tree:
         world:
+          base_link:
+            c1:
+              {}
+            c2:
+              {}
+            rs_cam_1_link:
+              rs_cam_1_aligned_depth_to_infra1_frame:
+                rs_cam_1_infra1_optical_frame:
+                  {}
+              rs_cam_1_color_frame:
+                rs_cam_1_color_optical_frame:
+                  {}
+              rs_cam_1_depth_frame:
+                rs_cam_1_depth_optical_frame:
+                  note:
+                    {}
+              rs_cam_1_infra1_frame:
+                {}
+              rs_cam_1_infra2_frame:
+                rs_cam_1_infra2_optical_frame:
+                  {}
           marker_1:
             {}
           marker_10:
@@ -521,11 +570,28 @@ Visualization Manager:
         Expand Link Details: false
         Expand Tree: false
         Link Tree Style: Links in Alphabetic Order
-        world:
+        arm_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
+        base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        c1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        c2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        rs_cam_1_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
       Mass Properties:
         Inertia: false
         Mass: false
@@ -551,7 +617,20 @@ Visualization Manager:
         Expand Joint Details: false
         Expand Link Details: false
         Expand Tree: false
-        Link Tree Style: ""
+        Link Tree Style: Links in Alphabetic Order
+        base_link_2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        camera_2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        camera_2_plane:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
       Mass Properties:
         Inertia: false
         Mass: false
@@ -606,25 +685,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 1.3971937894821167
+      Distance: 10
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 14.813211441040039
-        Y: 2.7921743392944336
-        Z: 2.5308961868286133
-      Focal Shape Fixed Size: true
+        X: 0
+        Y: 0
+        Z: 0
+      Focal Shape Fixed Size: false
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.6253973841667175
-      Target Frame: <Fixed Frame>
+      Pitch: 0.6853981614112854
+      Target Frame: base_link
       Value: Orbit (rviz)
-      Yaw: 1.980395793914795
+      Yaw: 5.26858377456665
     Saved: ~
 Window Geometry:
   Displays:

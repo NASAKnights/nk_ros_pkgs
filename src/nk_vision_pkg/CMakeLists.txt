@@ -28,6 +28,13 @@ install(
   DESTINATION lib/${PROJECT_NAME}
 )
 
+
+install(
+  PROGRAMS
+  ${PROJECT_NAME}/tf_listener.py
+  DESTINATION lib/${PROJECT_NAME}
+)
+
 install(
   PROGRAMS
   ${PROJECT_NAME}/network_table2tf.py
