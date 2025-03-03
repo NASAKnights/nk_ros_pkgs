@@ -38,7 +38,6 @@ data = [
         ]
 
 STDDEV = pd.DataFrame(data, columns = ['Distance', 'X', 'Y', 'Z'])
-
 #EXAMPLE
 #Interpolated value = np.interp(3.4, STDDEV.Distance, STDDEV.X)
 #Would return interpolated X value for a distance of 3.4 
@@ -73,37 +72,42 @@ class TF2NetworkTable(Node):
         self.timer_callback = self.create_timer(
             1/RATE,
             self.read_external_measurements)
+        self.count = 0
 
     def find_closest_marker(self):
         """
         Finds the transform between the camera and the closest marker
         """
-        closest_marker = None
-        closest_distance = 0
-        
         # Loop through all transforms and find the camera-to-marker transforms
-        for transform in self.tfBuffer.all_frames:
-            if transform.child_frame_id == "camera_link":  # Check if the child frame id is the camera link
-                marker_transform = None
-                try:
-                    # Look for transforms from camera to marker
-                    
-                    # Calculate the distance to the marker
-                    dx = transform.translation.x
-                    dy = transform.translation.y
-                    dz = transform.translation.z
-                    
-                    distance = np.sqrt(dx**2 + dy**2 + dz**2)  # Euclidean distance
-                    
-                    # If this marker is closer than the previous one, update the closest marker
-                    if distance < closest_distance:
-                        # closest_marker = transform.child_frame_id  # Store the marker's name or id
-                        closest_distance = distance
-                
-                except tf2_ros.LookupException:
-                    continue  # If there's no transform, continue to the next one
-        
-        return closest_distance
+        distance = 0
+        try:
+            for x in range(36): # for 36 markers
+                possible_marker = "marker_" + str(x)
+                if self.tfBuffer.can_transform(possible_marker, "camera", rclpy.time.Time()): 
+                    self.get_logger().warning(f"Made into if statement {possible_marker}")
+                    try:
+                        #make transform an object or something from camera_1 (the robot) to the april tag
+                        frame = self.tfBuffer.lookup_transform(possible_marker, "camera", rclpy.time.Time())
+                        # Calculate the distance to the marker
+                        dx = frame.transform.translation.x
+                        dy = frame.transform.translation.y
+                        dz = frame.transform.translation.z
+
+                        #self.get_logger().warning(f"dx: {dx}\ndy: {dy}\ndz: {dz}")
+                        
+                        distance = np.sqrt(dx**2 + dy**2 + dz**2)  # Euclidean distance
+                        
+                    except:
+                        self.get_logger().warning("failed transform"*5)
+                        continue  # If there's no transform, continue to the next one
+                else:
+                    self.get_logger().warning(f"Failed to make it through the if statement {x}")
+        except:
+            self.get_logger().warning("\n\n NO MARKER FOUND ", x, "\n\n")
+            pass
+
+        self.get_logger().warning(f"\n\n\n\n\n\n\nDistance: {distance}")    
+        return distance
         
     def read_external_measurements(self):
         """ 
