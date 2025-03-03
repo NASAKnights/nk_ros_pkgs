@@ -85,7 +85,7 @@ def generate_launch_description():
         IncludeLaunchDescription(AnyLaunchDescriptionSource(
                 get_package_share_directory('robot_2025_description') + '/launch/main.launch.py')),
 
-        launch_ros.actions.Node(
+        Node(
             package='nk_vision', executable='tf2network_table.py', output='screen',
             parameters=[{'transfer_topics': ["world:base_link_1", "world:base_link_2", "world:base_link_3", "base_link:branch"]}]),
         
