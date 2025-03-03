@@ -143,7 +143,7 @@ def generate_launch_description():
                 )
             ],
             output='screen',
-            arguments=['--ros-args', '--log-level', 'debug'],
+            # arguments=['--ros-args', '--log-level', 'debug'],
             # prefix=['gdb -ex run --args']
         )
     ])

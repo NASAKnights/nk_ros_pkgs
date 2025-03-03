@@ -1,0 +1,15 @@
+ARG BASE_IMAGE
+FROM ${BASE_IMAGE}
+
+# Install necessary dependencies for rosdep to work
+RUN apt-get update && apt-get install -y \
+    python3-pip \
+    python3-rosdep \
+    python3-colcon-common-extensions \
+    && rm -rf /var/lib/apt/lists/*
+RUN rosdep update
+
+WORKDIR ${ISAAC_ROS_WS}
+
+RUN rosdep install --from-paths src --ignore-src -r -y
+

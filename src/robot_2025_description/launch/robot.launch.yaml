@@ -1,0 +1,34 @@
+launch:
+  # Object Detection for branch
+  - include:
+      file: "$(find-pkg-share icp_obj_pose)/launch/component.launch.py"
+      arg:
+        - name: "input_topic"
+          value: "/depth/color/points"
+        - name: "reference_ply_filepath"
+          value: "$(find-pkg-share robot_2025_description)/meshes/branch.ply"
+        - name: "camera_frame"
+          value: "rs_cam_1_depth_frame"
+        - name: "object_name"
+          value: "branch"
+        - name: "voxel_size"
+          value: "0.025"
+        - name: "input_pointcloud_topic"
+          value: "/depth/color/points"
+        # For HSV, hue range is [0,179], saturation range is [0,255], and value range is [0,255].
+        # Different software use different scales, you need to normalize these ranges.
+        - name: "hue_min"
+          value: "0"
+        - name: "hue_max"
+          value: "179"
+        - name: "saturation_min"
+          value: "0"
+        - name: "saturation_max"
+          value: "120"
+        - name: "value_min"
+          value: "50"
+        - name: "value_max"
+          value: "255"
+
+  # - include:
+  #     file: "$(find-pkg-share nk_vision)/launch/nk_vision.launch.py"
