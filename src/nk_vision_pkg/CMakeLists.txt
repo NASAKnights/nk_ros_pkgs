@@ -31,7 +31,7 @@ install(
 
 install(
   PROGRAMS
-  ${PROJECT_NAME}/tf_listener.py
+  ${PROJECT_NAME}/transform_stdev_finder.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

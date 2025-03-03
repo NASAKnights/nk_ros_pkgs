@@ -34,6 +34,6 @@ def process_yaml_file(file_pathr, file_pathw):
         yaml.dump(data, file)
 
 if __name__ == "__main__":
-    yaml_file_pathr = "/home/nasa-knights/Desktop/vision_ws/nk_ros_pkgs/nk_vision_pkg/config/board_descriptions.yaml"  # Replace with your YAML file path
-    yaml_file_pathw = "/home/nasa-knights/Desktop/vision_ws/nk_ros_pkgs/nk_vision_pkg/config/board_descriptions1.yaml"  # Replace with your YAML file path
+    yaml_file_pathr = "/home/ccresta/workspace/nk_ros_pkgs/src/nk_vision_pkg/config/2025_aruco_layout.yaml"  # Replace with your YAML file path
+    yaml_file_pathw = "/home/ccresta/workspace/nk_ros_pkgs/src/nk_vision_pkg/config/2025_aruco_layout_new.yaml"  # Replace with your YAML file path
     process_yaml_file(yaml_file_pathr, yaml_file_pathw)

@@ -31,19 +31,14 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
-from launch.substitutions import LaunchConfiguration
-from launch.launch_description_sources import AnyLaunchDescriptionSource
-import launch_ros.actions
-from ament_index_python.packages import get_package_share_directory
+from launch_ros.actions import Node
 
 
 def generate_launch_description():
     device_1 = '/dev/video0'
     return LaunchDescription([
 
-        launch_ros.actions.Node(
-            package='image_publisher', executable='image_publisher_node', output='screen',
+        Node(package='image_publisher', executable='image_publisher_node', output='screen',
             arguments=[device_1],
             parameters=[{'filename': device_1,
                          'publish_rate': 100.0,
@@ -52,8 +47,7 @@ def generate_launch_description():
             remappings=[('image_raw', '/camera_1/image_raw'),
                         ('camera_info', '/camera_1/camera_info')]),
 
-        launch_ros.actions.Node(
-            package='camera_calibration', executable='cameracalibrator', output='screen',
+        Node(package='camera_calibration', executable='cameracalibrator', output='screen',
             parameters=[{'size': '10x7',
                          'square': 0.0429,}],
             remappings=[('image', '/camera_1/image_raw'),

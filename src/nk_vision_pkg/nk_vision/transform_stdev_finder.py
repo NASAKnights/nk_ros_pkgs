@@ -17,10 +17,10 @@ from tf2_ros.transform_listener import TransformListener
 from turtlesim.srv import Spawn
 
 
-class FrameListener(Node):
+class TransformStDevFinder(Node):
 
     def __init__(self):
-        super().__init__('turtle_tf2_frame_listener')
+        super().__init__('transform_stdev_finder')
         #Creating empty data frames for later use
         transform = {
         "x": [],
@@ -98,7 +98,7 @@ class FrameListener(Node):
 
 def main():
     rclpy.init()
-    node = FrameListener()
+    node = TransformStDevFinder()
     try:
         rclpy.spin(node)
     except KeyboardInterrupt:
@@ -112,7 +112,6 @@ def main():
         z_rotation = node.df_rotation['z'].to_numpy()
 
         enorm = (x_transform.mean()**2 + y_transform.mean()**2) ** (1/2) # + z_transform.mean()**2) ** (1/2)
-        # print(enorm)
 
         print("Euclidean Norm: ", f'{enorm:.10f}')
         print("X Transform: ", f'{x_transform.std():.10}')
