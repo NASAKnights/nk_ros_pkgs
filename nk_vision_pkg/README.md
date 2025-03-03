@@ -11,7 +11,7 @@
         
         
 
-3. Load the contents of `arducam.yaml` into the file that the terminal will spit out upon attempting calibration, as discussed in step 2. 
+3. Load the contents of `arducam.yaml` (from nk_vision_pkg/config/arducam.yaml) into the file that the terminal will spit out upon attempting calibration, as discussed in step 2. 
     If the file does not exist   create it.  
 
     > Our file path was named `home/frc-122/.ros/camera_info/ArducamOV9281USBCamera_Ardu___SB__PCI0_XHC__RHUB_HS01_1_2_1_0_0c45_6366_1280x800.yaml`
