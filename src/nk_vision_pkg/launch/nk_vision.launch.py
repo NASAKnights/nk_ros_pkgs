@@ -80,10 +80,7 @@ def generate_launch_description():
                 get_package_share_directory('nk_vision') + '/launch/aruco_tracker_2.launch.xml')),
 
         IncludeLaunchDescription(AnyLaunchDescriptionSource(
-                get_package_share_directory('frc_2025_field_description') + '/launch/main.launch.py')),
-        
-        IncludeLaunchDescription(AnyLaunchDescriptionSource(
-                get_package_share_directory('robot_2025_description') + '/launch/main.launch.py')),
+                get_package_share_directory('robot_2025_description') + '/launch/robot.launch.yaml')),
 
         Node(
             package='nk_vision', executable='tf2network_table.py', output='screen',
