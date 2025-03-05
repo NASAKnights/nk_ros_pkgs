@@ -49,25 +49,22 @@ def generate_launch_description():
             default_value='false',
             description='Use simulation clock if true'),
 
-        Node(package='image_publisher', executable='image_publisher_node', output='screen',
-            arguments=[device_0],
-            parameters=[{'use_sim_time': use_sim_time,
-                         'filename': device_0,
-                         'publish_rate': 50.0,
-                         'camera_info_url': 'package://nk_vision/config/arducam.yaml',
-                         'frame_id': 'camera_2'}],
-            remappings=[('image_raw', '/camera_2/image_raw'),
-                        ('camera_info', '/camera_2/camera_info')]),
+        launch_ros.actions.Node(
+            package='camera_ros', executable='camera_node', output='screen',
+            parameters=[{'width' : 1280,
+                         'height' : 800,
+                         'camera': 0,}],
+            remappings=[('/camera/image_raw', '/camera_2/image_raw'),
+                        ('/camera/camera_info', '/camera_2/camera_info')]),
 
-        Node(package='image_publisher', executable='image_publisher_node', output='screen',
-            arguments=[device_1],
-            parameters=[{'use_sim_time': use_sim_time,
-                         'publish_rate': 50.0,
-                         'filename': device_1,
-                         'camera_info_url': 'package://nk_vision/config/arducam.yaml',
-                         'frame_id': 'camera_1'}],
-            remappings=[('image_raw', '/camera_1/image_raw'),
-                        ('camera_info', '/camera_1/camera_info')]),
+        launch_ros.actions.Node(
+            package='camera_ros', executable='camera_node', output='screen',
+            parameters=[{ 'width' : 1280,
+                         'height' : 800,
+                         'camera': 1,}],
+            remappings=[('/camera/image_raw', '/camera_1/image_raw'),
+                        ('/camera/camera_info', '/camera_1/camera_info')]),
+
 
         Node(package='rviz2', executable='rviz2', output='screen',
             arguments=['-d', get_package_share_directory('nk_vision') + '/config/config_file.rviz']
@@ -109,4 +106,7 @@ def generate_launch_description():
         #                    ('object_name', 'note'),
         #           ]
         #  )
+        Node(
+            package='nk_vision', executable='stddev_network_table.py', output='screen',
+            parameters=[{'transfer_topics': ["vision_stddev"]}])
     ])
