@@ -3,5 +3,6 @@
     <param from="$(find-pkg-share nk_vision)/config/aruco_tracker_2.yaml" />
     <param name="board_descriptions_path"
       value="$(find-pkg-share frc_2025_field_description)/config/2025_aruco_layout.yaml" />
+    <param name="camera_frame" value="camera_2" />
   </node>
 </launch> 

@@ -3,19 +3,16 @@
 import time
 import rclpy
 from rclpy.node import Node
-from rclpy.qos import qos_profile_sensor_data
-import ntcore
-import logging
-from geometry_msgs.msg import TransformStamped
 import tf2_ros
 import rclpy.time as rostime
+from networktables import NetworkTables
 
-logging.basicConfig(level=logging.DEBUG)
 
 TEAM = 122
 NTABLE_NAME = "ROS2Bridge"
 RATE = 50
-
+NT_SERVER = f"10.{TEAM // 100}.{TEAM % 100}.2"  # Typical FRC robot IP
+TIME_TOPIC = "time"
 
 class TF2NetworkTable(Node):
     def __init__(self):
@@ -32,17 +29,14 @@ class TF2NetworkTable(Node):
         self.tfBuffer = tf2_ros.Buffer()
         self.listener = tf2_ros.TransformListener(self.tfBuffer, self)
 
-        # NetworkTable setup
-        self.inst = ntcore.NetworkTableInstance.getDefault()
-        self.inst.startClient4("vision_client")
-        self.inst.setServerTeam(TEAM)
-        self.inst.startDSClient()
-        self.inst.setServer("host", ntcore.NetworkTableInstance.kDefaultPort4)
-        self.table = self.inst.getTable(NTABLE_NAME)
-        self.ensure_connection()
+        # Initialize NetworkTables
+        NetworkTables.initialize(server=NT_SERVER)
+        self.table = NetworkTables.getTable(NTABLE_NAME)
+        self.topic_pairs = self.parse_transfer_topics(self.transfer_topics)
+
+        self.reconnect()
 
         # Parse transfer topics
-        self.topic_pairs = self.parse_transfer_topics(self.transfer_topics)
         self.pubs = self.create_publishers(self.topic_pairs)
 
         # Create a timer for periodic transform updates
@@ -68,22 +62,23 @@ class TF2NetworkTable(Node):
         publishers = {}
         for _, child in topic_pairs:
             topic = f"{child}"
-            publishers[child] = self.table.getDoubleArrayTopic(topic).publish()
+            publishers[child] = self.table.getEntry(topic)  # Use getEntry instead of ntcore publish
         return publishers
-
-    def ensure_connection(self):
-        """
-        Ensure NetworkTable connection.
-        """
-        while not self.inst.isConnected():
-            time.sleep(0.25)
-            self.reconnect()
 
     def read_external_measurements(self):
         """
         Reads the measurements and publishes them to NetworkTables.
         """
-        self.ensure_connection()
+        if not NetworkTables.isConnected() or not self.connected:
+            self.get_logger().warn("Lost connection to NetworkTables, attempting to reconnect...")
+            self.reconnect()
+            return
+        
+        robot_time = self.table.getEntry(TIME_TOPIC).getDoubleArray([])
+        if robot_time != []:
+            self.time_offest = robot_time[0] - time.time()
+        
+
         for parent, child in self.topic_pairs:
             try:
                 transform = self.tfBuffer.lookup_transform(parent, child, rostime.Time())
@@ -91,23 +86,18 @@ class TF2NetworkTable(Node):
                 rotation = transform.transform.rotation
                 seconds = transform.header.stamp.sec
                 nanoseconds = transform.header.stamp.nanosec
-                current_time_ros = float(nanoseconds) / 1e9 + float(seconds)
-
-                # Convert ROS time to robot time
-                if self.inst.getServerTimeOffset() is not None:
-                    current_time_robot = self.inst.getServerTimeOffset() / 1e6 + current_time_ros
-                else:
-                    current_time_robot = 0
-
+                current_time_ros = (float(nanoseconds) / 1e9 + float(seconds)) + self.time_offest
+                
+                # No direct time offset handling in pynetworktables, so just use ROS time
                 pose = [
                     translation.x, translation.y, translation.z,
                     rotation.x, rotation.y, rotation.z, rotation.w,
-                    current_time_robot
+                    current_time_ros
                 ]
 
                 # Publish to NetworkTables
                 if child in self.pubs:
-                    self.pubs[child].set(pose)
+                    self.pubs[child].setDoubleArray(pose)  # Use setDoubleArray instead of ntcore set
 
             except Exception as e:
                 self.get_logger().warn(f"Failed to lookup transform for {parent} -> {child}: {e}")
@@ -116,14 +106,18 @@ class TF2NetworkTable(Node):
         """
         Reconnect to NetworkTables.
         """
-        self.inst = ntcore.NetworkTableInstance.getDefault()
-        self.table = self.inst.getTable(NTABLE_NAME)
-        self.inst.startClient4("vision_client")
-        self.inst.setServerTeam(TEAM)
-        self.inst.startDSClient()
-        self.inst.setServer("host", ntcore.NetworkTableInstance.kDefaultPort4)
-        self.get_logger().info('Reconnecting to the robot', throttle_duration_sec=1.0)
-
+        # Ensure NetworkTables is connected
+        self.get_logger().warn("Waiting for NetworkTables connection...")
+        NetworkTables.initialize(server=NT_SERVER)
+        self.table = NetworkTables.getTable(NTABLE_NAME)
+        self.pubs = self.create_publishers(self.topic_pairs)
+        robot_time = self.table.getEntry(TIME_TOPIC).getDoubleArray([])
+        if robot_time == []:
+            self.connected = False
+        else:
+            self.time_offest = robot_time[0] - time.time()
+            self.connected = True
+        
 
 def main(args=None):
     rclpy.init(args=args)
@@ -131,7 +125,7 @@ def main(args=None):
     tf2nt_node = TF2NetworkTable()
 
     rclpy.spin(tf2nt_node)
-
+    rclpy.shutdown()
 
 if __name__ == "__main__":
     main()

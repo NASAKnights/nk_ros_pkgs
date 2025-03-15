@@ -23,7 +23,7 @@
 	<joint name="b2c1" type="fixed">
 		<parent link="camera_1_plane"/>
 		<child link="base_link_1"/>
-		<origin xyz="0.07008632370852994 -0.12291145073927642 -0.3242521119533219" rpy="-0.007984225556421502 1.080362624275041 1.570788528447058"/>
+		<origin xyz="0.191 -0.283 -0.299" rpy="0.0 -1.57 0.0"/>
 	</joint>
 
 	<link name="camera_1"/>

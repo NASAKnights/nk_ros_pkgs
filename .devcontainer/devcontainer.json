@@ -1,0 +1,34 @@
+{
+    "name": "Isaac ROS Dev Container",
+    "dockerFile": "Dockerfile",
+    "workspaceFolder": "/workspaces/isaac_ros-dev",
+    "mounts": [
+        "source=/dev,target=/dev,type=bind",
+        "source=/run/udev,target=/run/udev,type=bind",
+        "source=/run/dbus,target=/run/dbus,type=bind"
+    ],
+    "runArgs": [
+        "--gpus=all", // Enable GPU support if available
+        "--net=host", // Use the host network
+        "--privileged", // Grant privileged access
+        "--restart=always",
+        "--name=vision-container"
+    ],
+    "postStartCommand": "/workspaces/isaac_ros-dev/nk_ros_pkgs/run_robot.sh",
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "terminal.integrated.defaultProfile.linux": "bash"
+            },
+            "extensions": [
+                "ms-vscode.cpptools", // C++ Tools for ROS development
+                "ms-python.python",   // Python tools for scripting
+                "ms-vscode.remote-containers", // Ensure the Remote-Containers extension is installed
+                "ms-vscode.cpptools-extension-pack",
+                "althack.ament-task-provider",
+                "ms-iot.vscode-ros"
+                ]
+        }
+    }
+}
+

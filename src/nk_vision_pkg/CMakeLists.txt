@@ -47,13 +47,12 @@ install(
   DESTINATION lib/${PROJECT_NAME}
 )
 
-ament_auto_package(INSTALL_TO_SHARE launch config scripts)
 install(
   PROGRAMS
   ${PROJECT_NAME}/stddev_network_table.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
-ament_auto_package(INSTALL_TO_SHARE launch config)
+ament_auto_package(INSTALL_TO_SHARE launch config scripts)
 
 

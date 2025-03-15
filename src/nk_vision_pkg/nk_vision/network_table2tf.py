@@ -3,91 +3,82 @@
 import rclpy
 import time
 from rclpy.node import Node
-import tf2_ros
-import numpy.matlib as npm
 from tf2_ros import TransformBroadcaster
 from geometry_msgs.msg import TransformStamped
 from networktables import NetworkTables
-from networktables.entry import NetworkTableEntry
-import ntcore
-import logging
-logging.basicConfig(level=logging.DEBUG)
 
 TEAM = 122
 NTABLE_NAME = "ROS2Bridge"
-RATE = 50
+RATE = 10
+NT_SERVER = f"10.{TEAM // 100}.{TEAM % 100}.2"  # Typical FRC robot IP
+TIME_TOPIC = "time"
 
 class NetworkTable2TF(Node):
-    """  
-    """
+    """ ROS 2 Node to transfer NetworkTables data to TF frames. """
+    
     def __init__(self):
-        """
-        Initialize NetworkTable2TF
-        """
-        
-        # Read parameters and create n subscribers to the tf topics
         super().__init__('NetworkTable2TF')
+        
+        # Read parameters for topics
         self.declare_parameter('transfer_topics', [""])
-        self.transfer_topics: list = self.get_parameter('transfer_topics').get_parameter_value().string_array_value
+        self.transfer_topics = self.get_parameter('transfer_topics').get_parameter_value().string_array_value
 
-        # TF setup 
-        self.tfBuffer = tf2_ros.Buffer()
+        # TF setup
         self.tf_broadcaster = TransformBroadcaster(self)
 
-        # Network Table
-        self.inst = ntcore.NetworkTableInstance.getDefault()
-        self.inst.startClient4("pose_client")
-        self.inst.setServerTeam(TEAM)
-        self.inst.startDSClient()
-        self.inst.setServer("host", ntcore.NetworkTableInstance.kDefaultPort4)
-        self.table = self.inst.getTable(NTABLE_NAME)
-        while not self.inst.isConnected():
-            time.sleep(0.25)
-            self.reconnect()
+        # Initialize NetworkTables
+        NetworkTables.initialize(server=NT_SERVER)
+        self.table = NetworkTables.getTable(NTABLE_NAME)
 
-        self.timer = self.create_timer(1/RATE, self.transfer_data)
+        # Wait for NetworkTables connection
+        self.reconnect()
+
+        # ROS 2 timer for periodic updates
+        self.timer = self.create_timer(1 / RATE, self.transfer_data)
 
     def transfer_data(self):
-        tfs = []
-        while not self.inst.isConnected():
-            time.sleep(0.05)
+        """ Reads data from NetworkTables and publishes TF transforms """
+        if not NetworkTables.isConnected():
+            self.get_logger().warn("Lost connection to NetworkTables, attempting to reconnect...")
             self.reconnect()
-        for name, sub in self.subs.items():
-            val = sub.get()
-            if val != []:
-                if (self.inst.getServerTimeOffset() != None):
-                    ros_time =  val[7] - self.inst.getServerTimeOffset()/1e6
-                    ros_seconds = int(ros_time)
-                    ros_nanosec = int((ros_time - ros_seconds)*1e9)
-                    t = TransformStamped()
-                    t.header.frame_id = "world"
-                    t.child_frame_id = name
-                    t.header.stamp.sec = ros_seconds
-                    t.header.stamp.nanosec = ros_nanosec
-                    t.transform.translation.x = val[0]
-                    t.transform.translation.y = val[1]
-                    t.transform.translation.z = val[2]
-                    t.transform.rotation.x = val[3]
-                    t.transform.rotation.y = val[4]
-                    t.transform.rotation.z = val[5]
-                    t.transform.rotation.w = val[6]
-                    tfs.append(t)
-        
-        self.tf_broadcaster.sendTransform(tfs)
-        
+
+        tfs = []
+        for name, entry in self.subs.items():
+            val = entry.getDoubleArray([])
+            if val and len(val) >= 7:  # Ensure valid data length
+                ros_time = val[7] + self.time_offest
+                ros_seconds = int(ros_time)
+                ros_nanosec = int((ros_time - ros_seconds) * 1e9)
+                t = TransformStamped()
+                t.header.frame_id = "world"
+                t.child_frame_id = name
+                t.header.stamp.sec = ros_seconds
+                t.header.stamp.nanosec = ros_nanosec
+                t.transform.translation.x = val[0]
+                t.transform.translation.y = val[1]
+                t.transform.translation.z = val[2]
+                t.transform.rotation.x = val[3]
+                t.transform.rotation.y = val[4]
+                t.transform.rotation.z = val[5]
+                t.transform.rotation.w = val[6]
+                tfs.append(t)
+
+        if tfs:
+            self.tf_broadcaster.sendTransform(tfs)
+
     def reconnect(self):
-        self.inst = ntcore.NetworkTableInstance.getDefault()
-        self.table = self.inst.getTable(NTABLE_NAME)
-        self.inst.startClient4("vision_client")
-        self.inst.setServerTeam(TEAM)
-        self.inst.startDSClient()
-        self.inst.setServer("host", ntcore.NetworkTableInstance.kDefaultPort4)
-        self.get_logger().info('Trying to connect to the robot', throttle_duration_sec = 1.0)
+        """
+        Reconnect to NetworkTables.
+        """
+        # Ensure NetworkTables is connected
+        self.get_logger().warn("Waiting for NetworkTables connection...")
+        NetworkTables.initialize(server=NT_SERVER)
+        self.table = NetworkTables.getTable(NTABLE_NAME)
+        self.subs = {topic: self.table.getEntry(topic) for topic in self.transfer_topics}
         
-        self.subs = {}
-        for topic in self.transfer_topics:
-            self.subs[topic] = self.table.getDoubleArrayTopic(topic).subscribe([])
-   
+        self.time_offest = time.time() - self.table.getEntry(TIME_TOPIC).getDouble(0.0)
+
+
 def main(args = None):
     rclpy.init(args = args)
 

@@ -242,6 +242,13 @@
             "type": "shell",
             "command": "python3 .devcontainer/repos_to_submodules.py",
             "problemMatcher": []
+        },
+        {
+            "label": "Deploy Code",
+            "detail": "Deploy code to the robot",
+            "type": "shell",
+            "command": "${workspaceFolder}/.vscode/deploy.sh ${input:remoteUsername} ${input:remoteDevice} ${workspaceFolder} ${input:remoteWorkspacePath}",
+            "problemMatcher": [],
         }
     ],
     "inputs": [
@@ -249,6 +256,22 @@
             "id": "package",
             "type": "promptString",
             "description": "Package name"
+        },
+        {
+            "id": "remoteWorkspacePath",
+            "type": "promptString",
+            "description": "Workspace path on the remote device"
+        },
+        {
+            "id": "remoteDevice",
+            "type": "promptString",
+            "description": "Remote device ip address or hostname"
+        },
+        {
+            "id": "remoteUsername",
+            "type": "promptString",
+            "description": "Username of the user for the remote device"
         }
-    ]
+    ],
+    
 }

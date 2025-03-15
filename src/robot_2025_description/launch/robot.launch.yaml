@@ -13,8 +13,6 @@ launch:
           value: "branch"
         - name: "voxel_size"
           value: "0.025"
-        - name: "input_pointcloud_topic"
-          value: "/depth/color/points"
         # For HSV, hue range is [0,179], saturation range is [0,255], and value range is [0,255].
         # Different software use different scales, you need to normalize these ranges.
         - name: "hue_min"
@@ -30,5 +28,30 @@ launch:
         - name: "value_max"
           value: "255"
 
-  # - include:
-  #     file: "$(find-pkg-share nk_vision)/launch/nk_vision.launch.py"
+# Robot Descriptions for Cameras and Robot 2025
+  # - node:
+  #     pkg: "robot_state_publisher"
+  #     exec: "robot_state_publisher"
+  #     name: "camera_1_description"
+  #     output: "screen"
+  #     param:
+  #       - name: "robot_description"
+  #         value: "$(find-pkg-share robot_2025_description)/urdf/camera_1.urdf"
+
+  # - node:
+  #     pkg: "robot_state_publisher"
+  #     exec: "robot_state_publisher"
+  #     name: "camera_2_description"
+  #     output: "screen"
+  #     param:
+  #       - name: "robot_description"
+  #         value: "$(find-pkg-share robot_2025_description)/urdf/camera_2.urdf"
+
+  # - node:
+  #     pkg: "robot_state_publisher"
+  #     exec: "robot_state_publisher"
+  #     name: "robot_2025_description"
+  #     output: "screen"
+  #     param:
+  #       - name: "robot_description"
+  #         value: "$(find-pkg-share robot_2025_description)/urdf/robot_2025.urdf"
