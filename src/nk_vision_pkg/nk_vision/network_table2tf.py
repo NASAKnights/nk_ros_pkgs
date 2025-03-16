@@ -29,6 +29,7 @@ class NetworkTable2TF(Node):
         # Initialize NetworkTables
         NetworkTables.initialize(server=NT_SERVER)
         self.table = NetworkTables.getTable(NTABLE_NAME)
+        self.poi_table = NetworkTables.getTable("POI")
 
         # Wait for NetworkTables connection
         self.reconnect()
@@ -39,7 +40,7 @@ class NetworkTable2TF(Node):
     def transfer_data(self):
         """ Reads data from NetworkTables and publishes TF transforms """
         if not NetworkTables.isConnected():
-            self.get_logger().warn("Lost connection to NetworkTables, attempting to reconnect...")
+            self.get_logger().warn("Lost connection to NetworkTables, attempting to reconnect...", throttle_duration_sec=1)
             self.reconnect()
 
         tfs = []
@@ -71,11 +72,11 @@ class NetworkTable2TF(Node):
         Reconnect to NetworkTables.
         """
         # Ensure NetworkTables is connected
-        self.get_logger().warn("Waiting for NetworkTables connection...")
+        self.get_logger().warn("Waiting for NetworkTables connection...", throttle_duration_sec=1)
         NetworkTables.initialize(server=NT_SERVER)
         self.table = NetworkTables.getTable(NTABLE_NAME)
         self.subs = {topic: self.table.getEntry(topic) for topic in self.transfer_topics}
-        
+        self.subs["reef"] = self.poi_table.getEntry("SmartDashboard/POI/POIREEF")
         self.time_offest = time.time() - self.table.getEntry(TIME_TOPIC).getDouble(0.0)
 
 

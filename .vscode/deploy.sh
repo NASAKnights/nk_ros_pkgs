@@ -5,8 +5,6 @@ REMOTE_IP=$2
 WORKSPACE_LOCAL=$3
 WORKSPACE_REMOTE=$4
 CONTAINER_NAME="vision-container"
-eval $(ssh-agent)
-ssh-add
 
 # Stop and remove the existing container if it's running
 echo "Stopping existing container..."
@@ -23,6 +21,6 @@ ssh -t "$REMOTE_USER@$REMOTE_IP" "docker start $CONTAINER_NAME &&
 
 echo "Code Rebuilt, Running Robot..."
 
-ssh -t "$REMOTE_USER@$REMOTE_IP" "docker exec -d vision-container /bin/bash -c 'source $WORKSPACE_REMOTE/install/setup.bash && ./$WORKSPACE_REMOTE/run_robot.sh'"
+ssh -t "$REMOTE_USER@$REMOTE_IP" "docker exec -d vision-container /bin/bash -c 'cd /workspaces/isaac_ros-dev && source install/setup.bash && .run_robot.sh'"
 
 echo "Deployment complete!"

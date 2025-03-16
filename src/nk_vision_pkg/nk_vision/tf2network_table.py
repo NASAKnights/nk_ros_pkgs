@@ -52,7 +52,7 @@ class TF2NetworkTable(Node):
                 parent, child = topic.split(':')
                 topic_pairs.append((parent.strip(), child.strip()))
             except ValueError:
-                self.get_logger().error(f"Invalid format for topic: {topic}. Expected format 'parent:child'")
+                self.get_logger().error(f"Invalid format for topic: {topic}. Expected format 'parent:child'", throttle_duration_sec=1)
         return topic_pairs
 
     def create_publishers(self, topic_pairs):
@@ -70,7 +70,7 @@ class TF2NetworkTable(Node):
         Reads the measurements and publishes them to NetworkTables.
         """
         if not NetworkTables.isConnected() or not self.connected:
-            self.get_logger().warn("Lost connection to NetworkTables, attempting to reconnect...")
+            self.get_logger().warn("Lost connection to NetworkTables, attempting to reconnect...", throttle_duration_sec=1)
             self.reconnect()
             return
         
@@ -100,14 +100,14 @@ class TF2NetworkTable(Node):
                     self.pubs[child].setDoubleArray(pose)  # Use setDoubleArray instead of ntcore set
 
             except Exception as e:
-                self.get_logger().warn(f"Failed to lookup transform for {parent} -> {child}: {e}")
+                self.get_logger().warn(f"Failed to lookup transform for {parent} -> {child}: {e}", throttle_duration_sec=1)
 
     def reconnect(self):
         """
         Reconnect to NetworkTables.
         """
         # Ensure NetworkTables is connected
-        self.get_logger().warn("Waiting for NetworkTables connection...")
+        self.get_logger().warn("Waiting for NetworkTables connection...", throttle_duration_sec=1)
         NetworkTables.initialize(server=NT_SERVER)
         self.table = NetworkTables.getTable(NTABLE_NAME)
         self.pubs = self.create_publishers(self.topic_pairs)
