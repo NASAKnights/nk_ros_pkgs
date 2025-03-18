@@ -108,6 +108,7 @@ class TF2NetworkTable(Node):
         """
         # Ensure NetworkTables is connected
         self.get_logger().warn("Waiting for NetworkTables connection...", throttle_duration_sec=1)
+        NetworkTables.shutdown()
         NetworkTables.initialize(server=NT_SERVER)
         self.table = NetworkTables.getTable(NTABLE_NAME)
         self.pubs = self.create_publishers(self.topic_pairs)

@@ -21,6 +21,6 @@ ssh -t "$REMOTE_USER@$REMOTE_IP" "docker start $CONTAINER_NAME &&
 
 echo "Code Rebuilt, Running Robot..."
 
-ssh -t "$REMOTE_USER@$REMOTE_IP" "docker exec -d vision-container /bin/bash -c 'cd /workspaces/isaac_ros-dev && source install/setup.bash && .run_robot.sh'"
+ssh -t "$REMOTE_USER@$REMOTE_IP" "docker exec -d vision-container /bin/bash -c 'cd /workspaces/isaac_ros-dev && source install/setup.bash && ./run_robot.sh > vision_log.txt 2>&1'"
 
 echo "Deployment complete!"
