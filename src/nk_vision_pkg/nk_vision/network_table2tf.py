@@ -74,6 +74,8 @@ class NetworkTable2TF(Node):
         self.get_logger().warn("Waiting for NetworkTables connection...", throttle_duration_sec=1)
         NetworkTables.shutdown()
         NetworkTables.initialize(server=NT_SERVER)
+        time.sleep(1)
+        
         self.table = NetworkTables.getTable(NTABLE_NAME)
         self.subs = {topic: self.table.getEntry(topic) for topic in self.transfer_topics}
         self.time_offest = time.time() - self.table.getEntry(TIME_TOPIC).getDouble(0.0)

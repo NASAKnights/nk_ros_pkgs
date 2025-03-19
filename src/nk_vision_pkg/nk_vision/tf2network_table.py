@@ -29,15 +29,12 @@ class TF2NetworkTable(Node):
         self.tfBuffer = tf2_ros.Buffer()
         self.listener = tf2_ros.TransformListener(self.tfBuffer, self)
 
-        # Initialize NetworkTables
-        NetworkTables.initialize(server=NT_SERVER)
-        self.table = NetworkTables.getTable(NTABLE_NAME)
         self.topic_pairs = self.parse_transfer_topics(self.transfer_topics)
-
+        # Initialize NetworkTables
         self.reconnect()
+        
+        
 
-        # Parse transfer topics
-        self.pubs = self.create_publishers(self.topic_pairs)
 
         # Create a timer for periodic transform updates
         self.timer_callback = self.create_timer(1 / RATE, self.read_external_measurements)
@@ -110,10 +107,12 @@ class TF2NetworkTable(Node):
         self.get_logger().warn("Waiting for NetworkTables connection...", throttle_duration_sec=1)
         NetworkTables.shutdown()
         NetworkTables.initialize(server=NT_SERVER)
+        time.sleep(1)
         self.table = NetworkTables.getTable(NTABLE_NAME)
         self.pubs = self.create_publishers(self.topic_pairs)
         robot_time = self.table.getEntry(TIME_TOPIC).getDoubleArray([])
         if robot_time == []:
+            self.get_logger().warn(f"Can't get robot time... got {robot_time}", throttle_duration_sec=1)
             self.connected = False
         else:
             self.time_offest = robot_time[0] - time.time()
