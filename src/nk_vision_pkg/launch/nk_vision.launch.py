@@ -103,7 +103,7 @@ def generate_launch_description():
             package='camera_ros', executable='camera_node', output='screen',
             parameters=[{ 'width' : 1280,
                          'height' : 800,
-                         'camera': 1,}],
+                         'camera': 0,}],
             remappings=[('/camera/image_raw', '/camera_1/image_raw'),
                         ('/camera/camera_info', '/camera_1/camera_info')]
             ),
