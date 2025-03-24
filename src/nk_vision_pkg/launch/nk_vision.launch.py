@@ -127,20 +127,18 @@ def generate_launch_description():
         Node(package='nk_vision', executable='network_table2tf.py', output='screen',
             parameters=[{'transfer_topics': ["base_link"]}]),
 
-        ExecuteProcess(
-            cmd=['ros2', 'bag', 'record', 
-                 '/tf',
-                 '/camera_1/robot_description',
-                 '/camera_2/robot_description',
-                 '/robot_description',
-                 '/joint_states',
-                 '/tf',
-                  '/field/robot_description',
-                #   '/camera/realsense_camera/depth/color/points',
-                  '-o',
-                  bag_folder],
-            output='screen'
-        ),
+        # ExecuteProcess(
+        #     cmd=['ros2', 'bag', 'record', 
+        #          '/tf',
+        #          '/camera_1/robot_description',
+        #          '/camera_2/robot_description',
+        #          '/robot_description',
+        #          '/joint_states',
+        #           '/field/robot_description',
+        #           '-o',
+        #           bag_folder],
+        #     output='screen'
+        # ),
         # Node(
         #     package='nk_vision', executable='stddev_network_table.py', output='screen',
         #     parameters=[{'transfer_topics': ["vision_stddev"]}])
