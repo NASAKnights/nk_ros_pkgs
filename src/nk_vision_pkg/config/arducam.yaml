@@ -1,0 +1,28 @@
+image_width: 1280
+image_height: 800
+camera_name: ArducamOV9281USBCamera_Ardu___SB__PCI0_GP17_XHC0_RHUB_PRT2_2_3_2_1_0_0c45_6366_1280x800
+
+camera_matrix:
+  rows: 3
+  cols: 3
+  data: [913.238606, 0.000000,   653.193277,
+         0.000000,   913.243823, 430.111865,
+         0.000000 ,  0.000000,   1.000000]
+
+distortion_model: plumb_bob
+distortion_coefficients:
+  rows: 1
+  cols: 5
+  data: [0.044570, -0.081622, -0.001770, 0.001887, 0.000000]
+rectification_matrix:
+  rows: 3
+  cols: 3
+  data: [1., 0., 0.,
+         0., 1., 0.,
+         0., 0., 1.]
+projection_matrix:
+  rows: 3
+  cols: 4
+  data: [925.241307, 0.000000,   651.843852, 0.000000,
+         0.000000,   926.167014, 430.053770, 0.000000,
+         0.000000,   0.000000,   1.000000,   0.000000]

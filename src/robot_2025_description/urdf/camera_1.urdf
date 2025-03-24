@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<robot name="camera_1" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+	<link name="base_link_1">
+		<visual>
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+				<mesh filename="package://robot_2024_description/meshes/base_link.stl"/>
+			</geometry>
+			<material name="Red">
+				<color rgba="1 0 0 0.1"/>
+			</material>
+      	</visual>
+   
+		<collision>
+			<origin xyz="0 0 0" rpy="0 0 0"/>
+			<geometry>
+				<mesh filename="package://robot_2024_description/meshes/base_link.stl"/>
+			</geometry>
+		</collision>
+	</link>
+
+	<joint name="b2c1" type="fixed">
+		<parent link="camera_1_plane"/>
+		<child link="base_link_1"/>
+		<origin xyz="0.191 -0.283 -0.299" rpy="0.0 -1.57 0.0"/>
+	</joint>
+
+	<link name="camera_1"/>
+	<link name="camera_1_plane"/>
+
+	<joint name="camera2camera" type="fixed">
+		<parent link="camera_1"/>
+		<child link="camera_1_plane"/>
+		<origin xyz="0 0 0" rpy="0 0 3.14"/>
+	</joint>
+
+</robot>

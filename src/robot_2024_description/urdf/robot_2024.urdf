@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<robot name="robot_2024">
+
+	<link name="base_link">
+		<visual>
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+				<mesh filename="package://robot_2024_description/meshes/base_link.stl"/>
+			</geometry>
+			<material name="Cyan">
+				<color rgba="0 1.0 1.0 1.0"/>
+			</material>
+      	</visual>
+   
+		<collision>
+			<origin xyz="0 0 0" rpy="0 0 0"/>
+			<geometry>
+				<mesh filename="package://robot_2024_description/meshes/base_link.stl"/>
+			</geometry>
+		</collision>
+	</link>
+
+	<joint name="arm_joint" type="revolute">
+		<parent link="base_link"/>
+		<child link="arm_link"/>
+		<axis xyz="0 1 0"/>
+		<limit lower="-2.0" upper="0.07" effort="100.0" velocity="1.0"/>
+		<origin xyz="-0.146 0 0.261" rpy="0 0 0" />
+	</joint>
+
+	<link name="arm_link">
+		<visual>
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+				<mesh filename="package://robot_2024_description/meshes/arm_link.stl"/>
+			</geometry>
+			<material name="Cyan">
+				<color rgba="0 1.0 1.0 1.0"/>
+			</material>
+      	</visual>
+   
+		<collision>
+			<origin xyz="0 0 0" rpy="0 0 0"/>
+			<geometry>
+				<mesh filename="package://robot_2024_description/meshes/arm_link.stl"/>
+			</geometry>
+		</collision>
+	</link>
+	<joint name="b2c1_test" type="fixed">
+		<child link="c1"/>
+		<parent link="base_link"/>
+		<origin xyz="-0.22814 0.068 0.2617" rpy="-2.06123 -3.14957 1.5708"/>
+	</joint>
+	<joint name="b2c2_test" type="fixed">
+		<child link="c2"/>
+		<parent link="base_link"/>
+		<origin xyz="-0.247 0.068 0.2261" rpy="0.0 -1.0664 0.0"/> <!-- TODO Update ME-->
+	</joint>
+	<link name="c1"/>
+	<link name="c2"/>
+	<link name="rs_cam_1_link"/>
+	<joint name="b2realsense" type="fixed">
+		<child link="rs_cam_1_link"/>
+		<parent link="base_link"/>
+		<origin xyz="0.32 0.068 0.17" rpy="0.0 0.122173 0.0"/>
+	</joint>
+
+
+</robot>
