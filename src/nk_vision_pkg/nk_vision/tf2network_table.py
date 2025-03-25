@@ -32,9 +32,6 @@ class TF2NetworkTable(Node):
         self.topic_pairs = self.parse_transfer_topics(self.transfer_topics)
         # Initialize NetworkTables
         self.reconnect()
-        
-        
-
 
         # Create a timer for periodic transform updates
         self.timer_callback = self.create_timer(1 / RATE, self.read_external_measurements)
@@ -77,8 +74,10 @@ class TF2NetworkTable(Node):
         
 
         for parent, child in self.topic_pairs:
+            if child in self.pubs:
+                self.pubs[child].setDoubleArray([])
             try:
-                transform = self.tfBuffer.lookup_transform(parent, child, rostime.Time())
+                transform = self.tfBuffer.lookup_transform(parent, child, self.get_clock().now())
                 translation = transform.transform.translation
                 rotation = transform.transform.rotation
                 seconds = transform.header.stamp.sec
@@ -98,6 +97,7 @@ class TF2NetworkTable(Node):
 
             except Exception as e:
                 self.get_logger().warn(f"Failed to lookup transform for {parent} -> {child}: {e}", throttle_duration_sec=1)
+
 
     def reconnect(self):
         """
