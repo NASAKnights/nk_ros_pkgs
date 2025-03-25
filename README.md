@@ -27,15 +27,19 @@ colcon build --symlink-install
 
 ## Vision Pipeline
 
-### Running
+### Initial Startup / Deploy
 
-To run the pipeline you can use the following command:
+To run the pipeline on the Jetson Nano you can use the following process:
 
-```bash
-source vision_ws/install/setup.bash # This will tell the system where to find the code that you just built is and needs to be run in every terminal
-source /opt/ros/humble/setup.bash # If other setup bash doesn't work, use this
-ros2 launch nk_vision nk_vision.launch.py
-```
+1. Open the repository in a regular vscode window
+2. Connect to the Jetson via Ethernet
+3. Run the "Deploy Code" Task by pressing Ctrl+Shift+P and searching for "Tasks"
+4. Input the password when asked (it will ask multiple times)
+5. If the process succeeds, then move on to configuring your Ethernet settings
 
-### Debugging
+### Configuring Ethernet settings on the Jetson Nano
 
+1. Find your Ethernet interface using ifconfig (in our example it is `enP8p1s0`)
+2. Run `sudo ip link set [interface] down` (E.g: `sudo ip link set enP8p1s0 down`)
+3. Run `sudo ip addr add 10.1.22.10/255.255.255.0 dev [interface]`
+4. Run `sudo ip link set [interface] up`
