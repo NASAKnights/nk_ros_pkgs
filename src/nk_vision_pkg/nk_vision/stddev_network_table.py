@@ -4,13 +4,14 @@ import time
 from rclpy.node import Node
 import numpy as np
 import tf2_ros
-import ntcore
 import pandas as pd
+from networktables import NetworkTables
 from aruco_opencv_msgs.msg import ArucoDetection
 
 TEAM = 122
 NTABLE_NAME = "ROS2Bridge"
 RATE = 50
+NT_SERVER = f"10.{TEAM // 100}.{TEAM % 100}.2"  # Typical FRC robot IP
 
 
 data = [
@@ -38,27 +39,20 @@ class StddevNetworkTable(Node):
         
         # Read parameters and create n subscribers to the tf topics
         super().__init__('StddevNetworkTable')
-        self.declare_parameter('transfer_topics', [""])
-        self.transfer_topics: list = self.get_parameter('transfer_topics').get_parameter_value().string_array_value
 
         # TF setup 
         self.tfBuffer = tf2_ros.Buffer()
         self.listener = tf2_ros.TransformListener(self.tfBuffer, self)
         # Network Table
-        self.inst = ntcore.NetworkTableInstance.getDefault()
-        self.inst.startClient4("vision_client")
-        self.inst.setServerTeam(TEAM) 
-        self.inst.startDSClient()
-        self.inst.setServer("host", ntcore.NetworkTableInstance.kDefaultPort4)
-        self.table = self.inst.getTable(NTABLE_NAME)
-        while not self.inst.isConnected():
-            time.sleep(0.25)
+        while not NetworkTables.isConnected():
+            self.get_logger().info("Connecting", throttle_duration_sec=1)
             self.reconnect()
+            
         self.subscription = self.create_subscription(
                     ArucoDetection,
                     '/aruco_detections',
                     self.read_external_measurements,
-                    10)        
+                    1)        
 
     def find_closest_marker(self, msg):
         """
@@ -81,17 +75,15 @@ class StddevNetworkTable(Node):
         
         self.get_logger().info(f"the closest distance is {closest}", throttle_duration_sec = 2.0)
         return closest
-             
-                
-                        
+      
 
     def read_external_measurements(self, msg):
         """ 
         Publish stddev of measurement based on camera distance to marker
         """
-        while not self.inst.isConnected():
-            time.sleep(0.05)
+        if not NetworkTables.isConnected():
             self.reconnect()
+            return
         
         # find_marker_distance
         distance = self.find_closest_marker(msg)
@@ -108,22 +100,23 @@ class StddevNetworkTable(Node):
         self.table.getEntry("vision_stddev").setDoubleArray(stddev)
 
     def reconnect(self):
-        self.inst = ntcore.NetworkTableInstance.getDefault()
-        self.table = self.inst.getTable(NTABLE_NAME)
-        self.inst.startClient4("vision_client")
-        self.inst.setServerTeam(TEAM)
-        self.inst.startDSClient()
-        self.inst.setServer("host", ntcore.NetworkTableInstance.kDefaultPort4)
-        self.get_logger().info('Trying to connect to the robot', throttle_duration_sec = 2.0)
-        self.pub = self.table.getDoubleArrayTopic("vision_stddev").publish()
-            
+            """
+            Reconnect to NetworkTables.
+            """
+            # Ensure NetworkTables is connected
+            self.get_logger().warn("Waiting for NetworkTables connection...", throttle_duration_sec=1)
+            NetworkTables.shutdown()
+            NetworkTables.initialize(server=NT_SERVER)
+            time.sleep(1)
+            self.table = NetworkTables.getTable(NTABLE_NAME)
         
 def main(args = None):
     rclpy.init(args = args)
 
-    tf2nt_node = StddevNetworkTable()
+    stddev_node = StddevNetworkTable()
 
-    rclpy.spin(tf2nt_node)
+    rclpy.spin(stddev_node)
+    rclpy.shutdown()
 
 if __name__ == "__main__":
     main()

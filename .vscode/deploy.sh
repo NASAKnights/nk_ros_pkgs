@@ -13,7 +13,7 @@ ssh -t "$REMOTE_USER@$REMOTE_IP" "docker stop $CONTAINER_NAME"
 
 # Sync code to Jetson
 echo "Syncing code to Jetson..."
-rsync -avz --delete --exclude 'logs/' --exclude 'build/' --exclude 'install/' "$WORKSPACE_LOCAL/" "$REMOTE_USER@$REMOTE_IP:$WORKSPACE_REMOTE"
+rsync -avz --delete --exclude 'log/' --exclude 'build/' --exclude 'install/' "$WORKSPACE_LOCAL/src/" "$REMOTE_USER@$REMOTE_IP:$WORKSPACE_REMOTE/src"
 
 echo "Starting new container..."
 ssh -t "$REMOTE_USER@$REMOTE_IP" "docker start $CONTAINER_NAME &&
