@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 
-
-
 import math
 import pandas as pd
 
@@ -29,45 +27,35 @@ class FrameListener(Node):
         }
         self.df_transform = pd.DataFrame(transform)
 
-        # self.get_logger().info("strng 1")
-
         rotation = {
         "x": [],
         "y": [],
         "z": []
         }
-        # self.get_logger().info("string 2")
         self.df_rotation = pd.DataFrame(rotation)
                 
 
         # Declare and acquire `target_frame` parameter
         self.target_frame = self.declare_parameter(
             'target_frame', 'marker_3').get_parameter_value().string_value
-        # self.get_logger().info("string 3")
 
         self.tf_buffer = Buffer()
         self.tf_listener = TransformListener(self.tf_buffer, self)
 
         # Call on_timer function every second
-        self.timer = self.create_timer(.001, self.on_timer)
-        # self.get_logger().info("string 4")
+        self.timer = self.create_timer(0.1, self.on_timer)
 
     def on_timer(self):
         # Store frame names in variables that will be used to
         # compute transformations
         from_frame_rel = self.target_frame
         to_frame_rel = 'camera'
-        self.get_logger().info("string 5")
-
-                # Look up for the transformation between target_frame and turtle2 frames
-                # and send velocity commands for turtle2 to reach target_frame
         try:
             t = self.tf_buffer.lookup_transform(
                 to_frame_rel,
                 from_frame_rel,
-                rclpy.time.Time())
+                self.get_clock().now())
 
-            # self.get_logger().info("string 6")
             # getting a list of new x, y, z transforms_
             self.get_logger().info(f"Transform: {t}")
             new_transform = {"x": t.transform.translation.x, "y": t.transform.translation.y, "z": t.transform.translation.z}
@@ -85,8 +73,6 @@ class FrameListener(Node):
             self.df_transform = pd.concat([self.df_transform, df_new_transform], ignore_index=True)
             self.df_rotation = pd.concat([self.df_rotation, df_new_rotation], ignore_index=True)
 
-
-            # self.get_logger().info("string 7")
 
         except TransformException as ex:
                 self.get_logger().info(
@@ -121,6 +107,5 @@ def main():
         print("Z Rotaion: ", f'{z_rotation.std():.10f}')
 
 
-        # print("\n\ndf_transform:\n", node.df_transform)
 if __name__ == "__main__":
     main()
