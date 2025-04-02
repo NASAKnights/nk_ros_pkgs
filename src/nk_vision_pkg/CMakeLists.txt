@@ -24,12 +24,6 @@ install(
 
 install(
   PROGRAMS
-  ${PROJECT_NAME}/tf_listener.py
-  DESTINATION lib/${PROJECT_NAME}
-)
-
-install(
-  PROGRAMS
   ${PROJECT_NAME}/tf2network_table.py
   DESTINATION lib/${PROJECT_NAME}
 )
@@ -37,7 +31,7 @@ install(
 
 install(
   PROGRAMS
-  ${PROJECT_NAME}/transform_stdev_finder.py
+  ${PROJECT_NAME}/stddev_measure.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
