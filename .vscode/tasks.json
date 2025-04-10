@@ -249,7 +249,52 @@
             "type": "shell",
             "command": "${workspaceFolder}/.vscode/deploy.sh ${input:remoteUsername} ${input:remoteDevice} ${workspaceFolder} ${input:remoteWorkspacePath}",
             "problemMatcher": [],
+        },
+        {
+            "label": "Start Backend",
+            "type": "shell",
+            "command": "source ${workspaceFolder}/install/setup.bash && uvicorn main:app --reload --host 0.0.0.0 --port 8080",
+            "options": {
+                "cwd": "${workspaceFolder}/src/web_gui/backend"
+            },
+            "group": "build",
+            "isBackground": true,
+            "problemMatcher": [
+                {
+                "pattern": [
+                    {
+                    "regexp": ".",
+                    "file": 1,
+                    "location": 2,
+                    "message": 3
+                    }
+                ],
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": "INFO:     Uvicorn running on",
+                    "endsPattern": "Application startup complete"
+                }
+                }
+            ]
+        },
+        {
+            "label": "Start Frontend",
+            "type": "shell",
+            "command": "npm start",
+            "options": {
+                "cwd": "${workspaceFolder}/src/web_gui/frontend"
+            },
+            "group": "build",
+            "isBackground": true,
+            "problemMatcher": []
+        },
+        {
+            "label": "Start Web Dashboard (Backend + Frontend)",
+            "dependsOn": ["Start Backend", "Start Frontend"],
+            "dependsOrder": "parallel",
+            "group": "build"
         }
+          
     ],
     "inputs": [
         {

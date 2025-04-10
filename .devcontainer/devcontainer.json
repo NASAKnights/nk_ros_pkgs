@@ -2,6 +2,7 @@
     "name": "Isaac ROS Dev Container",
     "dockerFile": "Dockerfile",
     "workspaceFolder": "/workspaces/isaac_ros-dev",
+    "context": "..",
     "mounts": [
         "source=/dev,target=/dev,type=bind",
         "source=/run/udev,target=/run/udev,type=bind",

@@ -40,6 +40,7 @@ from launch.launch_description_sources import AnyLaunchDescriptionSource, Python
 from launch_ros.actions import Node
 from ament_index_python.packages import get_package_share_directory
 
+
 def get_next_bag_number(bag_folder):
     """
     Check the bag folder for existing bag recordings and return the next available number.
@@ -54,7 +55,8 @@ def get_next_bag_number(bag_folder):
     existing_numbers = []
     for bag in bag_files:
         try:
-            num = int(os.path.basename(bag).split('_')[-1])  # Extract last number
+            num = int(os.path.basename(bag).split(
+                '_')[-1])  # Extract last number
             existing_numbers.append(num)
         except ValueError:
             continue  # Ignore files that don't match the expected format
@@ -62,6 +64,7 @@ def get_next_bag_number(bag_folder):
     # Get the next available number
     next_number = max(existing_numbers) + 1 if existing_numbers else 0
     return next_number
+
 
 def copy_calibration_file():
     package_path = get_package_share_directory('nk_vision')
@@ -76,12 +79,15 @@ def copy_calibration_file():
         shutil.copy(source_file, dest_file)
         print(f"Copied {source_file} to {dest_file}")
 
+
 def generate_launch_description():
     # Ensure the directory exists
     copy_calibration_file()
     default_bag_folder = "vision_logs"
-    next_bag_number = get_next_bag_number(os.path.join(get_package_share_directory('nk_vision'),default_bag_folder))
-    bag_folder = os.path.join(get_package_share_directory('nk_vision'), default_bag_folder+f"/bag_{next_bag_number}")
+    next_bag_number = get_next_bag_number(os.path.join(
+        get_package_share_directory('nk_vision'), default_bag_folder))
+    bag_folder = os.path.join(get_package_share_directory(
+        'nk_vision'), default_bag_folder+f"/bag_{next_bag_number}")
     use_sim_time = LaunchConfiguration('use_sim_time', default='false')
     return LaunchDescription([
 
@@ -98,43 +104,42 @@ def generate_launch_description():
         #     remappings=[('/camera/image_raw', '/camera_2/image_raw'),
         #                 ('/camera/camera_info', '/camera_2/camera_info')]
         #     ),
-    
+
         Node(
             package='camera_ros', executable='camera_node', output='screen',
-            parameters=[{ 'width' : 1280,
-                         'height' : 800,
-                         'camera': 0,}],
+            parameters=[{'width': 1280,
+                         'height': 800,
+                         'camera': 0, }],
             remappings=[('/camera/image_raw', '/camera_1/image_raw'),
                         ('/camera/camera_info', '/camera_1/camera_info')],
             respawn=True,
             respawn_delay=2
-            ),
+        ),
 
         IncludeLaunchDescription(AnyLaunchDescriptionSource(
-                get_package_share_directory('nk_vision') + '/launch/aruco_tracker_1.launch.xml')),
+            get_package_share_directory('nk_vision') + '/launch/aruco_tracker_1.launch.xml')),
 
         IncludeLaunchDescription(AnyLaunchDescriptionSource(
-                get_package_share_directory('nk_vision') + '/launch/aruco_tracker_2.launch.xml')),
+            get_package_share_directory('nk_vision') + '/launch/aruco_tracker_2.launch.xml')),
 
         # IncludeLaunchDescription(AnyLaunchDescriptionSource(
         #         get_package_share_directory('robot_2025_description') + '/launch/robot.launch.yaml')),
-        
+
         IncludeLaunchDescription(AnyLaunchDescriptionSource(
-                get_package_share_directory('frc_2025_field_description') + '/launch/main.launch.py')),
+            get_package_share_directory('frc_2025_field_description') + '/launch/main.launch.py')),
 
         Node(
             package='nk_vision', executable='tf2network_table.py', output='screen',
             parameters=[{'transfer_topics': ["world:base_link_1", "world:base_link_2", "base_link:branch"]}]),
-        
+
         Node(package='nk_vision', executable='network_table2tf.py', output='screen',
-            parameters=[{'transfer_topics': ["base_link"]}]),
-        
+             parameters=[{'transfer_topics': ["base_link"]}]),
+
         Node(
             package='nk_vision', executable='stddev_network_table.py', output='screen'),
-            
+
         # ExecuteProcess(
-        #     cmd=['ros2', 'bag', 'record', 
-        #          '/tf',
+        #     cmd=['ros2', 'bag', 'record', '/tf',
         #          '/camera_1/robot_description',
         #          '/camera_2/robot_description',
         #          '/robot_description',
