@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e
-source /opt/ros/humble/setup.bash
+source /opt/ros/jazzy/setup.bash
 # Set the default build type
 BUILD_TYPE=Debug
 colcon build \

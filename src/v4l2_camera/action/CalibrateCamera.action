@@ -3,7 +3,6 @@ string board_type
 int32 rows
 int32 cols
 float64 square_size
-int32 num_frames
 ---
 # Result
 bool success
@@ -13,7 +12,8 @@ string message
 int32 frames_captured
 bool accepted
 string reason
-int32 x_offset
-int32 y_offset
-float64 area
-float64 skew_score
+float64 area_diversity
+float64 skew_diversity
+float64[] x_percent  # [left, right]
+float64[] y_percent  # [top, bottom]
+float64 quality_score

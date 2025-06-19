@@ -2,16 +2,16 @@
 
 ## Installing and building
 
-This project uses ROS2 Humble, and therefore needs to be running on Ubuntu 22.04
+This project uses ROS2 Jazzy, and therefore needs to be running on Ubuntu 22.04
 
 First make a workspace to store the code in, then clone the project to the src folder
 ```bash
 mkdir vision_ws
 cd vision_ws
-git clone https://github.com/NASAKnights/nk_ros_pkgs.git -b humble --recurse-submodules
+git clone https://github.com/NASAKnights/nk_ros_pkgs.git -b jazzy --recurse-submodules
 ```
 
-Install ROS2 Humble with the script in the top level folder of this project
+Install ROS2 jazzy with the script in the top level folder of this project
 
 ```bash
 cd nk_ros_pkgs

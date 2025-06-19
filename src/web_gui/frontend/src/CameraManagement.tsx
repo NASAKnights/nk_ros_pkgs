@@ -12,6 +12,7 @@ import {
     DialogContent,
     TextField,
     DialogActions,
+    LinearProgress
 } from "@mui/material";
 import { useState, useEffect } from "react";
 import axios from "axios";
@@ -73,15 +74,18 @@ export default function CameraViewer() {
         setCalibrating(true);
         setCalibrationResult(null);
         setFeedback(null);
+        const namespace =
+            selectedCamera?.split("/").slice(0, -1).join("/") || "";  // e.g. "/camera_x" from "/camera_x/image_raw"
 
         const payload: any = {
             pattern,
-            camera_topic: selectedCamera,
             square_size: parseFloat(squareSize),
             rows: parseInt(rows),
             cols: parseInt(cols),
             output_file: outputFile,
+            namespace
         };
+
 
         if (pattern === "charuco") {
             payload.charuco_dict = charucoDict;
@@ -93,8 +97,10 @@ export default function CameraViewer() {
         try {
             await axios.post(API_BASE + "/api/calibrate/intrinsic", payload);
             setCalibrationResult("Calibration started.");
-            setCalibrationTopic("/calibration");
             setOpen(false);
+            // Set stream to show the calibration overlay topic
+            const calibrationTopicName = `${namespace}/calibration`;
+            setCalibrationTopic(calibrationTopicName);
             setCalibrationActive(true);
 
             // Connect to calibration feedback
@@ -165,39 +171,114 @@ export default function CameraViewer() {
                 )}
 
                 {calibrationActive && (
-                    <Box mt={2} display="flex" gap={2}>
+                    <>
+                        {/* Feedback Section */}
                         {feedback && (
-                            <Box mt={2}>
-                                <Typography>Frames Captured: {feedback.frames_captured}</Typography>
-                                <Typography>Offset X: {feedback.x_offset}, Y: {feedback.y_offset}</Typography>
-                                <Typography>Area: {feedback.area?.toFixed(2)}</Typography>
-                                <Typography>Skew: {feedback.skew_score}</Typography>
-                                <Typography>Status: {feedback.reason}</Typography>
+                            <Box mt={3}>
+                                <Typography variant="subtitle1" gutterBottom>Calibration Feedback</Typography>
+
+                                <Typography variant="body2">Skew</Typography>
+                                <Box mb={2}>
+                                    <LinearProgress
+                                        variant="determinate"
+                                        value={Math.min(100, Math.max(0, feedback.skew_score * 100))}
+                                    />
+                                </Box>
+
+                                <Typography variant="body2">Scale (Board Area)</Typography>
+                                <Box mb={2}>
+                                    <LinearProgress
+                                        variant="determinate"
+                                        value={Math.min(100, Math.max(0, feedback.area * 100))}
+                                    />
+                                </Box>
+
+                                <Typography variant="body2">X Offset</Typography>
+                                <Box position="relative" height={10} mb={2}>
+                                    <Box
+                                        sx={{
+                                            position: "absolute",
+                                            left: "50%",
+                                            width: "2px",
+                                            height: "100%",
+                                            backgroundColor: "#999"
+                                        }}
+                                    />
+                                    <Box
+                                        sx={{
+                                            position: "absolute",
+                                            left: `${50 + (feedback.x_offset * 50)}%`,
+                                            width: "4px",
+                                            height: "100%",
+                                            backgroundColor: "blue"
+                                        }}
+                                    />
+                                </Box>
+
+                                <Typography variant="body2">Y Offset</Typography>
+                                <Box position="relative" height={10}>
+                                    <Box
+                                        sx={{
+                                            position: "absolute",
+                                            left: "50%",
+                                            width: "2px",
+                                            height: "100%",
+                                            backgroundColor: "#999"
+                                        }}
+                                    />
+                                    <Box
+                                        sx={{
+                                            position: "absolute",
+                                            left: `${50 + (feedback.y_offset * 50)}%`,
+                                            width: "4px",
+                                            height: "100%",
+                                            backgroundColor: "green"
+                                        }}
+                                    />
+                                </Box>
+
+                                <Typography
+                                    variant="caption"
+                                    color={feedback.accepted ? "success.main" : "error.main"}
+                                    mt={2}
+                                    display="block"
+                                >
+                                    {feedback.accepted
+                                        ? `Accepted (${feedback.frames_captured} frames)`
+                                        : `Rejected: ${feedback.reason}`}
+                                </Typography>
                             </Box>
                         )}
 
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            onClick={() => axios.post(API_BASE + "/api/calibrate/capture")}
-                        >Capture</Button>
-                        <Button
-                            variant="contained"
-                            color="success"
-                            onClick={() => {
-                                axios.post(API_BASE + "/api/calibrate/cancel");
-                                setCalibrationActive(false);
-                                setCalibrationTopic(null);
-                            }}
-                        >Commit Calibration</Button>
-                        <Button
-                            variant="outlined"
-                            color="error"
-                            onClick={() => { handleCancelCalibration(); }}
-                        >
-                            Cancel
-                        </Button>
-                    </Box>
+                        {/* Buttons Row */}
+                        <Box mt={3} display="flex" gap={2} alignItems="center">
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                onClick={() => axios.post(API_BASE + "/api/calibrate/capture")}
+                            >
+                                Capture
+                            </Button>
+                            <Button
+                                variant="contained"
+                                color="success"
+                                onClick={() => {
+                                    axios.post(API_BASE + "/api/calibrate/cancel");
+                                    setCalibrationActive(false);
+                                    setCalibrationTopic(null);
+                                }}
+                            >
+                                Commit Calibration
+                            </Button>
+                            <Button
+                                variant="outlined"
+                                color="error"
+                                onClick={() => { handleCancelCalibration(); }}
+                            >
+                                Cancel
+                            </Button>
+                        </Box>
+                    </>
                 )}
 
                 {selectedCamera && (

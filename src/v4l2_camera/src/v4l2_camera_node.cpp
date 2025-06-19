@@ -1,630 +1,469 @@
-// File: v4l2_camera_node.cpp
-#include <chrono>
-#include <cv_bridge/cv_bridge.h>
-#include <fcntl.h>
-#include <filesystem>
-#include <fstream>
-#include <linux/videodev2.h>
-#include <mutex>
-#include <opencv2/aruco/charuco.hpp>
-#include <opencv2/calib3d.hpp>
-#include <opencv2/opencv.hpp>
-#include <rclcpp/rclcpp.hpp>
-#include <rclcpp_action/rclcpp_action.hpp>
-#include <sensor_msgs/msg/camera_info.hpp>
-#include <sensor_msgs/msg/image.hpp>
-#include <string>
-#include <sys/ioctl.h>
-#include <sys/mman.h>
-#include <unistd.h>
-#include <vector>
-#include <yaml-cpp/yaml.h>
-
-#include "v4l2_camera/action/calibrate_camera.hpp"
-
-using CalibrateCamera = v4l2_camera::action::CalibrateCamera;
+#include "v4l2_camera/v4l2_camera_node.hpp"
+#include "v4l2_camera/v4l2_calibration.hpp"
 
 using namespace std::chrono_literals;
 namespace fs = std::filesystem;
 
-class V4L2CameraNode : public rclcpp::Node
+V4L2CameraNode::V4L2CameraNode()
+    : Node("v4l2_camera_node")
 {
-public:
-    V4L2CameraNode()
-        : Node("v4l2_camera_node")
+    this->declare_parameter("device_id", "");
+    this->declare_parameter("width", 0);  // default to 0 → auto
+    this->declare_parameter("height", 0); // default to 0 → auto
+    this->declare_parameter("calibration_base_path", "/.ros/calibration");
+
+    _device_id = this->get_parameter("device_id").as_string();
+
+    _device_path = resolve_device_id();
+
+    _width  = this->get_parameter("width").as_int();
+    _height = this->get_parameter("height").as_int();
+    int fps = 0;
+
+    if(_width <= 0 || _height <= 0)
     {
-        this->declare_parameter("device", "");
-        this->declare_parameter("device_id", "");
-        this->declare_parameter("width", 0);  // default to 0 → auto
-        this->declare_parameter("height", 0); // default to 0 → auto
-        this->declare_parameter("calibration_base_path", "/.ros/calibration");
-
-        std::string device_param    = this->get_parameter("device").as_string();
-        std::string device_id_param = this->get_parameter("device_id").as_string();
-        calib_base_path_            = this->get_parameter("calibration_base_path").as_string();
-
-        if(!device_param.empty())
+        if(get_max_resolution_and_fps(_device_path, _width, _height, fps) != 0)
         {
-            device_path_ = device_param;
-        }
-        else if(!device_id_param.empty())
-        {
-            device_path_ = resolve_device_id(device_id_param);
-        }
-        else
-        {
-            RCLCPP_FATAL(this->get_logger(), "No device or device_id specified.");
+            RCLCPP_FATAL(this->get_logger(), "Failed to determine max resolution for device: %s",
+                         _device_path.c_str());
             rclcpp::shutdown();
             return;
         }
-
-        width_  = this->get_parameter("width").as_int();
-        height_ = this->get_parameter("height").as_int();
-        int fps = 0;
-
-        if(width_ <= 0 || height_ <= 0)
-        {
-            if(get_max_resolution_and_fps(device_path_, width_, height_, fps) != 0)
-            {
-                RCLCPP_FATAL(this->get_logger(),
-                             "Failed to determine max resolution for device: %s",
-                             device_path_.c_str());
-                rclcpp::shutdown();
-                return;
-            }
-            RCLCPP_INFO(this->get_logger(), "Using max resolution: %dx%d", width_, height_);
-        }
-
-        publisher_       = this->create_publisher<sensor_msgs::msg::Image>("image_raw", 10);
-        camera_info_pub_ = this->create_publisher<sensor_msgs::msg::CameraInfo>("camera_info", 10);
-
-        load_camera_info(device_id_param);
-        open_device();
-        timer_ =
-            this->create_wall_timer(1000ms / fps, std::bind(&V4L2CameraNode::capture_loop, this));
-        calibration_image_pub_ =
-            this->create_publisher<sensor_msgs::msg::Image>("/calibration", 10);
-        calibration_server_ = rclcpp_action::create_server<CalibrateCamera>(
-            this, "calibrate_camera",
-            std::bind(&V4L2CameraNode::handle_goal, this, std::placeholders::_1,
-                      std::placeholders::_2),
-            std::bind(&V4L2CameraNode::handle_cancel, this, std::placeholders::_1),
-            std::bind(&V4L2CameraNode::handle_accepted, this, std::placeholders::_1));
+        RCLCPP_INFO(this->get_logger(), "Using max resolution: %dx%d", _width, _height);
     }
 
-    int get_max_resolution_and_fps(const std::string& device_path, int& width, int& height,
-                                   int& fps)
+    _publisher       = this->create_publisher<sensor_msgs::msg::Image>("image_raw", 10);
+    _camera_info_pub = this->create_publisher<sensor_msgs::msg::CameraInfo>("camera_info", 10);
+
+    _calib_path = ament_index_cpp::get_package_share_directory("v4l2_camera") + "/config/" +
+                  "calib_" + _serial_number + ".yaml";
+    load_camera_info(_device_id);
+    open_device();
+    _timer = this->create_wall_timer(1000ms / fps, std::bind(&V4L2CameraNode::capture_loop, this));
+
+    _calibration_server = std::make_shared<CalibrationHandler>(this);
+}
+
+int V4L2CameraNode::get_max_resolution_and_fps(const std::string& device_path, int& width,
+                                               int& height, int& fps)
+{
+    RCLCPP_INFO(this->get_logger(), "Attempting to determine max resolution and FPS for device: %s",
+                device_path.c_str());
+
+    int fd = open(device_path.c_str(), O_RDWR);
+    if(fd < 0)
     {
-        int fd = open(device_path.c_str(), O_RDWR);
-        if(fd < 0)
-            return -1;
+        RCLCPP_ERROR(this->get_logger(), "Failed to open device: %s", device_path.c_str());
+        return -1;
+    }
 
-        struct v4l2_fmtdesc fmt = {};
-        fmt.type                = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-        fmt.index               = 0;
+    struct v4l2_fmtdesc fmt = {};
+    fmt.type                = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+    fmt.index               = 0;
 
-        int max_score = 0;
-        while(ioctl(fd, VIDIOC_ENUM_FMT, &fmt) == 0)
+    int max_score = 0;
+    while(ioctl(fd, VIDIOC_ENUM_FMT, &fmt) == 0)
+    {
+        RCLCPP_INFO(this->get_logger(), "Found format: %s",
+                    reinterpret_cast<char*>(&fmt.description));
+
+        struct v4l2_frmsizeenum size = {};
+        size.pixel_format            = fmt.pixelformat;
+        size.index                   = 0;
+        while(ioctl(fd, VIDIOC_ENUM_FRAMESIZES, &size) == 0)
         {
-            struct v4l2_frmsizeenum size = {};
-            size.pixel_format            = fmt.pixelformat;
-            size.index                   = 0;
-            while(ioctl(fd, VIDIOC_ENUM_FRAMESIZES, &size) == 0)
+            if(size.type == V4L2_FRMSIZE_TYPE_DISCRETE)
             {
-                if(size.type == V4L2_FRMSIZE_TYPE_DISCRETE)
+                RCLCPP_INFO(this->get_logger(), "Found resolution: %dx%d", size.discrete.width,
+                            size.discrete.height);
+
+                struct v4l2_frmivalenum ival = {};
+                ival.pixel_format            = fmt.pixelformat;
+                ival.width                   = size.discrete.width;
+                ival.height                  = size.discrete.height;
+                ival.index                   = 0;
+                while(ioctl(fd, VIDIOC_ENUM_FRAMEINTERVALS, &ival) == 0)
                 {
-                    struct v4l2_frmivalenum ival = {};
-                    ival.pixel_format            = fmt.pixelformat;
-                    ival.width                   = size.discrete.width;
-                    ival.height                  = size.discrete.height;
-                    ival.index                   = 0;
-                    while(ioctl(fd, VIDIOC_ENUM_FRAMEINTERVALS, &ival) == 0)
+                    if(ival.type == V4L2_FRMIVAL_TYPE_DISCRETE)
                     {
-                        if(ival.type == V4L2_FRMIVAL_TYPE_DISCRETE)
+                        int area        = size.discrete.width * size.discrete.height;
+                        int current_fps = ival.discrete.denominator / ival.discrete.numerator;
+                        int score       = area * current_fps;
+                        RCLCPP_INFO(this->get_logger(), "Found FPS: %d, Score: %d", current_fps,
+                                    score);
+
+                        if(score > max_score)
                         {
-                            int area        = size.discrete.width * size.discrete.height;
-                            int current_fps = ival.discrete.denominator / ival.discrete.numerator;
-                            int score       = area * current_fps;
-                            if(score > max_score)
-                            {
-                                max_score = score;
-                                width     = size.discrete.width;
-                                height    = size.discrete.height;
-                                fps       = current_fps;
-                            }
+                            max_score = score;
+                            width     = size.discrete.width;
+                            height    = size.discrete.height;
+                            fps       = current_fps;
                         }
-                        ival.index++;
                     }
-                }
-                size.index++;
-            }
-            fmt.index++;
-        }
-
-        close(fd);
-        return max_score > 0 ? 0 : -1;
-    }
-
-    ~V4L2CameraNode()
-    {
-        stop_capture();
-    }
-
-private:
-    struct Buffer
-    {
-        void*  start;
-        size_t length;
-    };
-
-    std::string                                                device_path_;
-    int                                                        width_, height_;
-    int                                                        fd_ = -1;
-    std::vector<Buffer>                                        buffers_;
-    rclcpp::TimerBase::SharedPtr                               timer_;
-    rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr      publisher_;
-    rclcpp::Publisher<sensor_msgs::msg::CameraInfo>::SharedPtr camera_info_pub_;
-    sensor_msgs::msg::CameraInfo                               camera_info_;
-    std::string                                                calib_base_path_;
-    rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr      calibration_image_pub_;
-
-    std::string resolve_device_id(const std::string& device_id)
-    {
-        for(const auto& entry : fs::directory_iterator("/sys/class/video4linux"))
-        {
-            std::string   dev_name      = entry.path().filename();
-            std::string   device_dir    = entry.path().string() + "/device";
-            std::string   modalias_file = device_dir + "/modalias";
-            std::ifstream infile(modalias_file);
-            std::string   line;
-            if(infile.is_open() && std::getline(infile, line))
-            {
-                if(line.find(device_id) != std::string::npos)
-                {
-                    std::string full_path = "/dev/" + dev_name;
-                    RCLCPP_INFO(this->get_logger(), "Resolved device_id '%s' to %s",
-                                device_id.c_str(), full_path.c_str());
-                    return full_path;
+                    ival.index++;
                 }
             }
+            size.index++;
         }
-        RCLCPP_ERROR(this->get_logger(), "Device with ID '%s' not found.", device_id.c_str());
-        return "";
+        fmt.index++;
     }
 
-    void load_camera_info(const std::string& device_id)
+    close(fd);
+
+    if(max_score > 0)
     {
-        if(device_id.empty())
-            return;
-        std::string calib_file = calib_base_path_ + "/calib_" + device_id + ".yaml";
-        if(!fs::exists(calib_file))
-        {
-            RCLCPP_WARN(this->get_logger(), "Calibration file not found: %s", calib_file.c_str());
-            return;
-        }
-        try
-        {
-            YAML::Node calib              = YAML::LoadFile(calib_file);
-            camera_info_.width            = calib["image_width"].as<int>();
-            camera_info_.height           = calib["image_height"].as<int>();
-            camera_info_.distortion_model = calib["distortion_model"].as<std::string>();
-            camera_info_.d = calib["distortion_coefficients"]["data"].as<std::vector<double>>();
-            camera_info_.k = calib["camera_matrix"]["data"].as<std::array<double, 9>>();
-            camera_info_.r = calib["rectification_matrix"]["data"].as<std::array<double, 9>>();
-            camera_info_.p = calib["projection_matrix"]["data"].as<std::array<double, 12>>();
-            RCLCPP_INFO(this->get_logger(), "Loaded calibration for device_id %s",
-                        device_id.c_str());
-        }
-        catch(const std::exception& e)
-        {
-            RCLCPP_ERROR(this->get_logger(), "Failed to load camera info: %s", e.what());
-        }
+        RCLCPP_INFO(this->get_logger(), "Max resolution determined: %dx%d at %d FPS", width, height,
+                    fps);
+        return 0;
     }
-
-    void open_device()
+    else
     {
-        fd_ = open(device_path_.c_str(), O_RDWR | O_NONBLOCK);
-        if(fd_ < 0)
+        RCLCPP_ERROR(this->get_logger(),
+                     "Failed to determine max resolution and FPS for device: %s",
+                     device_path.c_str());
+        return -1;
+    }
+}
+
+V4L2CameraNode::~V4L2CameraNode()
+{
+    stop_capture();
+}
+
+std::string V4L2CameraNode::resolve_device_id()
+{
+    RCLCPP_INFO(get_logger(), "device_id: '%s', serial_number: %s, ", _device_id.c_str(),
+                _serial_number.c_str());
+    // Prefer resolving by exact serial number
+    if(!_serial_number.empty())
+    {
+        struct udev* udev = udev_new();
+        if(!udev)
         {
-            RCLCPP_ERROR(this->get_logger(), "Failed to open %s", device_path_.c_str());
-            return;
+            RCLCPP_ERROR(get_logger(), "Failed to create udev context");
+            return "";
         }
 
-        struct v4l2_format fmt  = {};
-        fmt.type                = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-        fmt.fmt.pix.width       = width_;
-        fmt.fmt.pix.height      = height_;
-        fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_YUYV;
-        fmt.fmt.pix.field       = V4L2_FIELD_ANY;
-        if(ioctl(fd_, VIDIOC_S_FMT, &fmt) < 0)
-        {
-            RCLCPP_ERROR(this->get_logger(), "Failed to set format.");
-            close(fd_);
-            fd_ = -1;
-            return;
-        }
+        struct udev_enumerate* enumerate = udev_enumerate_new(udev);
+        udev_enumerate_add_match_subsystem(enumerate, "video4linux");
+        udev_enumerate_scan_devices(enumerate);
 
-        struct v4l2_requestbuffers req = {};
-        req.count                      = 4;
-        req.type                       = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-        req.memory                     = V4L2_MEMORY_MMAP;
-        if(ioctl(fd_, VIDIOC_REQBUFS, &req) < 0)
-        {
-            RCLCPP_ERROR(this->get_logger(), "Failed to request buffers.");
-            close(fd_);
-            fd_ = -1;
-            return;
-        }
+        struct udev_list_entry* devices = udev_enumerate_get_list_entry(enumerate);
+        struct udev_list_entry* entry;
 
-        buffers_.resize(req.count);
-        for(size_t i = 0; i < req.count; ++i)
+        udev_list_entry_foreach(entry, devices)
         {
-            struct v4l2_buffer buf = {};
-            buf.type               = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-            buf.memory             = V4L2_MEMORY_MMAP;
-            buf.index              = i;
-            if(ioctl(fd_, VIDIOC_QUERYBUF, &buf) < 0)
+            const char*         syspath = udev_list_entry_get_name(entry);
+            struct udev_device* dev     = udev_device_new_from_syspath(udev, syspath);
+            if(!dev)
+                continue;
+
+            struct udev_device* parent =
+                udev_device_get_parent_with_subsystem_devtype(dev, "usb", "usb_device");
+            if(!parent)
             {
-                RCLCPP_ERROR(this->get_logger(), "Failed to query buffer %zu", i);
+                udev_device_unref(dev);
                 continue;
             }
 
-            buffers_[i].length = buf.length;
-            buffers_[i].start =
-                mmap(NULL, buf.length, PROT_READ | PROT_WRITE, MAP_SHARED, fd_, buf.m.offset);
+            const char* serial = udev_device_get_property_value(parent, "ID_SERIAL_SHORT");
+            if(serial && _serial_number == serial)
+            {
+                const char* devnode = udev_device_get_devnode(dev); // e.g., "/dev/video2"
+                if(devnode)
+                {
+                    _device_id = std::filesystem::path(devnode).filename().string();
+                    RCLCPP_INFO(get_logger(), "Resolved device by serial '%s' to %s",
+                                _serial_number.c_str(), devnode);
+
+                    udev_device_unref(dev);
+                    udev_enumerate_unref(enumerate);
+                    udev_unref(udev);
+                    return std::string(devnode);
+                }
+            }
+
+            udev_device_unref(dev);
         }
 
-        for(size_t i = 0; i < req.count; ++i)
-        {
-            struct v4l2_buffer buf = {};
-            buf.type               = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-            buf.memory             = V4L2_MEMORY_MMAP;
-            buf.index              = i;
-            ioctl(fd_, VIDIOC_QBUF, &buf);
-        }
-
-        enum v4l2_buf_type type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-        ioctl(fd_, VIDIOC_STREAMON, &type);
-        RCLCPP_INFO(this->get_logger(), "Camera stream started on %s", device_path_.c_str());
+        udev_enumerate_unref(enumerate);
+        udev_unref(udev);
     }
 
-    void capture_loop()
+    if(!_device_id.empty())
     {
-        if(fd_ < 0)
+        // Fall back to partial modalias match if no serial match found
+        for(const auto& entry : fs::directory_iterator("/sys/class/video4linux"))
         {
-            RCLCPP_WARN_THROTTLE(this->get_logger(), *this->get_clock(), 5000,
-                                 "Camera not open, retrying...");
-            open_device();
+            std::string dev_name   = entry.path().filename();
+            std::string device_dir = entry.path().string() + "/device";
+            std::string full_path  = "/dev/" + dev_name;
+            RCLCPP_INFO(get_logger(), "Resolved device_id substring '%s' to %s", _device_id.c_str(),
+                        full_path.c_str());
+            if(full_path.find(_device_id) == std::string::npos)
+                continue;
+            _serial_number = get_serial_from_udev(_device_id);
+            _device_id     = dev_name;
+
+            RCLCPP_INFO(get_logger(), "Resolved device_id substring '%s' to %s", _device_id.c_str(),
+                        full_path.c_str());
+            RCLCPP_INFO(get_logger(), "Resolved device_id substring '%s' to %s", _device_id.c_str(),
+                        full_path.c_str());
+            return full_path;
+        }
+    }
+
+    return "";
+}
+
+void V4L2CameraNode::load_camera_info(const std::string& device_id)
+{
+    if(device_id.empty())
+        return;
+    std::string calib_file = _calib_path;
+    if(!fs::exists(calib_file))
+    {
+        RCLCPP_WARN(this->get_logger(), "Calibration file not found: %s", calib_file.c_str());
+        return;
+    }
+    try
+    {
+        YAML::Node calib              = YAML::LoadFile(calib_file);
+        _camera_info.width            = calib["image_width"].as<int>();
+        _camera_info.height           = calib["image_height"].as<int>();
+        _camera_info.distortion_model = calib["distortion_model"].as<std::string>();
+        _camera_info.d = calib["distortion_coefficients"]["data"].as<std::vector<double>>();
+        _camera_info.k = calib["camera_matrix"]["data"].as<std::array<double, 9>>();
+        _camera_info.r = calib["rectification_matrix"]["data"].as<std::array<double, 9>>();
+        _camera_info.p = calib["projection_matrix"]["data"].as<std::array<double, 12>>();
+        RCLCPP_INFO(this->get_logger(), "Loaded calibration for device_id %s", device_id.c_str());
+    }
+    catch(const std::exception& e)
+    {
+        RCLCPP_ERROR(this->get_logger(), "Failed to load camera info: %s", e.what());
+    }
+}
+
+void V4L2CameraNode::open_device()
+{
+    _fd = open(_device_path.c_str(), O_RDWR | O_NONBLOCK);
+    if(_fd < 0)
+    {
+        RCLCPP_ERROR(this->get_logger(), "Failed to open %s", _device_path.c_str());
+        return;
+    }
+
+    struct v4l2_format fmt  = {};
+    fmt.type                = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+    fmt.fmt.pix.width       = _width;
+    fmt.fmt.pix.height      = _height;
+    fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_MJPEG;
+    fmt.fmt.pix.field       = V4L2_FIELD_ANY;
+
+    // Try MJPEG first
+    if(ioctl(_fd, VIDIOC_S_FMT, &fmt) < 0)
+    {
+        RCLCPP_WARN(this->get_logger(), "MJPEG not supported, falling back to YUYV.");
+        fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_YUYV;
+        if(ioctl(_fd, VIDIOC_S_FMT, &fmt) < 0)
+        {
+            RCLCPP_ERROR(this->get_logger(), "Failed to set format (MJPEG and YUYV both failed).");
+            close(_fd);
+            _fd = -1;
             return;
         }
+        _using_mjpeg = false;
+    }
+    else
+    {
+        _using_mjpeg = true;
+    }
 
-        fd_set fds;
-        FD_ZERO(&fds);
-        FD_SET(fd_, &fds);
-        struct timeval tv = {0};
-        tv.tv_sec         = 0;
-        tv.tv_usec        = 500000;
+    struct v4l2_requestbuffers req = {};
+    req.count                      = 4;
+    req.type                       = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+    req.memory                     = V4L2_MEMORY_MMAP;
+    if(ioctl(_fd, VIDIOC_REQBUFS, &req) < 0)
+    {
+        RCLCPP_ERROR(this->get_logger(), "Failed to request buffers.");
+        close(_fd);
+        _fd = -1;
+        return;
+    }
 
-        int r = select(fd_ + 1, &fds, NULL, NULL, &tv);
-        if(r <= 0)
-        {
-            RCLCPP_WARN(this->get_logger(), "No camera data. Retrying...");
-            return;
-        }
-
+    _buffers.resize(req.count);
+    for(size_t i = 0; i < req.count; ++i)
+    {
         struct v4l2_buffer buf = {};
         buf.type               = V4L2_BUF_TYPE_VIDEO_CAPTURE;
         buf.memory             = V4L2_MEMORY_MMAP;
-        if(ioctl(fd_, VIDIOC_DQBUF, &buf) < 0)
+        buf.index              = i;
+        if(ioctl(_fd, VIDIOC_QUERYBUF, &buf) < 0)
         {
-            RCLCPP_WARN(this->get_logger(), "Failed to dequeue buffer.");
-            return;
+            RCLCPP_ERROR(this->get_logger(), "Failed to query buffer %zu", i);
+            continue;
         }
 
-        cv::Mat yuyv(height_, width_, CV_8UC2, buffers_[buf.index].start);
+        _buffers[i].length = buf.length;
+        _buffers[i].start =
+            mmap(NULL, buf.length, PROT_READ | PROT_WRITE, MAP_SHARED, _fd, buf.m.offset);
+        if(_buffers[i].start == MAP_FAILED)
+        {
+            RCLCPP_ERROR(this->get_logger(), "mmap failed for buffer %zu", i);
+            _buffers[i].start = nullptr;
+        }
+    }
+
+    for(size_t i = 0; i < req.count; ++i)
+    {
+        struct v4l2_buffer buf = {};
+        buf.type               = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+        buf.memory             = V4L2_MEMORY_MMAP;
+        buf.index              = i;
+        ioctl(_fd, VIDIOC_QBUF, &buf);
+    }
+
+    enum v4l2_buf_type type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+    ioctl(_fd, VIDIOC_STREAMON, &type);
+    RCLCPP_INFO(get_logger(), "Camera stream started on %s (%s)", _device_path.c_str(),
+                _using_mjpeg ? "MJPEG" : "YUYV");
+}
+
+void V4L2CameraNode::capture_loop()
+{
+    if(_fd < 0)
+    {
+        RCLCPP_WARN_THROTTLE(this->get_logger(), *this->get_clock(), 5000,
+                             "Camera not open, retrying...");
+        open_device();
+        return;
+    }
+
+    fd_set fds;
+    FD_ZERO(&fds);
+    FD_SET(_fd, &fds);
+    struct timeval tv = {0};
+    tv.tv_sec         = 0;
+    tv.tv_usec        = 500000;
+
+    int r = select(_fd + 1, &fds, NULL, NULL, &tv);
+    if(r <= 0)
+    {
+        RCLCPP_WARN(this->get_logger(), "No camera data. Retrying...");
+        return;
+    }
+
+    struct v4l2_buffer buf = {};
+    buf.type               = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+    buf.memory             = V4L2_MEMORY_MMAP;
+    if(ioctl(_fd, VIDIOC_DQBUF, &buf) < 0)
+    {
+        RCLCPP_WARN(this->get_logger(), "Failed to dequeue buffer.");
+
+        struct stat st;
+        if(stat(_device_path.c_str(), &st) != 0)
+        {
+            RCLCPP_ERROR(this->get_logger(),
+                         "Device path no longer exists: %s. Attempting to reconnect...",
+                         _device_path.c_str());
+            stop_capture();
+
+            // Optional: Re-resolve in case the device path changed (requires _device_id to be
+            // stored)
+            if(!_device_id.empty())
+            {
+                _device_path = resolve_device_id();
+                RCLCPP_INFO(this->get_logger(), "Re-resolved device path: %s",
+                            _device_path.c_str());
+            }
+
+            open_device();
+        }
+
+        return;
+    }
+
+    bool buffer_ok = true;
+
+    if(buf.index >= _buffers.size())
+    {
+        RCLCPP_WARN(this->get_logger(), "Buffer index out of range.");
+        buffer_ok = false;
+    }
+    else if(buf.bytesused == 0)
+    {
+        RCLCPP_WARN(this->get_logger(), "Buffer is empty.");
+        buffer_ok = false;
+    }
+    else if(buf.bytesused != _buffers[buf.index].length)
+    {
+        RCLCPP_DEBUG(this->get_logger(), "Buffer bytesused: %u, Expected length: %zu",
+                     buf.bytesused, _buffers[buf.index].length);
+        RCLCPP_DEBUG(this->get_logger(), "Buffer size mismatch.");
+    }
+    else if(buf.flags & V4L2_BUF_FLAG_ERROR)
+    {
+        RCLCPP_WARN(this->get_logger(), "Buffer error.");
+        buffer_ok = false;
+    }
+
+    if(buffer_ok)
+    {
         cv::Mat bgr;
-        cv::cvtColor(yuyv, bgr, cv::COLOR_YUV2BGR_YUYV);
+        if(_using_mjpeg)
+        {
+            cv::Mat jpeg_data(1, buf.bytesused, CV_8UC1, _buffers[buf.index].start);
+            bgr = cv::imdecode(jpeg_data, cv::IMREAD_COLOR);
+            if(bgr.empty())
+            {
+                RCLCPP_WARN(this->get_logger(), "Failed to decode MJPEG frame.");
+                buffer_ok = false;
+            }
+        }
+        else
+        {
+            cv::Mat yuyv(_height, _width, CV_8UC2, _buffers[buf.index].start);
+            cv::cvtColor(yuyv, bgr, cv::COLOR_YUV2BGR_YUYV);
+        }
 
         auto stamp        = this->get_clock()->now();
         auto msg          = cv_bridge::CvImage(std_msgs::msg::Header(), "bgr8", bgr).toImageMsg();
         msg->header.stamp = stamp;
-        publisher_->publish(*msg);
+        _publisher->publish(*msg);
         {
             std::lock_guard<std::mutex> lock(_frame_mutex);
             _latest_frame = bgr.clone();
         }
-        camera_info_.header.stamp = stamp;
-        camera_info_pub_->publish(camera_info_);
-
-        ioctl(fd_, VIDIOC_QBUF, &buf);
+        _camera_info.header.stamp = stamp;
+        _camera_info_pub->publish(_camera_info);
     }
 
-    void stop_capture()
+    if(ioctl(_fd, VIDIOC_QBUF, &buf) < 0)
     {
-        if(fd_ >= 0)
-        {
-            enum v4l2_buf_type type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-            ioctl(fd_, VIDIOC_STREAMOFF, &type);
-            for(auto& b : buffers_)
-            {
-                munmap(b.start, b.length);
-            }
-            close(fd_);
-            fd_ = -1;
-        }
+        RCLCPP_ERROR(this->get_logger(), "Failed to requeue buffer: %s", strerror(errno));
     }
-    void publish_calibration_image(const cv::Mat& image)
+}
+
+void V4L2CameraNode::stop_capture()
+{
+    if(_fd >= 0)
     {
-        if(!calibration_image_pub_)
-            return;
-        auto msg          = cv_bridge::CvImage(std_msgs::msg::Header(), "bgr8", image).toImageMsg();
-        msg->header.stamp = this->get_clock()->now();
-        calibration_image_pub_->publish(*msg);
+        enum v4l2_buf_type type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+        ioctl(_fd, VIDIOC_STREAMOFF, &type);
+        for(auto& b : _buffers)
+        {
+            munmap(b.start, b.length);
+        }
+        close(_fd);
+        _fd = -1;
     }
-
-    rclcpp_action::Server<CalibrateCamera>::SharedPtr calibration_server_;
-
-    rclcpp_action::GoalResponse handle_goal(const rclcpp_action::GoalUUID&               uuid,
-                                            std::shared_ptr<const CalibrateCamera::Goal> goal)
-    {
-        if(_calibration_in_progress.load())
-        {
-            RCLCPP_WARN(this->get_logger(), "Calibration already in progress.");
-            return rclcpp_action::GoalResponse::REJECT;
-        }
-        RCLCPP_INFO(this->get_logger(), "Accepted calibration goal (%s board)",
-                    goal->board_type.c_str());
-        return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
-    }
-
-    rclcpp_action::CancelResponse handle_cancel(
-        const std::shared_ptr<rclcpp_action::ServerGoalHandle<CalibrateCamera>> goal_handle)
-    {
-        RCLCPP_INFO(this->get_logger(), "Calibration canceled.");
-        _calibration_in_progress.store(false);
-        return rclcpp_action::CancelResponse::ACCEPT;
-    }
-
-    void handle_accepted(
-        const std::shared_ptr<rclcpp_action::ServerGoalHandle<CalibrateCamera>> goal_handle)
-    {
-        _calibration_in_progress.store(true);
-        std::thread{std::bind(&V4L2CameraNode::execute_calibration, this, goal_handle)}.detach();
-    }
-
-    void execute_calibration(
-        const std::shared_ptr<rclcpp_action::ServerGoalHandle<CalibrateCamera>> goal_handle)
-    {
-        if(goal_handle->get_goal()->board_type == "chessboard")
-        {
-            execute_chessboard_calibration(goal_handle);
-        }
-        else if(goal_handle->get_goal()->board_type == "charuco")
-        {
-            execute_charuco_calibration(goal_handle);
-        }
-        else
-        {
-            auto result     = std::make_shared<CalibrateCamera::Result>();
-            result->success = false;
-            result->message = "Unsupported board type: " + goal_handle->get_goal()->board_type;
-            goal_handle->abort(result);
-        }
-    }
-    void execute_chessboard_calibration(
-        const std::shared_ptr<rclcpp_action::ServerGoalHandle<CalibrateCamera>> goal_handle)
-    {
-        const auto goal     = goal_handle->get_goal();
-        auto       feedback = std::make_shared<CalibrateCamera::Feedback>();
-        auto       result   = std::make_shared<CalibrateCamera::Result>();
-
-        std::vector<std::vector<cv::Point3f>> object_points;
-        std::vector<std::vector<cv::Point2f>> image_points;
-        std::vector<cv::Mat>                  collected_images;
-
-        cv::Size board_size(goal->cols, goal->rows);
-        cv::Size image_size;
-
-        int frames_needed = goal->num_frames;
-        int accepted      = 0;
-
-        RCLCPP_INFO(this->get_logger(), "Capturing %d calibration frames...", frames_needed);
-
-        rclcpp::Rate rate(30);
-        while(rclcpp::ok() && accepted < frames_needed && _calibration_in_progress.load())
-        {
-            cv::Mat frame, gray;
-            {
-                std::lock_guard<std::mutex> lock(_frame_mutex);
-                if(_latest_frame.empty())
-                    continue;
-                frame = _latest_frame.clone();
-            }
-
-            image_size = frame.size();
-            cv::cvtColor(frame, gray, cv::COLOR_BGR2GRAY);
-
-            std::vector<cv::Point2f> corners;
-            bool                     found =
-                cv::findChessboardCorners(gray, board_size, corners,
-                                          cv::CALIB_CB_ADAPTIVE_THRESH | cv::CALIB_CB_FAST_CHECK |
-                                              cv::CALIB_CB_NORMALIZE_IMAGE);
-
-            feedback->frames_captured = accepted;
-            if(!found)
-            {
-                feedback->accepted = false;
-                feedback->reason   = "No chessboard found";
-                goal_handle->publish_feedback(feedback);
-                rate.sleep();
-                publish_calibration_image(frame);
-                continue;
-            }
-
-            float area           = static_cast<float>(cv::contourArea(corners));
-            feedback->area       = area;
-            feedback->accepted   = true;
-            feedback->reason     = "Accepted";
-            feedback->x_offset   = static_cast<int>(cv::mean(corners)[0] - (image_size.width / 2));
-            feedback->y_offset   = static_cast<int>(cv::mean(corners)[1] - (image_size.height / 2));
-            feedback->skew_score = 1.0; // TODO: Compute real skew metric
-
-            goal_handle->publish_feedback(feedback);
-
-            std::vector<cv::Point3f> objp;
-            for(int i = 0; i < goal->rows; ++i)
-                for(int j = 0; j < goal->cols; ++j)
-                    objp.emplace_back(j * goal->square_size, i * goal->square_size, 0);
-
-            object_points.push_back(objp);
-            image_points.push_back(corners);
-            ++accepted;
-            cv::drawChessboardCorners(frame, board_size, corners, found);
-            publish_calibration_image(frame);
-            rate.sleep();
-        }
-
-        if(accepted < frames_needed)
-        {
-            result->success = false;
-            result->message = "Calibration aborted before sufficient frames were collected.";
-            goal_handle->abort(result);
-            return;
-        }
-
-        cv::Mat              camera_matrix, dist_coeffs;
-        std::vector<cv::Mat> rvecs, tvecs;
-        double err = cv::calibrateCamera(object_points, image_points, image_size, camera_matrix,
-                                         dist_coeffs, rvecs, tvecs);
-
-        std::string     calib_path = calib_base_path_ + "/calib_" + goal->board_type + ".yaml";
-        cv::FileStorage fs(calib_path, cv::FileStorage::WRITE);
-        fs << "image_width" << image_size.width;
-        fs << "image_height" << image_size.height;
-        fs << "camera_matrix" << camera_matrix;
-        fs << "distortion_coefficients" << dist_coeffs;
-        fs.release();
-
-        result->success = true;
-        result->message = "Calibration complete with reprojection error: " + std::to_string(err);
-        goal_handle->succeed(result);
-    }
-    void execute_charuco_calibration(
-        const std::shared_ptr<rclcpp_action::ServerGoalHandle<CalibrateCamera>> goal_handle)
-    {
-        const auto goal     = goal_handle->get_goal();
-        auto       feedback = std::make_shared<CalibrateCamera::Feedback>();
-        auto       result   = std::make_shared<CalibrateCamera::Result>();
-
-        int                                   accepted = 0;
-        std::vector<cv::Mat>                  collected_images;
-        std::vector<std::vector<cv::Point2f>> all_corners;
-        std::vector<std::vector<int>>         all_ids;
-
-        cv::Ptr<cv::aruco::Dictionary> dictionary =
-            cv::aruco::getPredefinedDictionary(cv::aruco::DICT_6X6_250);
-        cv::Ptr<cv::aruco::CharucoBoard> board = cv::aruco::CharucoBoard::create(
-            goal->cols, goal->rows, goal->square_size, goal->square_size * 0.7, dictionary);
-
-        rclcpp::Rate rate(30);
-        cv::Size     image_size;
-
-        while(rclcpp::ok() && accepted < goal->num_frames && _calibration_in_progress.load())
-        {
-            cv::Mat frame, gray;
-            {
-                std::lock_guard<std::mutex> lock(_frame_mutex);
-                if(_latest_frame.empty())
-                    continue;
-                frame = _latest_frame.clone();
-            }
-
-            image_size = frame.size();
-            cv::cvtColor(frame, gray, cv::COLOR_BGR2GRAY);
-
-            std::vector<int>                      marker_ids;
-            std::vector<std::vector<cv::Point2f>> marker_corners;
-            cv::aruco::detectMarkers(gray, dictionary, marker_corners, marker_ids);
-            if(marker_ids.empty())
-            {
-                feedback->accepted = false;
-                feedback->reason   = "No ArUco markers found";
-                goal_handle->publish_feedback(feedback);
-                publish_calibration_image(frame);
-                rate.sleep();
-                continue;
-            }
-
-            cv::Mat charuco_corners, charuco_ids;
-            cv::aruco::interpolateCornersCharuco(marker_corners, marker_ids, gray, board,
-                                                 charuco_corners, charuco_ids);
-
-            if(charuco_ids.total() < 4)
-            {
-                feedback->accepted = false;
-                feedback->reason   = "Too few Charuco corners";
-                goal_handle->publish_feedback(feedback);
-                publish_calibration_image(frame);
-                rate.sleep();
-                continue;
-            }
-
-            feedback->accepted        = true;
-            feedback->frames_captured = ++accepted;
-            feedback->reason          = "Accepted";
-            feedback->area            = static_cast<float>(cv::contourArea(charuco_corners));
-            feedback->x_offset =
-                static_cast<int>(cv::mean(charuco_corners)[0] - (image_size.width / 2));
-            feedback->y_offset =
-                static_cast<int>(cv::mean(charuco_corners)[1] - (image_size.height / 2));
-            feedback->skew_score = 1.0; // TODO: real skew calc
-
-            all_corners.emplace_back(charuco_corners.begin<cv::Point2f>(),
-                                     charuco_corners.end<cv::Point2f>());
-            all_ids.emplace_back(charuco_ids.begin<int>(), charuco_ids.end<int>());
-            collected_images.push_back(gray.clone());
-
-            cv::aruco::drawDetectedMarkers(frame, marker_corners, marker_ids);
-            goal_handle->publish_feedback(feedback);
-            publish_calibration_image(frame);
-            rate.sleep();
-        }
-
-        if(accepted < goal->num_frames)
-        {
-            result->success = false;
-            result->message = "Calibration aborted before sufficient frames were collected.";
-            goal_handle->abort(result);
-            return;
-        }
-
-        cv::Mat camera_matrix, dist_coeffs;
-        double  error = cv::aruco::calibrateCameraCharuco(all_corners, all_ids, board, image_size,
-                                                          camera_matrix, dist_coeffs);
-
-        std::string     calib_file = calib_base_path_ + "/calib_" + goal->board_type + ".yaml";
-        cv::FileStorage fs(calib_file, cv::FileStorage::WRITE);
-        fs << "image_width" << image_size.width;
-        fs << "image_height" << image_size.height;
-        fs << "camera_matrix" << camera_matrix;
-        fs << "distortion_coefficients" << dist_coeffs;
-        fs.release();
-
-        result->success = true;
-        result->message =
-            "Charuco calibration successful with reprojection error: " + std::to_string(error);
-        goal_handle->succeed(result);
-    }
-
-    std::mutex       _frame_mutex;
-    cv::Mat          _latest_frame;
-    std::atomic_bool _calibration_in_progress{false};
-};
+}
 
 int main(int argc, char* argv[])
 {
     rclcpp::init(argc, argv);
     auto node = std::make_shared<V4L2CameraNode>();
+    node->_calibration_server->start(); // safe, node is fully shared now
     rclcpp::spin(node);
     rclcpp::shutdown();
     return 0;

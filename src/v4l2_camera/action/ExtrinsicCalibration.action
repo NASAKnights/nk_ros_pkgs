@@ -1,0 +1,12 @@
+# Goal
+string base_link_frame
+string tag_map_frame
+string[] camera_namespaces
+
+---
+# Result
+string calibration_file_path
+
+---
+# Feedback
+uint32[] tag_detections_per_camera

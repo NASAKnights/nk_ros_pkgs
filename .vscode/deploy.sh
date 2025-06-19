@@ -17,7 +17,7 @@ rsync -avz --delete --exclude 'log/' --exclude 'build/' --exclude 'install/' --e
 
 echo "Starting new container..."
 ssh -t "$REMOTE_USER@$REMOTE_IP" "docker start $CONTAINER_NAME &&
-    docker exec vision-container /bin/bash -c 'source /opt/ros/humble/setup.bash && cd /workspaces/isaac_ros-dev && colcon build --symlink-install'"
+    docker exec vision-container /bin/bash -c 'source /opt/ros/jazzy/setup.bash && cd /workspaces/isaac_ros-dev && colcon build --symlink-install'"
 
 echo "Code Rebuilt, Running Robot..."
 
